@@ -10,6 +10,45 @@ OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 RESULTS_FILE = REPORTS_DIR / "results.csv"
 TOOLS = ("esbmc", "asan", "tsan", "afl")
+DETECTED_MARKERS = (
+    "AddressSanitizer:",
+    "ThreadSanitizer:",
+    "VERIFICATION FAILED",
+    "Violated property",
+    "data race",
+    "heap-buffer-overflow",
+)
+UNAVAILABLE_MARKERS = (
+    "executavel esbmc nao encontrado",
+    "compilador c nao encontrado",
+    "ferramenta afl++ nao encontrada",
+)
+EXECUTION_ERROR_MARKERS = (
+    "PARSING ERROR",
+    "No solver backends built into ESBMC",
+    "Tempo limite excedido",
+    "falha na compilacao",
+    "erro ao ler log",
+)
+
+
+def classify_result(log_text, data):
+    text = log_text.lower()
+    error = data["error"].lower()
+
+    if any(marker.lower() in text or marker.lower() in error for marker in UNAVAILABLE_MARKERS):
+        return "ferramenta indisponivel"
+
+    if any(marker.lower() in text for marker in DETECTED_MARKERS):
+        return "detectado"
+
+    if any(marker.lower() in text or marker.lower() in error for marker in EXECUTION_ERROR_MARKERS):
+        return "erro de execucao"
+
+    if data["compile_returncode"] and data["compile_returncode"] != "0":
+        return "erro de execucao"
+
+    return "nao detectado"
 
 
 def parse_log(log_path):
@@ -20,6 +59,7 @@ def parse_log(log_path):
         "returncode": "",
         "compile_returncode": "",
         "run_returncode": "",
+        "classification": "",
         "error": "",
     }
     section = "header"
@@ -28,7 +68,10 @@ def parse_log(log_path):
         lines = log_path.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError as exc:
         data["error"] = f"erro ao ler log: {exc}"
+        data["classification"] = classify_result("", data)
         return data
+
+    log_text = "\n".join(lines)
 
     for line in lines:
         if line.startswith("[") and line.endswith("]"):
@@ -57,6 +100,7 @@ def parse_log(log_path):
             data["error"] = line.strip()
             section = "error_captured"
 
+    data["classification"] = classify_result(log_text, data)
     return data
 
 
@@ -80,6 +124,7 @@ def write_csv(rows):
         "returncode",
         "compile_returncode",
         "run_returncode",
+        "classification",
         "error",
     ]
     with RESULTS_FILE.open("w", newline="", encoding="utf-8") as csv_file:

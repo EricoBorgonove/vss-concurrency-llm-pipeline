@@ -57,7 +57,8 @@ pipeline-vss-llm/
   curta, salvando logs em `outputs/afl/`.
 - `run_pipeline.py` executa uma rodada básica das ferramentas implementadas e
   salva um resumo em `outputs/pipeline/`.
-- `scripts/generate_report.py` consolida logs em `reports/results.csv`.
+- `scripts/generate_report.py` consolida logs em `reports/results.csv` e inclui
+  uma classificação simples dos resultados.
 - Há benchmarks mínimos para assertion violation, buffer overflow, data race e
   deadlock em `benchmarks/`.
 - Os demais scripts Python ainda são placeholders com tratamento básico de erro.
@@ -123,5 +124,5 @@ python3 scripts/generate_report.py
 
 ## Próxima etapa planejada
 
-Criar mecanismo simples para classificar resultados como detectado, não
-detectado, erro de execução ou ferramenta indisponível.
+Criar etapa simulada de LLM em `scripts/run_llm_repair.py`, sem chamar API
+externa ainda.

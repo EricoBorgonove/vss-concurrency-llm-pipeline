@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Virtual environments
+.venv/
+venv/
+
 # Distribution / packaging
 .Python
 env/
@@ -24,9 +28,14 @@ var/
 # OS files
 .DS_Store
 
-# Outputs and reports
-outputs/
-reports/
+# Generated outputs and reports
+outputs/**
+!outputs/
+!outputs/**/
+!outputs/**/.gitkeep
+reports/**
+!reports/
+!reports/.gitkeep
 
 # OneDrive temp files
 ~$*

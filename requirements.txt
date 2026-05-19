@@ -1,3 +1,2 @@
-# Dependências mínimas do pipeline (instalar quando necessário)
-# Ex: click, requests
-
+# Este projeto usa apenas a biblioteca padrao do Python nesta etapa inicial.
+# Dependencias serao adicionadas incrementalmente quando forem necessarias.

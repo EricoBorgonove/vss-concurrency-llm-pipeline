@@ -1,0 +1,3 @@
+# Dependências mínimas do pipeline (instalar quando necessário)
+# Ex: click, requests
+

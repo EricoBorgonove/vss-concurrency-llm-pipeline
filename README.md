@@ -57,6 +57,7 @@ pipeline-vss-llm/
   curta, salvando logs em `outputs/afl/`.
 - `run_pipeline.py` executa uma rodada básica das ferramentas implementadas e
   salva um resumo em `outputs/pipeline/`.
+- `scripts/generate_report.py` consolida logs em `reports/results.csv`.
 - Há benchmarks mínimos para assertion violation, buffer overflow, data race e
   deadlock em `benchmarks/`.
 - Os demais scripts Python ainda são placeholders com tratamento básico de erro.
@@ -107,6 +108,12 @@ Para executar a rodada básica do pipeline:
 python3 run_pipeline.py
 ```
 
+Para gerar o relatório CSV a partir dos logs:
+
+```bash
+python3 scripts/generate_report.py
+```
+
 ## Benchmarks iniciais
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
@@ -116,4 +123,5 @@ python3 run_pipeline.py
 
 ## Próxima etapa planejada
 
-Criar geração de relatório CSV em `reports/results.csv`.
+Criar mecanismo simples para classificar resultados como detectado, não
+detectado, erro de execução ou ferramenta indisponível.

@@ -59,6 +59,8 @@ pipeline-vss-llm/
   salva um resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv` e inclui
   uma classificação simples dos resultados.
+- `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
+  um log, sem chamar API externa.
 - Há benchmarks mínimos para assertion violation, buffer overflow, data race e
   deadlock em `benchmarks/`.
 - Os demais scripts Python ainda são placeholders com tratamento básico de erro.
@@ -115,6 +117,12 @@ Para gerar o relatório CSV a partir dos logs:
 python3 scripts/generate_report.py
 ```
 
+Para gerar uma sugestão simulada de reparo a partir de um log:
+
+```bash
+python3 scripts/run_llm_repair.py outputs/asan/simple_buffer_overflow_20260519-172441.log
+```
+
 ## Benchmarks iniciais
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
@@ -124,5 +132,4 @@ python3 scripts/generate_report.py
 
 ## Próxima etapa planejada
 
-Criar etapa simulada de LLM em `scripts/run_llm_repair.py`, sem chamar API
-externa ainda.
+Criar etapa de validação das correções geradas pela LLM.

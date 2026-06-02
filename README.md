@@ -61,6 +61,8 @@ pipeline-vss-llm/
   uma classificação simples dos resultados.
 - `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
   um log, sem chamar API externa.
+- `scripts/validate_llm_repair.py` valida de forma simulada uma sugestão gerada,
+  sem aplicar alterações no código-fonte.
 - Há benchmarks mínimos para assertion violation, buffer overflow, data race e
   deadlock em `benchmarks/`.
 - Os demais scripts Python ainda são placeholders com tratamento básico de erro.
@@ -123,6 +125,12 @@ Para gerar uma sugestão simulada de reparo a partir de um log:
 python3 scripts/run_llm_repair.py outputs/asan/simple_buffer_overflow_20260519-172441.log
 ```
 
+Para validar uma sugestão simulada de reparo:
+
+```bash
+python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt
+```
+
 ## Benchmarks iniciais
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
@@ -132,4 +140,5 @@ python3 scripts/run_llm_repair.py outputs/asan/simple_buffer_overflow_20260519-1
 
 ## Próxima etapa planejada
 
-Criar etapa de validação das correções geradas pela LLM.
+Evoluir a validação para aplicar correções controladas e reexecutar ESBMC e
+sanitizers sobre o código reparado.

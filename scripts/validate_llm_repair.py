@@ -3,11 +3,13 @@
 
 import argparse
 import datetime as dt
+import subprocess
 import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "llm"
+SUPPORTED_TOOLS = ("asan",)
 
 
 def build_parser():
@@ -15,6 +17,22 @@ def build_parser():
         description="Valida uma sugestao simulada de reparo sem alterar codigo-fonte."
     )
     parser.add_argument("repair_file", help="Arquivo de sugestao gerado por run_llm_repair.py.")
+    parser.add_argument(
+        "--fixed-benchmark",
+        help="Arquivo .c reparado a ser validado por uma ferramenta ja integrada.",
+    )
+    parser.add_argument(
+        "--tool",
+        choices=SUPPORTED_TOOLS,
+        default="asan",
+        help="Ferramenta usada para validar o benchmark reparado. Padrao: asan.",
+    )
+    parser.add_argument(
+        "--tool-timeout",
+        type=int,
+        default=30,
+        help="Timeout usado pela ferramenta de validacao em segundos. Padrao: 30.",
+    )
     return parser
 
 
@@ -51,7 +69,37 @@ def validate_repair(content):
     return status, issue_type, problems
 
 
-def write_validation(output_path, repair_path, status, issue_type, problems):
+def run_tool_validation(tool, fixed_benchmark, timeout):
+    if tool == "asan":
+        command = [
+            sys.executable,
+            "scripts/run_asan.py",
+            str(fixed_benchmark),
+            "--timeout",
+            str(timeout),
+        ]
+    else:
+        raise ValueError(f"ferramenta nao suportada: {tool}")
+
+    result = subprocess.run(
+        command,
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return command, result
+
+
+def write_validation(
+    output_path,
+    repair_path,
+    status,
+    issue_type,
+    problems,
+    tool_command=None,
+    tool_result=None,
+):
     with output_path.open("w", encoding="utf-8") as output_file:
         output_file.write("LLM repair validation simulation\n")
         output_file.write(f"generated_at: {dt.datetime.now().isoformat(timespec='seconds')}\n")
@@ -64,8 +112,23 @@ def write_validation(output_path, repair_path, status, issue_type, problems):
                 output_file.write(f"- {problem}\n")
         else:
             output_file.write("- sugestao contem metadados minimos esperados\n")
-            output_file.write("- nenhuma alteracao de codigo foi aplicada nesta etapa\n")
-            output_file.write("- validacao real com ESBMC/sanitizers fica para etapa futura\n")
+
+        if tool_command and tool_result:
+            output_file.write("\ntool_validation:\n")
+            output_file.write(f"command: {' '.join(tool_command)}\n")
+            output_file.write(f"returncode: {tool_result.returncode}\n")
+            if tool_result.stdout:
+                output_file.write("stdout:\n")
+                output_file.write(tool_result.stdout)
+                if not tool_result.stdout.endswith("\n"):
+                    output_file.write("\n")
+            if tool_result.stderr:
+                output_file.write("stderr:\n")
+                output_file.write(tool_result.stderr)
+                if not tool_result.stderr.endswith("\n"):
+                    output_file.write("\n")
+        else:
+            output_file.write("- nenhuma validacao com ferramenta foi solicitada nesta etapa\n")
 
 
 def main():
@@ -87,7 +150,37 @@ def main():
     try:
         content = repair_path.read_text(encoding="utf-8", errors="replace")
         status, issue_type, problems = validate_repair(content)
-        write_validation(output_path, repair_path, status, issue_type, problems)
+        tool_command = None
+        tool_result = None
+
+        if args.fixed_benchmark:
+            fixed_benchmark = Path(args.fixed_benchmark).resolve()
+            if not fixed_benchmark.exists():
+                problems.append(f"benchmark reparado nao encontrado: {fixed_benchmark}")
+            elif fixed_benchmark.suffix != ".c":
+                problems.append(f"benchmark reparado deve ser arquivo .c: {fixed_benchmark}")
+            else:
+                tool_command, tool_result = run_tool_validation(
+                    args.tool,
+                    fixed_benchmark,
+                    args.tool_timeout,
+                )
+                if tool_result.returncode != 0:
+                    problems.append(
+                        f"validacao com {args.tool} falhou com codigo {tool_result.returncode}"
+                    )
+
+            status = "validacao_controlada_aprovada" if not problems else "validacao_controlada_reprovada"
+
+        write_validation(
+            output_path,
+            repair_path,
+            status,
+            issue_type,
+            problems,
+            tool_command=tool_command,
+            tool_result=tool_result,
+        )
         print(f"Validacao simulada salva em: {output_path}")
         return 0 if not problems else 1
     except OSError as exc:

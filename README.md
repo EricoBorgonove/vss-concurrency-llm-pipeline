@@ -62,7 +62,7 @@ pipeline-vss-llm/
 - `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
   um log, sem chamar API externa.
 - `scripts/validate_llm_repair.py` valida de forma simulada uma sugestão gerada,
-  sem aplicar alterações no código-fonte.
+  e pode reexecutar uma ferramenta sobre um benchmark reparado controlado.
 - Há benchmarks mínimos para assertion violation, buffer overflow, data race e
   deadlock em `benchmarks/`.
 - Os demais scripts Python ainda são placeholders com tratamento básico de erro.
@@ -131,14 +131,21 @@ Para validar uma sugestão simulada de reparo:
 python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt
 ```
 
+Para validar um benchmark reparado controlado com ASAN:
+
+```bash
+python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fixed-benchmark benchmarks/memory_corruption/simple_buffer_overflow_fixed.c --tool asan
+```
+
 ## Benchmarks iniciais
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
 - `benchmarks/memory_corruption/simple_buffer_overflow.c`
+- `benchmarks/memory_corruption/simple_buffer_overflow_fixed.c`
 - `benchmarks/data_race/simple_data_race.c`
 - `benchmarks/deadlock/simple_deadlock.c`
 
 ## Próxima etapa planejada
 
-Evoluir a validação para aplicar correções controladas e reexecutar ESBMC e
-sanitizers sobre o código reparado.
+Expandir a validação controlada para outros tipos de vulnerabilidade e outras
+ferramentas.

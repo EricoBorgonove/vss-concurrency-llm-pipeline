@@ -60,8 +60,8 @@ pipeline-vss-llm/
   curta, salvando logs em `outputs/afl/`.
 - `run_pipeline.py` executa uma rodada básica das ferramentas implementadas,
   incluindo deadlock por timeout, e salva um resumo em `outputs/pipeline/`.
-- `scripts/generate_report.py` consolida logs em `reports/results.csv` e inclui
-  uma classificação simples dos resultados.
+- `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
+  classificação simples dos resultados e gera `reports/summary.csv`.
 - `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
   um log, sem chamar API externa.
 - `scripts/validate_llm_repair.py` valida de forma simulada uma sugestão gerada,
@@ -122,7 +122,7 @@ Para executar a rodada básica do pipeline:
 python3 run_pipeline.py
 ```
 
-Para gerar o relatório CSV a partir dos logs:
+Para gerar os relatórios CSV a partir dos logs:
 
 ```bash
 python3 scripts/generate_report.py
@@ -177,4 +177,5 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 
 ## Próxima etapa planejada
 
-Evoluir o relatório para resumir resultados por ferramenta e classificação.
+Adicionar opções de linha de comando para selecionar ferramentas e diretórios de
+entrada nos scripts de relatório.

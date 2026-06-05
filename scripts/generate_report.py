@@ -9,6 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 RESULTS_FILE = REPORTS_DIR / "results.csv"
+SUMMARY_FILE = REPORTS_DIR / "summary.csv"
 TOOLS = ("esbmc", "asan", "tsan", "deadlock", "afl")
 DETECTED_MARKERS = (
     "AddressSanitizer:",
@@ -137,11 +138,38 @@ def write_csv(rows):
         writer.writerows(rows)
 
 
+def build_summary(rows):
+    summary = {}
+    for row in rows:
+        key = (row["tool"], row["classification"])
+        summary[key] = summary.get(key, 0) + 1
+
+    return [
+        {
+            "tool": tool,
+            "classification": classification,
+            "count": count,
+        }
+        for (tool, classification), count in sorted(summary.items())
+    ]
+
+
+def write_summary_csv(rows):
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    fieldnames = ["tool", "classification", "count"]
+    with SUMMARY_FILE.open("w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(build_summary(rows))
+
+
 def main():
     try:
         rows = collect_rows()
         write_csv(rows)
+        write_summary_csv(rows)
         print(f"Relatorio salvo em: {RESULTS_FILE}")
+        print(f"Resumo salvo em: {SUMMARY_FILE}")
         print(f"Total de logs processados: {len(rows)}")
         return 0
     except Exception as exc:

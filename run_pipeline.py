@@ -32,6 +32,15 @@ TASKS = [
         ],
     },
     {
+        "name": "deadlock_timeout",
+        "command": [
+            "scripts/run_deadlock.py",
+            "benchmarks/deadlock/simple_deadlock.c",
+            "--timeout",
+            "3",
+        ],
+    },
+    {
         "name": "afl_buffer_overflow",
         "command": [
             "scripts/run_afl.py",

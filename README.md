@@ -58,8 +58,8 @@ pipeline-vss-llm/
   evidência de possível deadlock, salvando logs em `outputs/deadlock/`.
 - `scripts/run_afl.py` compila um benchmark com AFL++ e prepara uma campanha
   curta, salvando logs em `outputs/afl/`.
-- `run_pipeline.py` executa uma rodada básica das ferramentas implementadas e
-  salva um resumo em `outputs/pipeline/`.
+- `run_pipeline.py` executa uma rodada básica das ferramentas implementadas,
+  incluindo deadlock por timeout, e salva um resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv` e inclui
   uma classificação simples dos resultados.
 - `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
@@ -177,4 +177,4 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 
 ## Próxima etapa planejada
 
-Integrar `scripts/run_deadlock.py` ao orquestrador e ao relatorio CSV.
+Evoluir o relatório para resumir resultados por ferramenta e classificação.

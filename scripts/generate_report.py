@@ -9,7 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 RESULTS_FILE = REPORTS_DIR / "results.csv"
-TOOLS = ("esbmc", "asan", "tsan", "afl")
+TOOLS = ("esbmc", "asan", "tsan", "deadlock", "afl")
 DETECTED_MARKERS = (
     "AddressSanitizer:",
     "ThreadSanitizer:",
@@ -17,6 +17,7 @@ DETECTED_MARKERS = (
     "Violated property",
     "data race",
     "heap-buffer-overflow",
+    "tempo limite excedido",
 )
 UNAVAILABLE_MARKERS = (
     "executavel esbmc nao encontrado",
@@ -40,6 +41,9 @@ def classify_result(log_text, data):
         return "ferramenta indisponivel"
 
     if any(marker.lower() in text for marker in DETECTED_MARKERS):
+        return "detectado"
+
+    if "tool: deadlock-timeout" in text and "returncode: 124" in text:
         return "detectado"
 
     if any(marker.lower() in text or marker.lower() in error for marker in EXECUTION_ERROR_MARKERS):

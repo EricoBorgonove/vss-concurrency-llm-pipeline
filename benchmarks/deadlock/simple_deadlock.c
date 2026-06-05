@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <unistd.h>
 
 pthread_mutex_t first_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t second_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -7,6 +8,7 @@ void *lock_first_then_second(void *arg) {
     (void)arg;
 
     pthread_mutex_lock(&first_mutex);
+    usleep(1000);
     pthread_mutex_lock(&second_mutex);
 
     pthread_mutex_unlock(&second_mutex);
@@ -19,6 +21,7 @@ void *lock_second_then_first(void *arg) {
     (void)arg;
 
     pthread_mutex_lock(&second_mutex);
+    usleep(1000);
     pthread_mutex_lock(&first_mutex);
 
     pthread_mutex_unlock(&first_mutex);

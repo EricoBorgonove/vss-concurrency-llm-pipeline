@@ -33,6 +33,7 @@ pipeline-vss-llm/
 │   ├── afl/
 │   ├── asan/
 │   ├── tsan/
+│   ├── deadlock/
 │   ├── llm/
 │   └── pipeline/
 ├── reports/ (relatórios consolidados)
@@ -53,6 +54,8 @@ pipeline-vss-llm/
   salvando logs em `outputs/asan/`.
 - `scripts/run_tsan.py` compila e executa um benchmark C com ThreadSanitizer,
   salvando logs em `outputs/tsan/`.
+- `scripts/run_deadlock.py` compila e executa um benchmark C usando timeout como
+  evidência de possível deadlock, salvando logs em `outputs/deadlock/`.
 - `scripts/run_afl.py` compila um benchmark com AFL++ e prepara uma campanha
   curta, salvando logs em `outputs/afl/`.
 - `run_pipeline.py` executa uma rodada básica das ferramentas implementadas e
@@ -99,6 +102,12 @@ Para executar ThreadSanitizer sobre o benchmark de data race:
 
 ```bash
 python3 scripts/run_tsan.py benchmarks/data_race/simple_data_race.c
+```
+
+Para executar a observação de deadlock por timeout:
+
+```bash
+python3 scripts/run_deadlock.py benchmarks/deadlock/simple_deadlock.c
 ```
 
 Para preparar uma execução curta com AFL++:

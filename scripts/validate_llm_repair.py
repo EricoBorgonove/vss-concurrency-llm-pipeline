@@ -9,7 +9,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "llm"
-SUPPORTED_TOOLS = ("asan",)
+SUPPORTED_TOOLS = ("asan", "tsan")
 
 
 def build_parser():
@@ -74,6 +74,14 @@ def run_tool_validation(tool, fixed_benchmark, timeout):
         command = [
             sys.executable,
             "scripts/run_asan.py",
+            str(fixed_benchmark),
+            "--timeout",
+            str(timeout),
+        ]
+    elif tool == "tsan":
+        command = [
+            sys.executable,
+            "scripts/run_tsan.py",
             str(fixed_benchmark),
             "--timeout",
             str(timeout),

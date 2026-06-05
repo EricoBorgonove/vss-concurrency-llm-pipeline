@@ -137,15 +137,21 @@ Para validar um benchmark reparado controlado com ASAN:
 python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fixed-benchmark benchmarks/memory_corruption/simple_buffer_overflow_fixed.c --tool asan
 ```
 
+Para validar um benchmark reparado controlado com TSAN:
+
+```bash
+python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fixed-benchmark benchmarks/data_race/simple_data_race_fixed.c --tool tsan
+```
+
 ## Benchmarks iniciais
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
 - `benchmarks/memory_corruption/simple_buffer_overflow.c`
 - `benchmarks/memory_corruption/simple_buffer_overflow_fixed.c`
 - `benchmarks/data_race/simple_data_race.c`
+- `benchmarks/data_race/simple_data_race_fixed.c`
 - `benchmarks/deadlock/simple_deadlock.c`
 
 ## Próxima etapa planejada
 
-Expandir a validação controlada para outros tipos de vulnerabilidade e outras
-ferramentas.
+Expandir a validação controlada para deadlock e assertion violation.

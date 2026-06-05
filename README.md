@@ -134,6 +134,12 @@ Para gerar relatórios filtrando ferramentas:
 python3 scripts/generate_report.py --tools asan,tsan
 ```
 
+Para executar os testes automatizados leves:
+
+```bash
+python3 -m unittest
+```
+
 Para gerar uma sugestão simulada de reparo a partir de um log:
 
 ```bash
@@ -183,4 +189,4 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 
 ## Próxima etapa planejada
 
-Adicionar testes automatizados leves para os scripts de relatório.
+Ampliar os testes automatizados para validadores e executores.

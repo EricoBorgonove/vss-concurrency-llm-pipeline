@@ -34,6 +34,7 @@ pipeline-vss-llm/
 │   ├── asan/
 │   ├── tsan/
 │   ├── deadlock/
+│   ├── environment/
 │   ├── llm/
 │   └── pipeline/
 ├── reports/ (relatórios consolidados)
@@ -66,6 +67,8 @@ pipeline-vss-llm/
   um log, sem chamar API externa.
 - `scripts/validate_llm_repair.py` valida de forma simulada uma sugestão gerada,
   e pode reexecutar uma ferramenta sobre um benchmark reparado controlado.
+- `scripts/check_environment.py` registra um diagnóstico básico das ferramentas
+  e runtimes disponíveis em `outputs/environment/`.
 - Há benchmarks mínimos para assertion violation, buffer overflow, data race e
   deadlock em `benchmarks/`.
 - Os demais scripts Python ainda são placeholders com tratamento básico de erro.
@@ -138,6 +141,12 @@ Para executar os testes automatizados leves:
 
 ```bash
 python3 -m unittest
+```
+
+Para registrar diagnóstico do ambiente:
+
+```bash
+python3 scripts/check_environment.py
 ```
 
 Para gerar uma sugestão simulada de reparo a partir de um log:

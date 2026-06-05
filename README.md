@@ -143,9 +143,16 @@ Para validar um benchmark reparado controlado com TSAN:
 python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fixed-benchmark benchmarks/data_race/simple_data_race_fixed.c --tool tsan
 ```
 
+Para validar um benchmark reparado controlado com ESBMC:
+
+```bash
+python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fixed-benchmark benchmarks/assertion_violation/simple_assert_pass.c --tool esbmc
+```
+
 ## Benchmarks iniciais
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
+- `benchmarks/assertion_violation/simple_assert_pass.c`
 - `benchmarks/memory_corruption/simple_buffer_overflow.c`
 - `benchmarks/memory_corruption/simple_buffer_overflow_fixed.c`
 - `benchmarks/data_race/simple_data_race.c`
@@ -154,4 +161,4 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 
 ## Próxima etapa planejada
 
-Expandir a validação controlada para deadlock e assertion violation.
+Expandir a validação controlada para deadlock.

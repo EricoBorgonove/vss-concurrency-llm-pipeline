@@ -158,6 +158,12 @@ Para validar um benchmark reparado controlado com ESBMC:
 python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fixed-benchmark benchmarks/assertion_violation/simple_assert_pass.c --tool esbmc
 ```
 
+Para validar um benchmark reparado controlado de deadlock:
+
+```bash
+python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fixed-benchmark benchmarks/deadlock/simple_deadlock_fixed.c --tool deadlock
+```
+
 ## Benchmarks iniciais
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
@@ -167,7 +173,8 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 - `benchmarks/data_race/simple_data_race.c`
 - `benchmarks/data_race/simple_data_race_fixed.c`
 - `benchmarks/deadlock/simple_deadlock.c`
+- `benchmarks/deadlock/simple_deadlock_fixed.c`
 
 ## Próxima etapa planejada
 
-Expandir a validação controlada para deadlock.
+Integrar `scripts/run_deadlock.py` ao orquestrador e ao relatorio CSV.

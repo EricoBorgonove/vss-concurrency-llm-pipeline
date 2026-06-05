@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Gera um relatorio CSV simples a partir dos logs em outputs/."""
 
+import argparse
 import csv
 import sys
 from pathlib import Path
@@ -32,6 +33,36 @@ EXECUTION_ERROR_MARKERS = (
     "falha na compilacao",
     "erro ao ler log",
 )
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(
+        description="Gera CSVs consolidados a partir dos logs do pipeline."
+    )
+    parser.add_argument(
+        "--tools",
+        default=",".join(TOOLS),
+        help="Lista de ferramentas separadas por virgula. Padrao: todas.",
+    )
+    parser.add_argument(
+        "--output",
+        default=str(RESULTS_FILE),
+        help="Caminho do CSV detalhado. Padrao: reports/results.csv.",
+    )
+    parser.add_argument(
+        "--summary-output",
+        default=str(SUMMARY_FILE),
+        help="Caminho do CSV resumido. Padrao: reports/summary.csv.",
+    )
+    return parser
+
+
+def parse_tools(tools_arg):
+    selected_tools = tuple(tool.strip() for tool in tools_arg.split(",") if tool.strip())
+    invalid_tools = [tool for tool in selected_tools if tool not in TOOLS]
+    if invalid_tools:
+        raise ValueError(f"ferramenta(s) desconhecida(s): {', '.join(invalid_tools)}")
+    return selected_tools
 
 
 def classify_result(log_text, data):
@@ -109,9 +140,9 @@ def parse_log(log_path):
     return data
 
 
-def collect_rows():
+def collect_rows(tools):
     rows = []
-    for tool in TOOLS:
+    for tool in tools:
         tool_dir = OUTPUTS_DIR / tool
         if not tool_dir.is_dir():
             continue
@@ -120,8 +151,8 @@ def collect_rows():
     return rows
 
 
-def write_csv(rows):
-    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+def write_csv(rows, output_file):
+    output_file.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
         "tool",
         "benchmark",
@@ -132,7 +163,7 @@ def write_csv(rows):
         "classification",
         "error",
     ]
-    with RESULTS_FILE.open("w", newline="", encoding="utf-8") as csv_file:
+    with output_file.open("w", newline="", encoding="utf-8") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
@@ -154,22 +185,28 @@ def build_summary(rows):
     ]
 
 
-def write_summary_csv(rows):
-    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+def write_summary_csv(rows, summary_output_file):
+    summary_output_file.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = ["tool", "classification", "count"]
-    with SUMMARY_FILE.open("w", newline="", encoding="utf-8") as csv_file:
+    with summary_output_file.open("w", newline="", encoding="utf-8") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(build_summary(rows))
 
 
 def main():
+    parser = build_parser()
+    args = parser.parse_args()
+
     try:
-        rows = collect_rows()
-        write_csv(rows)
-        write_summary_csv(rows)
-        print(f"Relatorio salvo em: {RESULTS_FILE}")
-        print(f"Resumo salvo em: {SUMMARY_FILE}")
+        tools = parse_tools(args.tools)
+        results_file = Path(args.output)
+        summary_file = Path(args.summary_output)
+        rows = collect_rows(tools)
+        write_csv(rows, results_file)
+        write_summary_csv(rows, summary_file)
+        print(f"Relatorio salvo em: {results_file}")
+        print(f"Resumo salvo em: {summary_file}")
         print(f"Total de logs processados: {len(rows)}")
         return 0
     except Exception as exc:

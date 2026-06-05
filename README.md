@@ -128,6 +128,12 @@ Para gerar os relatórios CSV a partir dos logs:
 python3 scripts/generate_report.py
 ```
 
+Para gerar relatórios filtrando ferramentas:
+
+```bash
+python3 scripts/generate_report.py --tools asan,tsan
+```
+
 Para gerar uma sugestão simulada de reparo a partir de um log:
 
 ```bash
@@ -177,5 +183,4 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 
 ## Próxima etapa planejada
 
-Adicionar opções de linha de comando para selecionar ferramentas e diretórios de
-entrada nos scripts de relatório.
+Adicionar testes automatizados leves para os scripts de relatório.

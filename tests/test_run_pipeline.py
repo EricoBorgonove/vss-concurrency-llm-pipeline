@@ -1,5 +1,8 @@
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import run_pipeline
 
@@ -57,6 +60,26 @@ class RunPipelineTest(unittest.TestCase):
             task["command"],
             ["scripts/generate_report.py", "--latest-only"],
         )
+
+    def test_print_report_summary_prints_csv_content(self):
+        with TemporaryDirectory() as temp_dir:
+            summary_file = Path(temp_dir) / "summary.csv"
+            summary_file.write_text("tool,classification,count\nafl++,nao detectado,1\n")
+            output = StringIO()
+
+            with redirect_stdout(output):
+                run_pipeline.print_report_summary(summary_file)
+
+        self.assertIn("Resumo consolidado:", output.getvalue())
+        self.assertIn("afl++,nao detectado,1", output.getvalue())
+
+    def test_print_report_summary_handles_missing_file(self):
+        output = StringIO()
+
+        with redirect_stderr(output):
+            run_pipeline.print_report_summary(Path("missing-summary.csv"))
+
+        self.assertIn("Nao foi possivel ler o resumo CSV", output.getvalue())
 
 
 if __name__ == "__main__":

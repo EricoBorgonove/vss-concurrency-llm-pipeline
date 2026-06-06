@@ -150,7 +150,8 @@ python3 run_pipeline.py
 Esse comando registra o diagnóstico do ambiente, executa os benchmarks
 descobertos automaticamente e atualiza `reports/results.csv` e
 `reports/summary.csv` usando apenas os logs mais recentes por ferramenta e
-benchmark.
+benchmark. Ao final, o conteúdo de `reports/summary.csv` também é exibido no
+terminal.
 
 O `reports/results.csv` inclui a coluna `execution_date`. O
 `reports/summary.csv` inclui `first_execution_date` e `latest_execution_date`

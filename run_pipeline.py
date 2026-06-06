@@ -8,6 +8,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "pipeline"
+REPORT_SUMMARY_FILE = PROJECT_ROOT / "reports" / "summary.csv"
 
 BENCHMARK_RULES = {
     "assertion_violation": (("esbmc", "scripts/run_esbmc.py", ()),),
@@ -109,6 +110,21 @@ def write_summary(summary_path, results):
             summary_file.write("\n")
 
 
+def print_report_summary(summary_file=REPORT_SUMMARY_FILE):
+    try:
+        content = summary_file.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        print(f"Nao foi possivel ler o resumo CSV: {exc}", file=sys.stderr)
+        return
+
+    if not content:
+        print("Resumo CSV vazio.")
+        return
+
+    print("\nResumo consolidado:")
+    print(content)
+
+
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     summary_path = make_summary_path()
@@ -136,6 +152,7 @@ def main():
 
     write_summary(summary_path, results)
     print(f"Resumo salvo em: {summary_path}")
+    print_report_summary()
     return 0
 
 

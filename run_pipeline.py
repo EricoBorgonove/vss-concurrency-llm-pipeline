@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Executa uma rodada basica das ferramentas implementadas no pipeline."""
+"""Executa uma rodada completa das ferramentas implementadas no pipeline."""
 
 import datetime as dt
 import subprocess
@@ -52,6 +52,23 @@ def discover_tasks(benchmarks_dir=PROJECT_ROOT / "benchmarks"):
     return tasks
 
 
+def build_environment_task():
+    return {
+        "name": "environment_check",
+        "command": ["scripts/check_environment.py"],
+    }
+
+
+def build_report_task():
+    return {
+        "name": "generate_latest_report",
+        "command": [
+            "scripts/generate_report.py",
+            "--latest-only",
+        ],
+    }
+
+
 def make_summary_path():
     timestamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     return OUTPUT_DIR / f"pipeline_{timestamp}.txt"
@@ -97,10 +114,12 @@ def main():
     summary_path = make_summary_path()
     results = []
 
-    tasks = discover_tasks()
-    if not tasks:
+    benchmark_tasks = discover_tasks()
+    if not benchmark_tasks:
         print("Nenhum benchmark .c encontrado para executar.", file=sys.stderr)
         return 1
+
+    tasks = [build_environment_task(), *benchmark_tasks, build_report_task()]
 
     for task in tasks:
         print(f"Executando: {task['name']}")

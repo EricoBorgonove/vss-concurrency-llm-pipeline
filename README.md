@@ -60,8 +60,8 @@ pipeline-vss-llm/
 - `scripts/run_afl.py` compila um benchmark com AFL++ e prepara uma campanha
   curta, salvando logs em `outputs/afl/`.
 - `run_pipeline.py` descobre benchmarks `.c` automaticamente nas categorias
-  suportadas, executa uma rodada básica das ferramentas implementadas e salva um
-  resumo em `outputs/pipeline/`.
+  suportadas, registra diagnóstico do ambiente, executa as ferramentas
+  implementadas, gera relatórios CSV e salva um resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
   classificação simples dos resultados e gera `reports/summary.csv`, com opção
   para considerar apenas os logs mais recentes.
@@ -123,11 +123,16 @@ Para preparar uma execução curta com AFL++:
 python3 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
 ```
 
-Para executar a rodada básica do pipeline:
+Para executar uma rodada completa do pipeline:
 
 ```bash
 python3 run_pipeline.py
 ```
+
+Esse comando registra o diagnóstico do ambiente, executa os benchmarks
+descobertos automaticamente e atualiza `reports/results.csv` e
+`reports/summary.csv` usando apenas os logs mais recentes por ferramenta e
+benchmark.
 
 Novos arquivos `.c` adicionados em `benchmarks/assertion_violation/`,
 `benchmarks/memory_corruption/`, `benchmarks/data_race/` e

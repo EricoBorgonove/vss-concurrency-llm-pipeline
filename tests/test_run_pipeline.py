@@ -43,6 +43,21 @@ class RunPipelineTest(unittest.TestCase):
             task_names,
         )
 
+    def test_build_environment_task_runs_environment_check(self):
+        task = run_pipeline.build_environment_task()
+
+        self.assertEqual(task["name"], "environment_check")
+        self.assertEqual(task["command"], ["scripts/check_environment.py"])
+
+    def test_build_report_task_generates_latest_report(self):
+        task = run_pipeline.build_report_task()
+
+        self.assertEqual(task["name"], "generate_latest_report")
+        self.assertEqual(
+            task["command"],
+            ["scripts/generate_report.py", "--latest-only"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

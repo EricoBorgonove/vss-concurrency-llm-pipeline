@@ -81,13 +81,30 @@ pipeline-vss-llm/
 
 ## Como preparar o ambiente
 
+Os scripts Python usam apenas a biblioteca padrão nesta etapa. O
+`requirements.txt` documenta essa decisão e pode ser instalado sem adicionar
+pacotes externos.
+
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 No macOS, se usar `zsh`, o comando de ativação acima continua válido.
+
+As ferramentas de análise são dependências de sistema. Para AFL++ no macOS com
+Homebrew:
+
+```bash
+brew install afl++
+```
+
+Depois de preparar o ambiente, registre o diagnóstico:
+
+```bash
+python3 scripts/check_environment.py
+```
 
 ## Como executar nesta etapa
 

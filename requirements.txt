@@ -1,2 +1,15 @@
-# Este projeto usa apenas a biblioteca padrao do Python nesta etapa inicial.
-# Dependencias serao adicionadas incrementalmente quando forem necessarias.
+# Dependencias Python do pipeline VSS-LLM.
+#
+# Estado atual:
+# - nenhum pacote Python externo e necessario;
+# - os scripts usam apenas a biblioteca padrao do Python.
+#
+# Dependencias de sistema esperadas para executar as ferramentas:
+# - clang/gcc: compilacao dos benchmarks C e sanitizers;
+# - esbmc: verificacao simbolica;
+# - afl++: fuzzing com afl-clang-fast e afl-fuzz.
+#
+# Em macOS com Homebrew, exemplos:
+#   brew install afl++
+#
+# O ESBMC pode exigir instalacao separada conforme a plataforma.

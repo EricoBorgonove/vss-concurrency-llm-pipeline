@@ -73,6 +73,8 @@ pipeline-vss-llm/
   e runtimes disponíveis em `outputs/environment/`.
 - Há benchmarks mínimos para assertion violation, buffer overflow, data race e
   deadlock em `benchmarks/`.
+- Cada categoria inicial recebeu exemplos adicionais para ampliar a base de
+  experimentos controlados.
 - Os demais scripts Python ainda são placeholders com tratamento básico de erro.
 - Nenhuma dependência externa Python é necessária nesta etapa.
 
@@ -204,12 +206,32 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 
 - `benchmarks/assertion_violation/simple_assert_fail.c`
 - `benchmarks/assertion_violation/simple_assert_pass.c`
+- `benchmarks/assertion_violation/assert_array_index.c`
+- `benchmarks/assertion_violation/assert_counter_overflow.c`
+- `benchmarks/assertion_violation/assert_negative_value.c`
+- `benchmarks/assertion_violation/assert_state_transition.c`
+- `benchmarks/assertion_violation/assert_sum_limit.c`
 - `benchmarks/memory_corruption/simple_buffer_overflow.c`
 - `benchmarks/memory_corruption/simple_buffer_overflow_fixed.c`
+- `benchmarks/memory_corruption/heap_write_overflow.c`
+- `benchmarks/memory_corruption/out_of_bounds_read.c`
+- `benchmarks/memory_corruption/stack_write_overflow.c`
+- `benchmarks/memory_corruption/string_copy_overflow.c`
+- `benchmarks/memory_corruption/use_after_free.c`
 - `benchmarks/data_race/simple_data_race.c`
 - `benchmarks/data_race/simple_data_race_fixed.c`
+- `benchmarks/data_race/race_array_cell.c`
+- `benchmarks/data_race/race_increment_loop.c`
+- `benchmarks/data_race/race_read_write.c`
+- `benchmarks/data_race/race_shared_flag.c`
+- `benchmarks/data_race/race_struct_field.c`
 - `benchmarks/deadlock/simple_deadlock.c`
 - `benchmarks/deadlock/simple_deadlock_fixed.c`
+- `benchmarks/deadlock/deadlock_conditional_order.c`
+- `benchmarks/deadlock/deadlock_resource_pair.c`
+- `benchmarks/deadlock/deadlock_self_lock.c`
+- `benchmarks/deadlock/deadlock_three_locks_cycle.c`
+- `benchmarks/deadlock/deadlock_two_locks_reverse.c`
 
 ## Próxima etapa planejada
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Executa uma rodada completa das ferramentas implementadas no pipeline."""
 
+import csv
 import datetime as dt
 import subprocess
 import sys
@@ -9,6 +10,19 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "pipeline"
 REPORT_SUMMARY_FILE = PROJECT_ROOT / "reports" / "summary.csv"
+SUMMARY_HEADERS = {
+    "tool": "Ferramenta",
+    "classification": "Resultado",
+    "count": "Qtd",
+    "first_execution_date": "Primeira execucao",
+    "latest_execution_date": "Ultima execucao",
+}
+CLASSIFICATION_LABELS = {
+    "detectado": "Detectado",
+    "nao detectado": "Nao detectado",
+    "erro de execucao": "Erro de execucao",
+    "ferramenta indisponivel": "Ferramenta indisponivel",
+}
 
 BENCHMARK_RULES = {
     "assertion_violation": (("esbmc", "scripts/run_esbmc.py", ()),),
@@ -110,19 +124,78 @@ def write_summary(summary_path, results):
             summary_file.write("\n")
 
 
+def format_summary_date(value):
+    if not value:
+        return "-"
+
+    try:
+        parsed = dt.datetime.fromisoformat(value)
+    except ValueError:
+        return value
+
+    return parsed.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def format_summary_rows(rows):
+    columns = [
+        "tool",
+        "classification",
+        "count",
+        "first_execution_date",
+        "latest_execution_date",
+    ]
+    labels = {key: SUMMARY_HEADERS[key] for key in columns}
+    formatted_rows = []
+
+    for row in rows:
+        formatted_rows.append(
+            {
+                "tool": row.get("tool", "-") or "-",
+                "classification": CLASSIFICATION_LABELS.get(
+                    row.get("classification", ""),
+                    row.get("classification", "-") or "-",
+                ),
+                "count": row.get("count", "0") or "0",
+                "first_execution_date": format_summary_date(
+                    row.get("first_execution_date", "")
+                ),
+                "latest_execution_date": format_summary_date(
+                    row.get("latest_execution_date", "")
+                ),
+            }
+        )
+
+    widths = {
+        column: max(
+            len(labels[column]),
+            *(len(row[column]) for row in formatted_rows),
+        )
+        for column in columns
+    }
+    header = " | ".join(labels[column].ljust(widths[column]) for column in columns)
+    separator = "-+-".join("-" * widths[column] for column in columns)
+    lines = [header, separator]
+
+    for row in formatted_rows:
+        lines.append(" | ".join(row[column].ljust(widths[column]) for column in columns))
+
+    return "\n".join(lines)
+
+
 def print_report_summary(summary_file=REPORT_SUMMARY_FILE):
     try:
-        content = summary_file.read_text(encoding="utf-8").strip()
+        with summary_file.open(encoding="utf-8", newline="") as csv_file:
+            rows = list(csv.DictReader(csv_file))
     except OSError as exc:
         print(f"Nao foi possivel ler o resumo CSV: {exc}", file=sys.stderr)
         return
 
-    if not content:
+    if not rows:
         print("Resumo CSV vazio.")
         return
 
-    print("\nResumo consolidado:")
-    print(content)
+    print("\nResumo consolidado da rodada")
+    print(format_summary_rows(rows))
 
 
 def main():

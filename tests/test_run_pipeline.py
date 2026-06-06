@@ -64,14 +64,19 @@ class RunPipelineTest(unittest.TestCase):
     def test_print_report_summary_prints_csv_content(self):
         with TemporaryDirectory() as temp_dir:
             summary_file = Path(temp_dir) / "summary.csv"
-            summary_file.write_text("tool,classification,count\nafl++,nao detectado,1\n")
+            summary_file.write_text(
+                "tool,classification,count,first_execution_date,latest_execution_date\n"
+                "afl++,nao detectado,1,2026-06-05T21:00:00,2026-06-05T21:10:00\n"
+            )
             output = StringIO()
 
             with redirect_stdout(output):
                 run_pipeline.print_report_summary(summary_file)
 
-        self.assertIn("Resumo consolidado:", output.getvalue())
-        self.assertIn("afl++,nao detectado,1", output.getvalue())
+        self.assertIn("Resumo consolidado da rodada", output.getvalue())
+        self.assertIn("Ferramenta", output.getvalue())
+        self.assertIn("Nao detectado", output.getvalue())
+        self.assertIn("2026-06-05 21:10:00", output.getvalue())
 
     def test_print_report_summary_handles_missing_file(self):
         output = StringIO()
@@ -80,6 +85,29 @@ class RunPipelineTest(unittest.TestCase):
             run_pipeline.print_report_summary(Path("missing-summary.csv"))
 
         self.assertIn("Nao foi possivel ler o resumo CSV", output.getvalue())
+
+    def test_format_summary_date_converts_iso_timestamp(self):
+        self.assertEqual(
+            run_pipeline.format_summary_date("2026-06-05T21:10:00"),
+            "2026-06-05 21:10:00",
+        )
+
+    def test_format_summary_rows_returns_readable_table(self):
+        table = run_pipeline.format_summary_rows(
+            [
+                {
+                    "tool": "asan",
+                    "classification": "detectado",
+                    "count": "7",
+                    "first_execution_date": "2026-06-05T21:00:00",
+                    "latest_execution_date": "2026-06-05T21:20:00",
+                }
+            ]
+        )
+
+        self.assertIn("Ferramenta", table)
+        self.assertIn("Detectado", table)
+        self.assertIn("2026-06-05 21:20:00", table)
 
 
 if __name__ == "__main__":

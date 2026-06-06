@@ -151,7 +151,7 @@ Esse comando registra o diagnóstico do ambiente, executa os benchmarks
 descobertos automaticamente e atualiza `reports/results.csv` e
 `reports/summary.csv` usando apenas os logs mais recentes por ferramenta e
 benchmark. Ao final, o conteúdo de `reports/summary.csv` também é exibido no
-terminal.
+terminal em uma tabela legível.
 
 O `reports/results.csv` inclui a coluna `execution_date`. O
 `reports/summary.csv` inclui `first_execution_date` e `latest_execution_date`

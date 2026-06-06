@@ -9,45 +9,47 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "pipeline"
 
-TASKS = [
-    {
-        "name": "esbmc_assertion_violation",
-        "command": [
-            "scripts/run_esbmc.py",
-            "benchmarks/assertion_violation/simple_assert_fail.c",
-        ],
-    },
-    {
-        "name": "asan_buffer_overflow",
-        "command": [
-            "scripts/run_asan.py",
-            "benchmarks/memory_corruption/simple_buffer_overflow.c",
-        ],
-    },
-    {
-        "name": "tsan_data_race",
-        "command": [
-            "scripts/run_tsan.py",
-            "benchmarks/data_race/simple_data_race.c",
-        ],
-    },
-    {
-        "name": "deadlock_timeout",
-        "command": [
-            "scripts/run_deadlock.py",
-            "benchmarks/deadlock/simple_deadlock.c",
-            "--timeout",
-            "3",
-        ],
-    },
-    {
-        "name": "afl_buffer_overflow",
-        "command": [
-            "scripts/run_afl.py",
-            "benchmarks/memory_corruption/simple_buffer_overflow.c",
-        ],
-    },
-]
+BENCHMARK_RULES = {
+    "assertion_violation": (("esbmc", "scripts/run_esbmc.py", ()),),
+    "memory_corruption": (
+        ("asan", "scripts/run_asan.py", ()),
+        ("afl", "scripts/run_afl.py", ()),
+    ),
+    "data_race": (("tsan", "scripts/run_tsan.py", ()),),
+    "deadlock": (("deadlock", "scripts/run_deadlock.py", ("--timeout", "3")),),
+}
+
+
+def is_experiment_benchmark(path):
+    ignored_suffixes = ("_fixed.c", "_pass.c")
+    return path.suffix == ".c" and not path.name.endswith(ignored_suffixes)
+
+
+def discover_tasks(benchmarks_dir=PROJECT_ROOT / "benchmarks"):
+    tasks = []
+    for category, tools in BENCHMARK_RULES.items():
+        category_dir = benchmarks_dir / category
+        if not category_dir.is_dir():
+            continue
+
+        for benchmark_path in sorted(category_dir.glob("*.c")):
+            if not is_experiment_benchmark(benchmark_path):
+                continue
+
+            relative_benchmark = benchmark_path.relative_to(PROJECT_ROOT)
+            for tool_name, script_path, extra_args in tools:
+                tasks.append(
+                    {
+                        "name": f"{tool_name}_{category}_{benchmark_path.stem}",
+                        "command": [
+                            script_path,
+                            str(relative_benchmark),
+                            *extra_args,
+                        ],
+                    }
+                )
+
+    return tasks
 
 
 def make_summary_path():
@@ -95,7 +97,12 @@ def main():
     summary_path = make_summary_path()
     results = []
 
-    for task in TASKS:
+    tasks = discover_tasks()
+    if not tasks:
+        print("Nenhum benchmark .c encontrado para executar.", file=sys.stderr)
+        return 1
+
+    for task in tasks:
         print(f"Executando: {task['name']}")
         command, result = run_task(task)
         results.append(

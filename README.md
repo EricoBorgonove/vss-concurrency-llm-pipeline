@@ -59,8 +59,9 @@ pipeline-vss-llm/
   evidência de possível deadlock, salvando logs em `outputs/deadlock/`.
 - `scripts/run_afl.py` compila um benchmark com AFL++ e prepara uma campanha
   curta, salvando logs em `outputs/afl/`.
-- `run_pipeline.py` executa uma rodada básica das ferramentas implementadas,
-  incluindo deadlock por timeout, e salva um resumo em `outputs/pipeline/`.
+- `run_pipeline.py` descobre benchmarks `.c` automaticamente nas categorias
+  suportadas, executa uma rodada básica das ferramentas implementadas e salva um
+  resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
   classificação simples dos resultados e gera `reports/summary.csv`, com opção
   para considerar apenas os logs mais recentes.
@@ -125,6 +126,12 @@ Para executar a rodada básica do pipeline:
 ```bash
 python3 run_pipeline.py
 ```
+
+Novos arquivos `.c` adicionados em `benchmarks/assertion_violation/`,
+`benchmarks/memory_corruption/`, `benchmarks/data_race/` e
+`benchmarks/deadlock/` entram automaticamente na rodada. Arquivos terminados em
+`_fixed.c` ou `_pass.c` são ignorados pelo pipeline principal, pois ficam
+reservados para validação de reparos e controles positivos.
 
 Para gerar os relatórios CSV a partir dos logs:
 

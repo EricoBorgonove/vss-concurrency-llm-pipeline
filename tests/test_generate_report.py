@@ -53,6 +53,43 @@ class GenerateReportTest(unittest.TestCase):
             ],
         )
 
+    def test_filter_latest_rows_keeps_latest_log_per_tool_and_benchmark(self):
+        rows = [
+            {
+                "tool": "afl++",
+                "benchmark": "benchmarks/memory_corruption/simple_buffer_overflow.c",
+                "log_file": "outputs/afl/simple_buffer_overflow_20260519-170253.log",
+            },
+            {
+                "tool": "afl++",
+                "benchmark": "benchmarks/memory_corruption/simple_buffer_overflow.c",
+                "log_file": "outputs/afl/simple_buffer_overflow_20260605-204924.log",
+            },
+            {
+                "tool": "asan",
+                "benchmark": "benchmarks/memory_corruption/simple_buffer_overflow.c",
+                "log_file": "outputs/asan/simple_buffer_overflow_20260605-204920.log",
+            },
+        ]
+
+        latest_rows = generate_report.filter_latest_rows(rows)
+
+        self.assertEqual(
+            latest_rows,
+            [
+                {
+                    "tool": "afl++",
+                    "benchmark": "benchmarks/memory_corruption/simple_buffer_overflow.c",
+                    "log_file": "outputs/afl/simple_buffer_overflow_20260605-204924.log",
+                },
+                {
+                    "tool": "asan",
+                    "benchmark": "benchmarks/memory_corruption/simple_buffer_overflow.c",
+                    "log_file": "outputs/asan/simple_buffer_overflow_20260605-204920.log",
+                },
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

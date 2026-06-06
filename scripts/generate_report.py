@@ -54,6 +54,11 @@ def build_parser():
         default=str(SUMMARY_FILE),
         help="Caminho do CSV resumido. Padrao: reports/summary.csv.",
     )
+    parser.add_argument(
+        "--latest-only",
+        action="store_true",
+        help="Considera apenas o log mais recente por ferramenta e benchmark.",
+    )
     return parser
 
 
@@ -151,6 +156,17 @@ def collect_rows(tools):
     return rows
 
 
+def filter_latest_rows(rows):
+    latest_rows = {}
+    for row in rows:
+        key = (row["tool"], row["benchmark"])
+        current = latest_rows.get(key)
+        if current is None or row["log_file"] > current["log_file"]:
+            latest_rows[key] = row
+
+    return sorted(latest_rows.values(), key=lambda row: (row["tool"], row["benchmark"]))
+
+
 def write_csv(rows, output_file):
     output_file.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -203,6 +219,8 @@ def main():
         results_file = Path(args.output)
         summary_file = Path(args.summary_output)
         rows = collect_rows(tools)
+        if args.latest_only:
+            rows = filter_latest_rows(rows)
         write_csv(rows, results_file)
         write_summary_csv(rows, summary_file)
         print(f"Relatorio salvo em: {results_file}")

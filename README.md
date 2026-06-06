@@ -62,7 +62,8 @@ pipeline-vss-llm/
 - `run_pipeline.py` executa uma rodada básica das ferramentas implementadas,
   incluindo deadlock por timeout, e salva um resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
-  classificação simples dos resultados e gera `reports/summary.csv`.
+  classificação simples dos resultados e gera `reports/summary.csv`, com opção
+  para considerar apenas os logs mais recentes.
 - `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
   um log, sem chamar API externa.
 - `scripts/validate_llm_repair.py` valida de forma simulada uma sugestão gerada,
@@ -135,6 +136,13 @@ Para gerar relatórios filtrando ferramentas:
 
 ```bash
 python3 scripts/generate_report.py --tools asan,tsan
+```
+
+Para gerar relatórios usando apenas o log mais recente por ferramenta e
+benchmark:
+
+```bash
+python3 scripts/generate_report.py --latest-only
 ```
 
 Para executar os testes automatizados leves:

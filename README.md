@@ -63,8 +63,9 @@ pipeline-vss-llm/
   suportadas, registra diagnóstico do ambiente, executa as ferramentas
   implementadas, gera relatórios CSV e salva um resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
-  classificação simples dos resultados e gera `reports/summary.csv`, com opção
-  para considerar apenas os logs mais recentes.
+  data de execução, classificação simples dos resultados e gera
+  `reports/summary.csv`, com intervalo de datas e opção para considerar apenas
+  os logs mais recentes.
 - `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
   um log, sem chamar API externa.
 - `scripts/validate_llm_repair.py` valida de forma simulada uma sugestão gerada,
@@ -133,6 +134,10 @@ Esse comando registra o diagnóstico do ambiente, executa os benchmarks
 descobertos automaticamente e atualiza `reports/results.csv` e
 `reports/summary.csv` usando apenas os logs mais recentes por ferramenta e
 benchmark.
+
+O `reports/results.csv` inclui a coluna `execution_date`. O
+`reports/summary.csv` inclui `first_execution_date` e `latest_execution_date`
+para cada combinação de ferramenta e classificação.
 
 Novos arquivos `.c` adicionados em `benchmarks/assertion_violation/`,
 `benchmarks/memory_corruption/`, `benchmarks/data_race/` e

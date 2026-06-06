@@ -3,6 +3,8 @@
 
 import argparse
 import csv
+import datetime as dt
+import re
 import sys
 from pathlib import Path
 
@@ -33,6 +35,7 @@ EXECUTION_ERROR_MARKERS = (
     "falha na compilacao",
     "erro ao ler log",
 )
+LOG_TIMESTAMP_PATTERN = re.compile(r"_(\d{8}-\d{6})$")
 
 
 def build_parser():
@@ -92,11 +95,21 @@ def classify_result(log_text, data):
     return "nao detectado"
 
 
+def extract_execution_date(log_path):
+    match = LOG_TIMESTAMP_PATTERN.search(log_path.stem)
+    if not match:
+        return ""
+
+    timestamp = dt.datetime.strptime(match.group(1), "%Y%m%d-%H%M%S")
+    return timestamp.isoformat(timespec="seconds")
+
+
 def parse_log(log_path):
     data = {
         "tool": "",
         "benchmark": "",
         "log_file": str(log_path.relative_to(PROJECT_ROOT)),
+        "execution_date": extract_execution_date(log_path),
         "returncode": "",
         "compile_returncode": "",
         "run_returncode": "",
@@ -173,6 +186,7 @@ def write_csv(rows, output_file):
         "tool",
         "benchmark",
         "log_file",
+        "execution_date",
         "returncode",
         "compile_returncode",
         "run_returncode",
@@ -189,21 +203,43 @@ def build_summary(rows):
     summary = {}
     for row in rows:
         key = (row["tool"], row["classification"])
-        summary[key] = summary.get(key, 0) + 1
+        if key not in summary:
+            summary[key] = {
+                "count": 0,
+                "first_execution_date": "",
+                "latest_execution_date": "",
+            }
+
+        item = summary[key]
+        item["count"] += 1
+        execution_date = row.get("execution_date", "")
+        if execution_date:
+            if not item["first_execution_date"] or execution_date < item["first_execution_date"]:
+                item["first_execution_date"] = execution_date
+            if not item["latest_execution_date"] or execution_date > item["latest_execution_date"]:
+                item["latest_execution_date"] = execution_date
 
     return [
         {
             "tool": tool,
             "classification": classification,
-            "count": count,
+            "count": item["count"],
+            "first_execution_date": item["first_execution_date"],
+            "latest_execution_date": item["latest_execution_date"],
         }
-        for (tool, classification), count in sorted(summary.items())
+        for (tool, classification), item in sorted(summary.items())
     ]
 
 
 def write_summary_csv(rows, summary_output_file):
     summary_output_file.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = ["tool", "classification", "count"]
+    fieldnames = [
+        "tool",
+        "classification",
+        "count",
+        "first_execution_date",
+        "latest_execution_date",
+    ]
     with summary_output_file.open("w", newline="", encoding="utf-8") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()

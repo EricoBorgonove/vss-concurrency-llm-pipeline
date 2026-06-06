@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from scripts import generate_report
 
@@ -38,9 +39,21 @@ class GenerateReportTest(unittest.TestCase):
 
     def test_build_summary_counts_by_tool_and_classification(self):
         rows = [
-            {"tool": "asan", "classification": "detectado"},
-            {"tool": "asan", "classification": "detectado"},
-            {"tool": "tsan", "classification": "nao detectado"},
+            {
+                "tool": "asan",
+                "classification": "detectado",
+                "execution_date": "2026-06-05T20:00:00",
+            },
+            {
+                "tool": "asan",
+                "classification": "detectado",
+                "execution_date": "2026-06-05T21:00:00",
+            },
+            {
+                "tool": "tsan",
+                "classification": "nao detectado",
+                "execution_date": "2026-06-05T20:30:00",
+            },
         ]
 
         summary = generate_report.build_summary(rows)
@@ -48,10 +61,29 @@ class GenerateReportTest(unittest.TestCase):
         self.assertEqual(
             summary,
             [
-                {"tool": "asan", "classification": "detectado", "count": 2},
-                {"tool": "tsan", "classification": "nao detectado", "count": 1},
+                {
+                    "tool": "asan",
+                    "classification": "detectado",
+                    "count": 2,
+                    "first_execution_date": "2026-06-05T20:00:00",
+                    "latest_execution_date": "2026-06-05T21:00:00",
+                },
+                {
+                    "tool": "tsan",
+                    "classification": "nao detectado",
+                    "count": 1,
+                    "first_execution_date": "2026-06-05T20:30:00",
+                    "latest_execution_date": "2026-06-05T20:30:00",
+                },
             ],
         )
+
+    def test_extract_execution_date_from_log_filename(self):
+        execution_date = generate_report.extract_execution_date(
+            Path("outputs/asan/simple_buffer_overflow_20260605-210638.log")
+        )
+
+        self.assertEqual(execution_date, "2026-06-05T21:06:38")
 
     def test_filter_latest_rows_keeps_latest_log_per_tool_and_benchmark(self):
         rows = [

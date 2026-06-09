@@ -4,8 +4,9 @@ Pipeline experimental para verificar vulnerabilidades concorrentes em programas 
 coletar evidências de ferramentas de análise e preparar uma etapa futura de reparo
 assistido por LLM.
 
-O repositório está sendo construído incrementalmente. A integração com AFL++,
-AddressSanitizer, ThreadSanitizer e LLM ainda será adicionada em etapas futuras.
+O repositório está sendo construído incrementalmente. A base atual já integra
+ESBMC, AFL++, AddressSanitizer, ThreadSanitizer, detecção simples de deadlock por
+timeout, geração de relatórios e uma etapa simulada de reparo por LLM.
 
 ## Objetivo
 
@@ -16,7 +17,7 @@ Desenvolver um pipeline reprodutível para:
 - salvar logs e artefatos em `outputs/`;
 - consolidar resultados em `reports/`;
 - futuramente enviar evidências para uma LLM sugerir correções preliminares;
-- validar as correções novamente com ESBMC e sanitizers.
+- validar as correções novamente com as ferramentas disponíveis no pipeline.
 
 ## Estrutura do projeto
 
@@ -39,6 +40,7 @@ pipeline-vss-llm/
 │   └── pipeline/
 ├── reports/ (relatórios consolidados)
 ├── scripts/ (scripts de automação Python)
+├── tests/ (testes automatizados leves)
 ├── run_pipeline.py (orquestrador)
 ├── requirements.txt
 ├── .gitignore
@@ -72,16 +74,17 @@ pipeline-vss-llm/
   e pode reexecutar uma ferramenta sobre um benchmark reparado controlado.
 - `scripts/check_environment.py` registra um diagnóstico básico das ferramentas
   e runtimes disponíveis em `outputs/environment/`.
-- Há benchmarks mínimos para assertion violation, buffer overflow, data race e
-  deadlock em `benchmarks/`.
-- Cada categoria inicial recebeu exemplos adicionais para ampliar a base de
-  experimentos controlados.
-- Os demais scripts Python ainda são placeholders com tratamento básico de erro.
-- Nenhuma dependência externa Python é necessária nesta etapa.
+- A base possui 48 benchmarks C, incluindo casos mínimos, casos mais complexos,
+  exemplos vulneráveis e exemplos corretos.
+- Os benchmarks possuem comentários iniciais indicando se são casos com erro ou
+  casos corretos.
+- Os scripts Python possuem tratamento básico de erros e geram saídas em
+  `outputs/` ou `reports/`.
+- Nenhuma dependência externa Python é necessária atualmente.
 
 ## Como preparar o ambiente
 
-Os scripts Python usam apenas a biblioteca padrão nesta etapa. O
+Os scripts Python usam apenas a biblioteca padrão atualmente. O
 `requirements.txt` documenta essa decisão e pode ser instalado sem adicionar
 pacotes externos.
 
@@ -93,20 +96,33 @@ python3 -m pip install -r requirements.txt
 
 No macOS, se usar `zsh`, o comando de ativação acima continua válido.
 
-As ferramentas de análise são dependências de sistema. Para AFL++ no macOS com
-Homebrew:
+As ferramentas de análise são dependências de sistema. O pipeline usa
+`clang/gcc`, ESBMC e AFL++. Para AFL++ no macOS com Homebrew:
 
 ```bash
 brew install afl++
 ```
 
-Depois de preparar o ambiente, registre o diagnóstico:
+O ESBMC deve estar instalado e disponível no `PATH`. Depois de preparar o
+ambiente, registre o diagnóstico:
 
 ```bash
 python3 scripts/check_environment.py
 ```
 
-## Como executar nesta etapa
+## Como executar
+
+O comando principal é:
+
+```bash
+python3 run_pipeline.py
+```
+
+Ele registra o diagnóstico do ambiente, executa os benchmarks descobertos
+automaticamente, atualiza `reports/results.csv` e `reports/summary.csv`, salva um
+resumo textual em `outputs/pipeline/` e exibe uma tabela consolidada no terminal.
+
+Os comandos abaixo continuam disponíveis para executar etapas individuais.
 
 Para executar o ESBMC sobre o benchmark mínimo:
 
@@ -140,18 +156,6 @@ Para preparar uma execução curta com AFL++:
 ```bash
 python3 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
 ```
-
-Para executar uma rodada completa do pipeline:
-
-```bash
-python3 run_pipeline.py
-```
-
-Esse comando registra o diagnóstico do ambiente, executa os benchmarks
-descobertos automaticamente e atualiza `reports/results.csv` e
-`reports/summary.csv` usando apenas os logs mais recentes por ferramenta e
-benchmark. Ao final, o conteúdo de `reports/summary.csv` também é exibido no
-terminal em uma tabela legível.
 
 O `reports/results.csv` inclui a coluna `execution_date`. O
 `reports/summary.csv` inclui `first_execution_date` e `latest_execution_date`
@@ -197,7 +201,7 @@ python3 scripts/check_environment.py
 Para gerar uma sugestão simulada de reparo a partir de um log:
 
 ```bash
-python3 scripts/run_llm_repair.py outputs/asan/simple_buffer_overflow_20260519-172441.log
+python3 scripts/run_llm_repair.py outputs/asan/<arquivo_de_log>.log
 ```
 
 Para validar uma sugestão simulada de reparo:
@@ -246,4 +250,6 @@ não entram na rodada principal.
 
 ## Próxima etapa planejada
 
-Ampliar os testes automatizados para validadores e executores.
+Melhorar os relatórios para separar casos esperados como vulneráveis (`_error.c`)
+e casos esperados como corretos (`_safe.c`), além de ampliar testes dos
+validadores e executores.

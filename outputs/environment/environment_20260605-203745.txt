@@ -1,0 +1,39 @@
+Pipeline VSS-LLM - environment diagnostics
+generated_at: 2026-06-05T20:37:57
+python: 3.14.4
+platform: macOS-26.5-arm64-arm-64bit-Mach-O
+machine: arm64
+
+[clang]
+available: True
+path: /usr/bin/clang
+returncode: 124
+output: timeout while probing
+
+[gcc]
+available: True
+path: /usr/bin/gcc
+returncode: 124
+output: timeout while probing
+
+[esbmc]
+available: True
+path: /usr/local/bin/esbmc
+returncode: 0
+output: ESBMC version 8.2.0 64-bit aarch64 macos
+
+[afl-clang-fast]
+available: False
+path: N/A
+returncode: N/A
+output: not found
+
+[afl-fuzz]
+available: False
+path: N/A
+returncode: N/A
+output: not found
+
+notes:
+- Sanitizers and ESBMC may depend on platform-specific runtime support.
+- On macOS, ASAN/TSAN and ESBMC solver availability should be checked before experiments.

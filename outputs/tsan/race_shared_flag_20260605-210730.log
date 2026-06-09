@@ -1,0 +1,10 @@
+tool: tsan
+benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/data_race/race_shared_flag.c
+compile_command: clang -fsanitize=thread -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/data_race/race_shared_flag.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-tsan-2q9bgkr6/race_shared_flag -pthread
+run_command: /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-tsan-2q9bgkr6/race_shared_flag
+
+[compile]
+returncode: 0
+
+[run]
+returncode: -11

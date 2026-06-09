@@ -1,0 +1,19 @@
+tool: asan
+benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/string_copy_overflow.c
+compile_command: clang -fsanitize=address -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/string_copy_overflow.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-asan-3q52_idv/string_copy_overflow
+run_command: /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-asan-3q52_idv/string_copy_overflow
+
+[error]
+Tempo limite excedido apos 10 segundos.
+
+[compile]
+returncode: 0
+
+stderr:
+/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/string_copy_overflow.c:8:5: warning: 'strcpy' will always overflow; destination buffer has size 5, but the source string has length 9 (including NUL byte) [-Wfortify-source]
+    8 |     strcpy(target, "overflow");
+      |     ^
+1 warning generated.
+
+[run]
+returncode: 124

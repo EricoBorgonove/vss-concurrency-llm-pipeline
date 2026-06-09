@@ -1,0 +1,10 @@
+LLM repair validation simulation
+generated_at: 2026-06-02T16:14:51
+repair_file: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/llm/simple_buffer_overflow_20260519-172441_20260602-160504_repair.txt
+status: validacao_simulada_aprovada
+issue_type: memory_corruption
+
+checks:
+- sugestao contem metadados minimos esperados
+- nenhuma alteracao de codigo foi aplicada nesta etapa
+- validacao real com ESBMC/sanitizers fica para etapa futura

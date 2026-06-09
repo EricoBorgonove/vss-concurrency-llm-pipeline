@@ -1,0 +1,7 @@
+tool,classification,count
+afl++,nao detectado,1
+asan,detectado,2
+deadlock-timeout,detectado,1
+deadlock-timeout,nao detectado,1
+esbmc,erro de execucao,2
+tsan,nao detectado,2

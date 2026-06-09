@@ -1,0 +1,10 @@
+LLM repair simulation
+generated_at: 2026-06-05T13:43:31
+evidence: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/simple_deadlock_20260605-134204.log
+issue_type: deadlock
+
+suggestion:
+Definir uma ordem global de aquisicao de locks e liberar mutexes em todos os caminhos de erro.
+
+note:
+Esta etapa e uma simulacao deterministica. Nenhuma API externa foi chamada.

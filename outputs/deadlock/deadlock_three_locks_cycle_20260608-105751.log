@@ -1,0 +1,13 @@
+tool: deadlock-timeout
+benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/deadlock/deadlock_three_locks_cycle.c
+compile_command: clang -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/deadlock/deadlock_three_locks_cycle.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-deadlock-o6fplrgk/deadlock_three_locks_cycle -pthread
+run_command: /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-deadlock-o6fplrgk/deadlock_three_locks_cycle
+
+[error]
+Tempo limite excedido apos 3 segundos.
+
+[compile]
+returncode: 0
+
+[run]
+returncode: 124

@@ -1,0 +1,13 @@
+tool: asan
+benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/parser_token_safe.c
+compile_command: clang -fsanitize=address -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/parser_token_safe.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-asan-d486iafu/parser_token_safe
+run_command: /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-asan-d486iafu/parser_token_safe
+
+[error]
+Tempo limite excedido apos 10 segundos.
+
+[compile]
+returncode: 0
+
+[run]
+returncode: 124

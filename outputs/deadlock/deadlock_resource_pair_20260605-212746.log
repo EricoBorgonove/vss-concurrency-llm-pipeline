@@ -1,0 +1,13 @@
+tool: deadlock-timeout
+benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/deadlock/deadlock_resource_pair.c
+compile_command: clang -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/deadlock/deadlock_resource_pair.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-deadlock-1mirmosc/deadlock_resource_pair -pthread
+run_command: /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-deadlock-1mirmosc/deadlock_resource_pair
+
+[error]
+Tempo limite excedido apos 3 segundos.
+
+[compile]
+returncode: 0
+
+[run]
+returncode: 124

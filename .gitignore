@@ -28,14 +28,9 @@ var/
 # OS files
 .DS_Store
 
-# Generated outputs and reports
-outputs/**
-!outputs/
-!outputs/**/
-!outputs/**/.gitkeep
-reports/**
-!reports/
-!reports/.gitkeep
-
 # OneDrive temp files
 ~$*
+
+# Local project notes outside the reproducible pipeline
+evolucoes-pipeline-vss-llm.md
+explicacao-pipeline-vss-llm.md

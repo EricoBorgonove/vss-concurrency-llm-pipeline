@@ -1,0 +1,10 @@
+LLM repair simulation
+generated_at: 2026-06-05T12:03:05
+evidence: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/simple_data_race_20260519-172445.log
+issue_type: data_race
+
+suggestion:
+Proteger o estado compartilhado com mutex ou usar operacoes atomicas para sincronizar acessos concorrentes.
+
+note:
+Esta etapa e uma simulacao deterministica. Nenhuma API externa foi chamada.

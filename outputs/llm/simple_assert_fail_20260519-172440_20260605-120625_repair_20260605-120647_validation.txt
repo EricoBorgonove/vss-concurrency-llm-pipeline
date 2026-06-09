@@ -1,0 +1,14 @@
+LLM repair validation simulation
+generated_at: 2026-06-05T12:06:51
+repair_file: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/llm/simple_assert_fail_20260519-172440_20260605-120625_repair.txt
+status: validacao_controlada_reprovada
+issue_type: assertion_violation
+
+checks:
+- validacao com esbmc falhou com codigo 6
+
+tool_validation:
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/simple_assert_pass.c --timeout 30
+returncode: 6
+stdout:
+Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/simple_assert_pass_20260605-120647.log

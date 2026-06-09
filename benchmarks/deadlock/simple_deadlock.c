@@ -1,3 +1,4 @@
+// Caso com erro: as threads pegam first_mutex e second_mutex em ordens opostas.
 #include <pthread.h>
 #include <unistd.h>
 

@@ -1,3 +1,4 @@
+// Caso correto: shared_counter e incrementado dentro de regiao protegida por mutex.
 #include <pthread.h>
 #include <stdio.h>
 

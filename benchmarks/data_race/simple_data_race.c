@@ -1,3 +1,4 @@
+// Caso com erro: shared_counter e incrementado por threads sem mutex.
 #include <pthread.h>
 #include <stdio.h>
 

@@ -1,3 +1,4 @@
+// Caso com erro: buffer[4] escreve fora do vetor local de 4 posicoes.
 #include <stdio.h>
 
 int main(void)

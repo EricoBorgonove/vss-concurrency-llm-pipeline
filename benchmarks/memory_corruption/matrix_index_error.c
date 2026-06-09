@@ -1,3 +1,4 @@
+// Caso com erro: read_cell(3, 1) acessa linha fora da matriz 3x3.
 #include <stdio.h>
 
 static int read_cell(int row, int column)

@@ -1,3 +1,4 @@
+// Caso com erro: deposit e withdraw alteram balance sem mutex.
 #include <pthread.h>
 
 struct account {

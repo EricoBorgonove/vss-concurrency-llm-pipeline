@@ -1,3 +1,4 @@
+// Caso com erro: tres threads formam ciclo de espera entre lock_a, lock_b e lock_c.
 #include <pthread.h>
 #include <unistd.h>
 

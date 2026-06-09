@@ -1,3 +1,4 @@
+// Caso com erro: duas threads adquirem first e second em ordem inversa.
 #include <pthread.h>
 #include <unistd.h>
 

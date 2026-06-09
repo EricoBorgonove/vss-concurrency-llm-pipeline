@@ -1,3 +1,4 @@
+// Caso com erro: leitura e escrita de config ocorrem sem mutex.
 #include <pthread.h>
 
 struct config {

@@ -1,3 +1,4 @@
+// Caso correto: ambas as threads usam a mesma ordem de aquisicao dos mutexes.
 #include <pthread.h>
 
 pthread_mutex_t first_mutex = PTHREAD_MUTEX_INITIALIZER;

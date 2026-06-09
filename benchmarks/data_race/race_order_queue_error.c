@@ -1,3 +1,4 @@
+// Caso com erro: producers atualizam queue.count e items sem mutex.
 #include <pthread.h>
 
 struct queue {

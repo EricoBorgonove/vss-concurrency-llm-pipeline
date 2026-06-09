@@ -1,3 +1,4 @@
+// Caso com erro: write_index cresce sem modulo e escreve fora do ring buffer.
 #include <stdio.h>
 
 struct ring_buffer {

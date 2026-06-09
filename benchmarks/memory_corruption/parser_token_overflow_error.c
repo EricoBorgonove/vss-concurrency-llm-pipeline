@@ -1,3 +1,4 @@
+// Caso com erro: strcpy copia texto maior que o campo token.text.
 #include <string.h>
 
 struct token {

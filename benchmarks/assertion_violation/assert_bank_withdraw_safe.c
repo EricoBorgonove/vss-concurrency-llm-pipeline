@@ -1,3 +1,4 @@
+// Caso correto: withdraw rejeita a operacao que violaria o limite da conta.
 #include <assert.h>
 
 struct account {

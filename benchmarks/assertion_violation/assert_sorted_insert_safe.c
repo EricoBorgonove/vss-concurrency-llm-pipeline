@@ -1,3 +1,4 @@
+// Caso correto: a insercao valida capacidade e o assert final confirma size == 5.
 #include <assert.h>
 
 static int insert_sorted(int values[], int size, int capacity, int value)

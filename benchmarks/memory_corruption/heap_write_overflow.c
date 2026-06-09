@@ -1,3 +1,4 @@
+// Caso com erro: items[3] escreve fora do heap alocado para 3 inteiros.
 #include <stdlib.h>
 
 int main(void)

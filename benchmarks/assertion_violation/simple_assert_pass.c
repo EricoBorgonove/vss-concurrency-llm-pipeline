@@ -1,3 +1,4 @@
+// Caso correto: value satisfaz a assercao esperada pelo ESBMC.
 void __ESBMC_assert(int condition, const char *message);
 
 int main(void) {

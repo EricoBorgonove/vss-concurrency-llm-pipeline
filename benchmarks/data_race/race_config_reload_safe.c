@@ -1,3 +1,4 @@
+// Caso correto: config e acessado sempre protegido por config_lock.
 #include <pthread.h>
 
 struct config {

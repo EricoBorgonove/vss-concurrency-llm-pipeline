@@ -1,3 +1,4 @@
+// Caso com erro: uma thread le shared_value enquanto outra escreve sem lock.
 #include <pthread.h>
 
 static int shared_value = 0;

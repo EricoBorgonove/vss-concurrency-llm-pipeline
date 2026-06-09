@@ -1,3 +1,4 @@
+// Caso com erro: resource_a e resource_b sao adquiridos em ordens opostas.
 #include <pthread.h>
 #include <unistd.h>
 

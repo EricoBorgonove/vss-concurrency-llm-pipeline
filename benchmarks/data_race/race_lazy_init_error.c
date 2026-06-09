@@ -1,3 +1,4 @@
+// Caso com erro: inicializacao preguicosa de global_service ocorre sem lock.
 #include <pthread.h>
 #include <stdlib.h>
 

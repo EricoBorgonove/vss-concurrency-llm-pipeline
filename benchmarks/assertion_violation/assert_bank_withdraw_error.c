@@ -1,3 +1,4 @@
+// Caso com erro: withdraw permite saldo abaixo do limite e o assert final falha.
 #include <assert.h>
 
 struct account {

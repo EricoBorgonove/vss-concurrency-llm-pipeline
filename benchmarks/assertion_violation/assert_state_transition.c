@@ -1,3 +1,4 @@
+// Caso com erro: o estado salta para DONE, mas o assert espera READY.
 #include <assert.h>
 
 enum state {

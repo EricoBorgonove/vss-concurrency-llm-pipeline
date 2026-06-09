@@ -1,3 +1,4 @@
+// Caso com erro: value e usado depois de free(value).
 #include <stdlib.h>
 
 int main(void)

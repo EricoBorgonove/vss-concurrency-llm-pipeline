@@ -1,3 +1,4 @@
+// Caso com erro: a soma vale 15, mas o assert exige valor menor que 10.
 #include <assert.h>
 
 int main(void)

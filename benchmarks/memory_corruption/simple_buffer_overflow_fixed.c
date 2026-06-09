@@ -1,3 +1,4 @@
+// Caso correto: o vetor tem tamanho suficiente para o acesso ao indice 2.
 #include <stdio.h>
 
 int main(void) {

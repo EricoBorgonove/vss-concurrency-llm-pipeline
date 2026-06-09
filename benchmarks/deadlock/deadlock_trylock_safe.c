@@ -1,3 +1,4 @@
+// Caso correto: trylock evita espera circular ao liberar left quando right falha.
 #include <pthread.h>
 #include <unistd.h>
 

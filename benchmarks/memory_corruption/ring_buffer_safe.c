@@ -1,3 +1,4 @@
+// Caso correto: write_index usa modulo e permanece dentro do ring buffer.
 #include <stdio.h>
 
 struct ring_buffer {

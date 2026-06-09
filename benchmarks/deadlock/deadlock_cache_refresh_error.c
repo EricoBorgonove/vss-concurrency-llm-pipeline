@@ -1,3 +1,4 @@
+// Caso com erro: as threads pegam cache_lock e database_lock em ordens opostas.
 #include <pthread.h>
 #include <unistd.h>
 

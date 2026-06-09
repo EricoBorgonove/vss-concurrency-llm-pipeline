@@ -1,3 +1,4 @@
+// Caso com erro: values[2] escreve fora da alocacao de 2 inteiros.
 #include <stdio.h>
 #include <stdlib.h>
 

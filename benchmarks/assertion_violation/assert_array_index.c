@@ -1,3 +1,4 @@
+// Caso com erro: o assert falha porque index vale 4 e o vetor tem indices 0..2.
 #include <assert.h>
 
 int main(void)

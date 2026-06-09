@@ -1,3 +1,4 @@
+// Caso com erro: duas threads escrevem ready sem sincronizacao.
 #include <pthread.h>
 
 static int ready = 0;

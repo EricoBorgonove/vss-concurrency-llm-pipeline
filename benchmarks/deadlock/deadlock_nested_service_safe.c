@@ -1,3 +1,4 @@
+// Caso correto: as operacoes usam sempre a mesma ordem de locks do servico.
 #include <pthread.h>
 #include <unistd.h>
 

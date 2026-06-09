@@ -1,3 +1,4 @@
+// Caso correto: producers atualizam a fila protegidos por queue.lock.
 #include <pthread.h>
 
 struct queue {

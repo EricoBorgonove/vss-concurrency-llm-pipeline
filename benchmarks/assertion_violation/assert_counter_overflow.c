@@ -1,3 +1,4 @@
+// Caso com erro: o contador chega a 5, mas o assert exige valor no maximo 3.
 #include <assert.h>
 
 int main(void)

@@ -1,3 +1,4 @@
+// Caso com erro: a insercao aumenta size para 5, mas o assert exige size <= 4.
 #include <assert.h>
 
 static int insert_sorted(int values[], int size, int capacity, int value)

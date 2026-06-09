@@ -1,3 +1,4 @@
+// Caso correto: strncpy limita a copia e garante terminador nulo.
 #include <string.h>
 
 struct token {

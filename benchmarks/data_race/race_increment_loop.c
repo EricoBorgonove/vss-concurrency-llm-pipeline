@@ -1,3 +1,4 @@
+// Caso com erro: duas threads incrementam counter sem sincronizacao.
 #include <pthread.h>
 
 static int counter = 0;

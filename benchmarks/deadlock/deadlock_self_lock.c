@@ -1,3 +1,4 @@
+// Caso com erro: a mesma thread tenta bloquear o mesmo mutex duas vezes.
 #include <pthread.h>
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;

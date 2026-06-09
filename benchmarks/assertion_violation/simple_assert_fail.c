@@ -1,3 +1,4 @@
+// Caso com erro: value fica maior que zero e viola a assercao esperada.
 void __ESBMC_assert(int condition, const char *message);
 
 int main(void) {

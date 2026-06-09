@@ -1,3 +1,4 @@
+// Caso com erro: state_lock e metrics_lock sao adquiridos em ordens opostas.
 #include <pthread.h>
 #include <unistd.h>
 

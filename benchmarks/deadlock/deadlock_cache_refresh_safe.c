@@ -1,3 +1,4 @@
+// Caso correto: todas as threads usam a mesma ordem de locks.
 #include <pthread.h>
 #include <unistd.h>
 

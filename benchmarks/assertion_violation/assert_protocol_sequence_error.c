@@ -1,3 +1,4 @@
+// Caso com erro: a sequencia de eventos nao abre o protocolo como o assert espera.
 #include <assert.h>
 
 enum protocol_state {

@@ -1,3 +1,4 @@
+// Caso com erro: duas threads escrevem em values[0] sem sincronizacao.
 #include <pthread.h>
 
 static int values[2] = {0, 0};

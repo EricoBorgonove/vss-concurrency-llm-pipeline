@@ -1,3 +1,4 @@
+// Caso com erro: lock_pair pode pegar left/right em ordens opostas.
 #include <pthread.h>
 #include <unistd.h>
 

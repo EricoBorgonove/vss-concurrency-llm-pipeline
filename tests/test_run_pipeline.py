@@ -65,8 +65,10 @@ class RunPipelineTest(unittest.TestCase):
         with TemporaryDirectory() as temp_dir:
             summary_file = Path(temp_dir) / "summary.csv"
             summary_file.write_text(
-                "tool,classification,count,first_execution_date,latest_execution_date\n"
-                "afl++,nao detectado,1,2026-06-05T21:00:00,2026-06-05T21:10:00\n"
+                "tool,expected_behavior,expectation_match,classification,count,"
+                "first_execution_date,latest_execution_date\n"
+                "afl++,correto,conforme esperado,nao detectado,1,"
+                "2026-06-05T21:00:00,2026-06-05T21:10:00\n"
             )
             output = StringIO()
 
@@ -75,6 +77,8 @@ class RunPipelineTest(unittest.TestCase):
 
         self.assertIn("Resumo consolidado da rodada", output.getvalue())
         self.assertIn("Ferramenta", output.getvalue())
+        self.assertIn("Correto", output.getvalue())
+        self.assertIn("Conforme", output.getvalue())
         self.assertIn("Nao detectado", output.getvalue())
         self.assertIn("2026-06-05 21:10:00", output.getvalue())
 
@@ -97,6 +101,8 @@ class RunPipelineTest(unittest.TestCase):
             [
                 {
                     "tool": "asan",
+                    "expected_behavior": "vulneravel",
+                    "expectation_match": "conforme esperado",
                     "classification": "detectado",
                     "count": "7",
                     "first_execution_date": "2026-06-05T21:00:00",
@@ -106,6 +112,8 @@ class RunPipelineTest(unittest.TestCase):
         )
 
         self.assertIn("Ferramenta", table)
+        self.assertIn("Vulneravel", table)
+        self.assertIn("Conforme", table)
         self.assertIn("Detectado", table)
         self.assertIn("2026-06-05 21:20:00", table)
 

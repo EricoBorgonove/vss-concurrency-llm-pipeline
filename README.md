@@ -157,9 +157,10 @@ Para preparar uma execução curta com AFL++:
 python3 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
 ```
 
-O `reports/results.csv` inclui a coluna `execution_date`. O
-`reports/summary.csv` inclui `first_execution_date` e `latest_execution_date`
-para cada combinação de ferramenta e classificação.
+O `reports/results.csv` inclui `execution_date`, `expected_behavior` e
+`expectation_match`. O `reports/summary.csv` inclui essas mesmas dimensões,
+além de `first_execution_date` e `latest_execution_date` para cada combinação de
+ferramenta, expectativa e classificação.
 
 Novos arquivos `.c` adicionados em `benchmarks/assertion_violation/`,
 `benchmarks/memory_corruption/`, `benchmarks/data_race/` e
@@ -248,8 +249,15 @@ exemplos corretos nomeados com o sufixo `_safe.c`. Arquivos terminados em
 `_fixed.c` ou `_pass.c` ficam reservados para validação de reparos e controles e
 não entram na rodada principal.
 
+Nos relatórios, os sufixos são interpretados assim:
+
+- `_error.c`: comportamento esperado `vulneravel`;
+- `_safe.c`, `_fixed.c` e `_pass.c`: comportamento esperado `correto`;
+- demais nomes: comportamento esperado `nao informado`.
+
+A coluna `expectation_match` indica se o resultado observado ficou `conforme
+esperado`, `divergente`, `inconclusivo` ou `nao avaliado`.
+
 ## Próxima etapa planejada
 
-Melhorar os relatórios para separar casos esperados como vulneráveis (`_error.c`)
-e casos esperados como corretos (`_safe.c`), além de ampliar testes dos
-validadores e executores.
+Ampliar testes automatizados dos validadores e executores.

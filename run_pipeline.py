@@ -12,10 +12,23 @@ OUTPUT_DIR = PROJECT_ROOT / "outputs" / "pipeline"
 REPORT_SUMMARY_FILE = PROJECT_ROOT / "reports" / "summary.csv"
 SUMMARY_HEADERS = {
     "tool": "Ferramenta",
+    "expected_behavior": "Esperado",
+    "expectation_match": "Comparacao",
     "classification": "Resultado",
     "count": "Qtd",
     "first_execution_date": "Primeira execucao",
     "latest_execution_date": "Ultima execucao",
+}
+EXPECTED_BEHAVIOR_LABELS = {
+    "vulneravel": "Vulneravel",
+    "correto": "Correto",
+    "nao informado": "Nao informado",
+}
+EXPECTATION_MATCH_LABELS = {
+    "conforme esperado": "Conforme",
+    "divergente": "Divergente",
+    "inconclusivo": "Inconclusivo",
+    "nao avaliado": "Nao avaliado",
 }
 CLASSIFICATION_LABELS = {
     "detectado": "Detectado",
@@ -139,6 +152,8 @@ def format_summary_date(value):
 def format_summary_rows(rows):
     columns = [
         "tool",
+        "expected_behavior",
+        "expectation_match",
         "classification",
         "count",
         "first_execution_date",
@@ -151,6 +166,14 @@ def format_summary_rows(rows):
         formatted_rows.append(
             {
                 "tool": row.get("tool", "-") or "-",
+                "expected_behavior": EXPECTED_BEHAVIOR_LABELS.get(
+                    row.get("expected_behavior", ""),
+                    row.get("expected_behavior", "-") or "-",
+                ),
+                "expectation_match": EXPECTATION_MATCH_LABELS.get(
+                    row.get("expectation_match", ""),
+                    row.get("expectation_match", "-") or "-",
+                ),
                 "classification": CLASSIFICATION_LABELS.get(
                     row.get("classification", ""),
                     row.get("classification", "-") or "-",

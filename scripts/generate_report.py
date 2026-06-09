@@ -36,6 +36,8 @@ EXECUTION_ERROR_MARKERS = (
     "erro ao ler log",
 )
 LOG_TIMESTAMP_PATTERN = re.compile(r"_(\d{8}-\d{6})$")
+EXPECTED_VULNERABLE_SUFFIXES = ("_error.c",)
+EXPECTED_SAFE_SUFFIXES = ("_safe.c", "_fixed.c", "_pass.c")
 
 
 def build_parser():
@@ -104,12 +106,39 @@ def extract_execution_date(log_path):
     return timestamp.isoformat(timespec="seconds")
 
 
+def infer_expected_behavior(benchmark):
+    name = Path(benchmark).name
+    if name.endswith(EXPECTED_VULNERABLE_SUFFIXES):
+        return "vulneravel"
+    if name.endswith(EXPECTED_SAFE_SUFFIXES):
+        return "correto"
+    return "nao informado"
+
+
+def evaluate_expectation(expected_behavior, classification):
+    if expected_behavior == "nao informado":
+        return "nao avaliado"
+
+    if classification in ("erro de execucao", "ferramenta indisponivel"):
+        return "inconclusivo"
+
+    if expected_behavior == "vulneravel":
+        return "conforme esperado" if classification == "detectado" else "divergente"
+
+    if expected_behavior == "correto":
+        return "conforme esperado" if classification == "nao detectado" else "divergente"
+
+    return "nao avaliado"
+
+
 def parse_log(log_path):
     data = {
         "tool": "",
         "benchmark": "",
         "log_file": str(log_path.relative_to(PROJECT_ROOT)),
         "execution_date": extract_execution_date(log_path),
+        "expected_behavior": "",
+        "expectation_match": "",
         "returncode": "",
         "compile_returncode": "",
         "run_returncode": "",
@@ -123,6 +152,11 @@ def parse_log(log_path):
     except OSError as exc:
         data["error"] = f"erro ao ler log: {exc}"
         data["classification"] = classify_result("", data)
+        data["expected_behavior"] = infer_expected_behavior(data["benchmark"])
+        data["expectation_match"] = evaluate_expectation(
+            data["expected_behavior"],
+            data["classification"],
+        )
         return data
 
     log_text = "\n".join(lines)
@@ -155,6 +189,11 @@ def parse_log(log_path):
             section = "error_captured"
 
     data["classification"] = classify_result(log_text, data)
+    data["expected_behavior"] = infer_expected_behavior(data["benchmark"])
+    data["expectation_match"] = evaluate_expectation(
+        data["expected_behavior"],
+        data["classification"],
+    )
     return data
 
 
@@ -187,6 +226,8 @@ def write_csv(rows, output_file):
         "benchmark",
         "log_file",
         "execution_date",
+        "expected_behavior",
+        "expectation_match",
         "returncode",
         "compile_returncode",
         "run_returncode",
@@ -202,7 +243,12 @@ def write_csv(rows, output_file):
 def build_summary(rows):
     summary = {}
     for row in rows:
-        key = (row["tool"], row["classification"])
+        key = (
+            row["tool"],
+            row.get("expected_behavior", "nao informado"),
+            row.get("expectation_match", "nao avaliado"),
+            row["classification"],
+        )
         if key not in summary:
             summary[key] = {
                 "count": 0,
@@ -222,12 +268,16 @@ def build_summary(rows):
     return [
         {
             "tool": tool,
+            "expected_behavior": expected_behavior,
+            "expectation_match": expectation_match,
             "classification": classification,
             "count": item["count"],
             "first_execution_date": item["first_execution_date"],
             "latest_execution_date": item["latest_execution_date"],
         }
-        for (tool, classification), item in sorted(summary.items())
+        for (tool, expected_behavior, expectation_match, classification), item in sorted(
+            summary.items()
+        )
     ]
 
 
@@ -235,6 +285,8 @@ def write_summary_csv(rows, summary_output_file):
     summary_output_file.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
         "tool",
+        "expected_behavior",
+        "expectation_match",
         "classification",
         "count",
         "first_execution_date",

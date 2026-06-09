@@ -41,16 +41,22 @@ class GenerateReportTest(unittest.TestCase):
         rows = [
             {
                 "tool": "asan",
+                "expected_behavior": "vulneravel",
+                "expectation_match": "conforme esperado",
                 "classification": "detectado",
                 "execution_date": "2026-06-05T20:00:00",
             },
             {
                 "tool": "asan",
+                "expected_behavior": "vulneravel",
+                "expectation_match": "conforme esperado",
                 "classification": "detectado",
                 "execution_date": "2026-06-05T21:00:00",
             },
             {
                 "tool": "tsan",
+                "expected_behavior": "correto",
+                "expectation_match": "conforme esperado",
                 "classification": "nao detectado",
                 "execution_date": "2026-06-05T20:30:00",
             },
@@ -63,6 +69,8 @@ class GenerateReportTest(unittest.TestCase):
             [
                 {
                     "tool": "asan",
+                    "expected_behavior": "vulneravel",
+                    "expectation_match": "conforme esperado",
                     "classification": "detectado",
                     "count": 2,
                     "first_execution_date": "2026-06-05T20:00:00",
@@ -70,6 +78,8 @@ class GenerateReportTest(unittest.TestCase):
                 },
                 {
                     "tool": "tsan",
+                    "expected_behavior": "correto",
+                    "expectation_match": "conforme esperado",
                     "classification": "nao detectado",
                     "count": 1,
                     "first_execution_date": "2026-06-05T20:30:00",
@@ -84,6 +94,34 @@ class GenerateReportTest(unittest.TestCase):
         )
 
         self.assertEqual(execution_date, "2026-06-05T21:06:38")
+
+    def test_infer_expected_behavior_from_benchmark_suffix(self):
+        self.assertEqual(
+            generate_report.infer_expected_behavior("benchmarks/data_race/race_error.c"),
+            "vulneravel",
+        )
+        self.assertEqual(
+            generate_report.infer_expected_behavior("benchmarks/data_race/race_safe.c"),
+            "correto",
+        )
+        self.assertEqual(
+            generate_report.infer_expected_behavior("benchmarks/data_race/simple_data_race.c"),
+            "nao informado",
+        )
+
+    def test_evaluate_expectation_compares_expected_behavior_and_classification(self):
+        self.assertEqual(
+            generate_report.evaluate_expectation("vulneravel", "detectado"),
+            "conforme esperado",
+        )
+        self.assertEqual(
+            generate_report.evaluate_expectation("correto", "detectado"),
+            "divergente",
+        )
+        self.assertEqual(
+            generate_report.evaluate_expectation("correto", "erro de execucao"),
+            "inconclusivo",
+        )
 
     def test_filter_latest_rows_keeps_latest_log_per_tool_and_benchmark(self):
         rows = [

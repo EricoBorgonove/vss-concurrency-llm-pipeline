@@ -212,6 +212,28 @@ Para registrar diagnóstico do ambiente:
 python3 scripts/check_environment.py
 ```
 
+## Etapa LLM simulada
+
+A etapa de LLM ainda não integra uma API externa nem envia dados para nenhum
+serviço. Ela é uma simulação determinística usada para exercitar o fluxo do
+pipeline antes da integração real com uma LLM.
+
+O script `scripts/run_llm_repair.py` lê um log de ferramenta e procura
+marcadores simples, como `AddressSanitizer`, `ThreadSanitizer`, `data race`,
+`deadlock`, `assert`, `VERIFICATION FAILED` ou `heap-buffer-overflow`. A partir
+desses marcadores, ele classifica o tipo provável de problema e grava uma
+sugestão textual genérica em `outputs/llm/`.
+
+Essa etapa serve para testar a sequência experimental:
+
+- coletar evidências nos logs;
+- gerar uma sugestão preliminar de reparo;
+- registrar a sugestão como artefato;
+- validar um benchmark reparado controlado com as ferramentas já integradas.
+
+Ela não modifica automaticamente os arquivos `.c` e não substitui uma análise
+manual. A integração real com LLM fica para uma etapa futura.
+
 Para gerar uma sugestão simulada de reparo a partir de um log:
 
 ```bash

@@ -66,8 +66,8 @@ pipeline-vss-llm/
   implementadas, gera relatórios CSV e salva um resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
   data de execução, classificação simples dos resultados e gera
-  `reports/summary.csv`, com intervalo de datas e opção para considerar apenas
-  os logs mais recentes.
+  `reports/summary.csv` e `reports/report.html`, com intervalo de datas e opção
+  para considerar apenas os logs mais recentes.
 - `scripts/run_llm_repair.py` gera uma sugestão simulada de reparo a partir de
   um log, sem chamar API externa.
 - `scripts/validate_llm_repair.py` valida de forma simulada uma sugestão gerada,
@@ -121,8 +121,9 @@ python3 run_pipeline.py
 ```
 
 Ele registra o diagnóstico do ambiente, executa os benchmarks descobertos
-automaticamente, atualiza `reports/results.csv` e `reports/summary.csv`, salva um
-resumo textual em `outputs/pipeline/` e exibe uma tabela consolidada no terminal.
+automaticamente, atualiza `reports/results.csv`, `reports/summary.csv` e
+`reports/report.html`, salva um resumo textual em `outputs/pipeline/` e exibe
+uma tabela consolidada no terminal.
 
 Os comandos abaixo continuam disponíveis para executar etapas individuais.
 
@@ -162,7 +163,8 @@ python3 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
 O `reports/results.csv` inclui `execution_date`, `expected_behavior` e
 `expectation_match`. O `reports/summary.csv` inclui essas mesmas dimensões,
 além de `first_execution_date` e `latest_execution_date` para cada combinação de
-ferramenta, expectativa e classificação.
+ferramenta, expectativa e classificação. O `reports/report.html` apresenta um
+resumo e os resultados detalhados em formato mais amigável para leitura.
 
 Novos arquivos `.c` adicionados em `benchmarks/assertion_violation/`,
 `benchmarks/memory_corruption/`, `benchmarks/data_race/` e
@@ -187,6 +189,12 @@ benchmark:
 
 ```bash
 python3 scripts/generate_report.py --latest-only
+```
+
+Para escolher outro caminho para o relatório HTML:
+
+```bash
+python3 scripts/generate_report.py --html-output reports/meu_relatorio.html
 ```
 
 Para executar os testes automatizados leves:
@@ -265,5 +273,5 @@ esperado`, `divergente`, `inconclusivo` ou `nao avaliado`.
 
 ## Próxima etapa planejada
 
-Gerar um relatório em formato Markdown ou HTML para facilitar leitura e
-apresentação dos resultados.
+Adicionar métricas por benchmark, como duração das tarefas e quantidade de
+execuções por categoria.

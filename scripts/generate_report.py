@@ -4,6 +4,7 @@
 import argparse
 import csv
 import datetime as dt
+import html
 import re
 import sys
 from pathlib import Path
@@ -13,6 +14,7 @@ OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 RESULTS_FILE = REPORTS_DIR / "results.csv"
 SUMMARY_FILE = REPORTS_DIR / "summary.csv"
+HTML_FILE = REPORTS_DIR / "report.html"
 TOOLS = ("esbmc", "asan", "tsan", "deadlock", "afl")
 DETECTED_MARKERS = (
     "AddressSanitizer:",
@@ -58,6 +60,11 @@ def build_parser():
         "--summary-output",
         default=str(SUMMARY_FILE),
         help="Caminho do CSV resumido. Padrao: reports/summary.csv.",
+    )
+    parser.add_argument(
+        "--html-output",
+        default=str(HTML_FILE),
+        help="Caminho do relatorio HTML. Padrao: reports/report.html.",
     )
     parser.add_argument(
         "--latest-only",
@@ -298,6 +305,118 @@ def write_summary_csv(rows, summary_output_file):
         writer.writerows(build_summary(rows))
 
 
+def escape(value):
+    return html.escape(str(value), quote=True)
+
+
+def render_html_table(rows, fieldnames):
+    if not rows:
+        return "<p>Nenhum registro encontrado.</p>"
+
+    header_cells = "".join(f"<th>{escape(field)}</th>" for field in fieldnames)
+    body_rows = []
+    for row in rows:
+        cells = "".join(f"<td>{escape(row.get(field, ''))}</td>" for field in fieldnames)
+        body_rows.append(f"<tr>{cells}</tr>")
+
+    return (
+        "<table>\n"
+        f"<thead><tr>{header_cells}</tr></thead>\n"
+        f"<tbody>{''.join(body_rows)}</tbody>\n"
+        "</table>"
+    )
+
+
+def write_html_report(rows, html_output_file):
+    html_output_file.parent.mkdir(parents=True, exist_ok=True)
+    summary_rows = build_summary(rows)
+    generated_at = dt.datetime.now().isoformat(timespec="seconds")
+    summary_fields = [
+        "tool",
+        "expected_behavior",
+        "expectation_match",
+        "classification",
+        "count",
+        "first_execution_date",
+        "latest_execution_date",
+    ]
+    detail_fields = [
+        "tool",
+        "benchmark",
+        "execution_date",
+        "expected_behavior",
+        "expectation_match",
+        "classification",
+        "log_file",
+        "error",
+    ]
+    content = f"""<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Relatorio Pipeline VSS-LLM</title>
+  <style>
+    body {{
+      font-family: Arial, sans-serif;
+      margin: 32px;
+      color: #1f2933;
+      background: #f7f9fb;
+    }}
+    h1, h2 {{
+      margin-bottom: 8px;
+    }}
+    .meta {{
+      color: #52606d;
+      margin-bottom: 24px;
+    }}
+    table {{
+      border-collapse: collapse;
+      width: 100%;
+      margin: 16px 0 32px;
+      background: #ffffff;
+      font-size: 14px;
+    }}
+    th, td {{
+      border: 1px solid #d9e2ec;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }}
+    th {{
+      background: #e4edf7;
+      color: #102a43;
+      position: sticky;
+      top: 0;
+    }}
+    tr:nth-child(even) {{
+      background: #f9fbfd;
+    }}
+    .note {{
+      background: #ffffff;
+      border-left: 4px solid #486581;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+    }}
+  </style>
+</head>
+<body>
+  <h1>Relatorio Pipeline VSS-LLM</h1>
+  <p class="meta">Gerado em: {escape(generated_at)} | Logs processados: {len(rows)}</p>
+  <div class="note">
+    <strong>Leitura:</strong> <code>expected_behavior</code> indica se o benchmark era esperado
+    como vulneravel, correto ou nao informado. <code>expectation_match</code> indica se o
+    resultado observado ficou conforme, divergente, inconclusivo ou nao avaliado.
+  </div>
+  <h2>Resumo</h2>
+  {render_html_table(summary_rows, summary_fields)}
+  <h2>Resultados Detalhados</h2>
+  {render_html_table(rows, detail_fields)}
+</body>
+</html>
+"""
+    html_output_file.write_text(content, encoding="utf-8")
+
+
 def main():
     parser = build_parser()
     args = parser.parse_args()
@@ -306,13 +425,16 @@ def main():
         tools = parse_tools(args.tools)
         results_file = Path(args.output)
         summary_file = Path(args.summary_output)
+        html_file = Path(args.html_output)
         rows = collect_rows(tools)
         if args.latest_only:
             rows = filter_latest_rows(rows)
         write_csv(rows, results_file)
         write_summary_csv(rows, summary_file)
+        write_html_report(rows, html_file)
         print(f"Relatorio salvo em: {results_file}")
         print(f"Resumo salvo em: {summary_file}")
+        print(f"Relatorio HTML salvo em: {html_file}")
         print(f"Total de logs processados: {len(rows)}")
         return 0
     except Exception as exc:

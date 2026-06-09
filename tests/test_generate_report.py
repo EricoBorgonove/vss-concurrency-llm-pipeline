@@ -1,5 +1,6 @@
 import unittest
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from scripts import generate_report
 
@@ -159,6 +160,43 @@ class GenerateReportTest(unittest.TestCase):
                 },
             ],
         )
+
+    def test_render_html_table_escapes_cell_values(self):
+        table = generate_report.render_html_table(
+            [{"tool": "<script>alert(1)</script>"}],
+            ["tool"],
+        )
+
+        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", table)
+        self.assertNotIn("<script>alert(1)</script>", table)
+
+    def test_write_html_report_creates_summary_and_detail_sections(self):
+        rows = [
+            {
+                "tool": "asan",
+                "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                "log_file": "outputs/asan/sample_error_20260609-120000.log",
+                "execution_date": "2026-06-09T12:00:00",
+                "expected_behavior": "vulneravel",
+                "expectation_match": "conforme esperado",
+                "returncode": "",
+                "compile_returncode": "0",
+                "run_returncode": "1",
+                "classification": "detectado",
+                "error": "",
+            }
+        ]
+
+        with TemporaryDirectory() as temp_dir:
+            html_path = Path(temp_dir) / "report.html"
+            generate_report.write_html_report(rows, html_path)
+            content = html_path.read_text(encoding="utf-8")
+
+        self.assertIn("Relatorio Pipeline VSS-LLM", content)
+        self.assertIn("Resumo", content)
+        self.assertIn("Resultados Detalhados", content)
+        self.assertIn("sample_error.c", content)
+        self.assertIn("conforme esperado", content)
 
 
 if __name__ == "__main__":

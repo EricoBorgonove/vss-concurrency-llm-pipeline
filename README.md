@@ -80,6 +80,8 @@ pipeline-vss-llm/
   casos corretos.
 - Os scripts Python possuem tratamento básico de erros e geram saídas em
   `outputs/` ou `reports/`.
+- A suíte de testes cobre geração de relatórios, descoberta de benchmarks,
+  formatação do resumo, helpers dos executores e validação simulada de reparos.
 - Nenhuma dependência externa Python é necessária atualmente.
 
 ## Como preparar o ambiente
@@ -193,6 +195,9 @@ Para executar os testes automatizados leves:
 python3 -m unittest
 ```
 
+Atualmente a suíte cobre testes rápidos sem chamar ferramentas externas pesadas,
+usando funções puras, arquivos temporários e mocks quando necessário.
+
 Para registrar diagnóstico do ambiente:
 
 ```bash
@@ -260,4 +265,5 @@ esperado`, `divergente`, `inconclusivo` ou `nao avaliado`.
 
 ## Próxima etapa planejada
 
-Ampliar testes automatizados dos validadores e executores.
+Gerar um relatório em formato Markdown ou HTML para facilitar leitura e
+apresentação dos resultados.

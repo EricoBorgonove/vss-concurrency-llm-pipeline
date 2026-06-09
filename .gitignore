@@ -28,6 +28,11 @@ var/
 # OS files
 .DS_Store
 
+# Generated execution artifacts
+outputs/**
+!outputs/**/
+!outputs/**/.gitkeep
+
 # OneDrive temp files
 ~$*
 

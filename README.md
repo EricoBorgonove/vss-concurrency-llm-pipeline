@@ -44,6 +44,8 @@ pipeline-vss-llm/
 ├── pipeline_runner/ (módulos internos do orquestrador)
 ├── scripts/ (scripts de automação Python)
 ├── tests/ (testes automatizados leves)
+├── Dockerfile
+├── docker-compose.yml
 ├── run_pipeline.py (orquestrador)
 ├── requirements.txt
 ├── .gitignore
@@ -95,7 +97,38 @@ pipeline-vss-llm/
   formatação do resumo, helpers dos executores e validação simulada de reparos.
 - Nenhuma dependência externa Python é necessária atualmente.
 
-## Como preparar o ambiente
+## Como preparar o ambiente reprodutivel
+
+Para resultados de pesquisa, a forma recomendada de execucao e via Docker. O
+ambiente Docker usa Ubuntu 24.04 em `linux/amd64`, instala `clang/LLVM`, `gcc`,
+AFL++ e ESBMC, e mantem as variaveis necessarias para campanhas curtas do AFL++.
+A arquitetura `linux/amd64` e usada de proposito porque o pacote do ESBMC no PPA
+oficial nao esta disponivel para todas as arquiteturas, como `arm64`.
+
+Para construir a imagem:
+
+```bash
+docker compose build
+```
+
+Para executar a rodada completa:
+
+```bash
+docker compose run --rm pipeline
+```
+
+Para executar comandos especificos dentro do mesmo ambiente:
+
+```bash
+docker compose run --rm pipeline python3 scripts/check_environment.py
+docker compose run --rm pipeline python3 -m unittest
+docker compose run --rm pipeline python3 scripts/generate_report.py --latest-only
+```
+
+Os diretorios do projeto sao montados em `/workspace`, entao `outputs/` e
+`reports/` gerados dentro do container aparecem tambem na maquina local.
+
+## Como preparar o ambiente local
 
 Os scripts Python usam apenas a biblioteca padrão atualmente. O
 `requirements.txt` documenta essa decisão e pode ser instalado sem adicionar
@@ -159,6 +192,12 @@ Para executar ThreadSanitizer sobre o benchmark de data race:
 ```bash
 python3 scripts/run_tsan.py benchmarks/data_race/simple_data_race.c
 ```
+
+No macOS, o executor de TSAN prefere automaticamente o clang do LLVM instalado
+via Homebrew, quando disponivel em `/opt/homebrew/opt/llvm/bin/clang` ou
+`/usr/local/opt/llvm/bin/clang`. Essa preferencia evita falsos negativos
+causados por crashes do runtime TSAN observados com Apple clang, que apareciam
+nos logs como `returncode: -11` sem relatorio `ThreadSanitizer`.
 
 Para executar a observação de deadlock por timeout:
 

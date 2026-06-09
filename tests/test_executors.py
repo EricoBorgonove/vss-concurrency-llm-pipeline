@@ -27,6 +27,21 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertEqual(compiler_path, "/usr/bin/gcc")
         self.assertEqual(compiler_name, "gcc")
 
+    # Verifica se TSAN prefere clang LLVM quando disponivel.
+    def test_tsan_find_compiler_prefers_homebrew_llvm_clang(self):
+        def fake_which(candidate):
+            if candidate == "/opt/homebrew/opt/llvm/bin/clang":
+                return candidate
+            if candidate == "clang":
+                return "/usr/bin/clang"
+            return None
+
+        with patch("scripts.run_tsan.shutil.which", side_effect=fake_which):
+            compiler_path, compiler_name = run_tsan.find_compiler(None)
+
+        self.assertEqual(compiler_path, "/opt/homebrew/opt/llvm/bin/clang")
+        self.assertEqual(compiler_name, "/opt/homebrew/opt/llvm/bin/clang")
+
     # Verifica o comportamento quando nenhum compilador C e encontrado.
     def test_find_compiler_returns_none_when_no_compiler_exists(self):
         with patch("scripts.run_deadlock.shutil.which", return_value=None):

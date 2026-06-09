@@ -19,7 +19,9 @@ def display_path(path):
     try:
         return str(path.resolve().relative_to(PROJECT_ROOT))
     except ValueError:
-        return f"<tmp>/{path.name}" if path.is_absolute() else str(path)
+        if path.is_absolute() and str(path).startswith(tempfile.gettempdir()):
+            return f"<tmp>/{path.name}"
+        return str(path)
 
 
 def display_command(command):
@@ -62,10 +64,16 @@ def find_compiler(compiler):
     if compiler:
         return shutil.which(compiler), compiler
 
-    for candidate in ("clang", "gcc"):
+    candidates = (
+        "/opt/homebrew/opt/llvm/bin/clang",
+        "/usr/local/opt/llvm/bin/clang",
+        "clang",
+        "gcc",
+    )
+    for candidate in candidates:
         compiler_path = shutil.which(candidate)
         if compiler_path:
-            return compiler_path, candidate
+            return compiler_path, compiler_path if candidate.startswith("/") else candidate
 
     return None, "clang"
 

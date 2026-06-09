@@ -1,0 +1,14 @@
+services:
+  pipeline:
+    platform: linux/amd64
+    build:
+      context: .
+    image: vss-llm-pipeline:local
+    working_dir: /workspace
+    environment:
+      AFL_SKIP_CPUFREQ: "1"
+      AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - .:/workspace
+    command: ["python3", "run_pipeline.py"]

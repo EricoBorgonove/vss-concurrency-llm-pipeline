@@ -113,6 +113,9 @@ def classify_result(log_text, data):
     if data["compile_returncode"] and data["compile_returncode"] != "0":
         return "erro de execucao"
 
+    if data.get("run_returncode", "").startswith("-"):
+        return "erro de execucao"
+
     return "nao detectado"
 
 

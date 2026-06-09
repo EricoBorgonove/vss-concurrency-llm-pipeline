@@ -42,6 +42,18 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(classification, "ferramenta indisponivel")
 
+    # Verifica se crash de runtime sem marcador nao vira falso negativo.
+    def test_classify_result_treats_negative_run_returncode_as_execution_error(self):
+        data = {
+            "error": "",
+            "compile_returncode": "0",
+            "run_returncode": "-11",
+        }
+
+        classification = generate_report.classify_result("returncode: -11", data)
+
+        self.assertEqual(classification, "erro de execucao")
+
     # Verifica se o resumo agrupa resultados e datas por ferramenta/classificacao.
     def test_build_summary_counts_by_tool_and_classification(self):
         rows = [

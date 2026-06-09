@@ -8,6 +8,7 @@ from scripts import run_asan, run_deadlock, run_esbmc, run_tsan
 
 
 class ExecutorHelpersTest(unittest.TestCase):
+    # Verifica se o compilador solicitado e usado quando esta disponivel.
     def test_find_compiler_uses_requested_compiler_when_available(self):
         with patch("scripts.run_asan.shutil.which", return_value="/usr/bin/clang"):
             compiler_path, compiler_name = run_asan.find_compiler("clang")
@@ -15,6 +16,7 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertEqual(compiler_path, "/usr/bin/clang")
         self.assertEqual(compiler_name, "clang")
 
+    # Verifica se o helper tenta usar gcc quando clang nao esta disponivel.
     def test_find_compiler_falls_back_to_gcc_when_clang_is_missing(self):
         def fake_which(candidate):
             return "/usr/bin/gcc" if candidate == "gcc" else None
@@ -25,6 +27,7 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertEqual(compiler_path, "/usr/bin/gcc")
         self.assertEqual(compiler_name, "gcc")
 
+    # Verifica o comportamento quando nenhum compilador C e encontrado.
     def test_find_compiler_returns_none_when_no_compiler_exists(self):
         with patch("scripts.run_deadlock.shutil.which", return_value=None):
             compiler_path, compiler_name = run_deadlock.find_compiler(None)
@@ -32,6 +35,7 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertIsNone(compiler_path)
         self.assertEqual(compiler_name, "clang")
 
+    # Verifica se o log do ASAN registra secoes de compilacao e execucao.
     def test_asan_write_log_records_compile_and_run_sections(self):
         with TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "asan.log"
@@ -64,6 +68,7 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertIn("compile stderr", content)
         self.assertIn("run stdout", content)
 
+    # Verifica se o log de deadlock registra corretamente erro de timeout.
     def test_deadlock_write_log_records_timeout_error(self):
         with TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "deadlock.log"
@@ -81,6 +86,7 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertIn("[error]", content)
         self.assertIn("Tempo limite excedido", content)
 
+    # Verifica se o log do ESBMC registra comando, retorno e erro.
     def test_esbmc_write_log_records_command_and_error(self):
         with TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "esbmc.log"

@@ -8,12 +8,14 @@ import run_pipeline
 
 
 class RunPipelineTest(unittest.TestCase):
+    # Verifica se benchmarks de reparo/controle sao ignorados na rodada principal.
     def test_is_experiment_benchmark_ignores_fixed_variants(self):
         self.assertTrue(run_pipeline.is_experiment_benchmark(Path("sample.c")))
         self.assertFalse(run_pipeline.is_experiment_benchmark(Path("sample_fixed.c")))
         self.assertFalse(run_pipeline.is_experiment_benchmark(Path("sample_pass.c")))
         self.assertFalse(run_pipeline.is_experiment_benchmark(Path("sample.txt")))
 
+    # Verifica se a descoberta inclui benchmarks atuais e metadados da tarefa.
     def test_discover_tasks_includes_current_benchmarks(self):
         tasks = run_pipeline.discover_tasks()
         task_names = {task["name"] for task in tasks}
@@ -59,6 +61,7 @@ class RunPipelineTest(unittest.TestCase):
             "benchmarks/memory_corruption/simple_buffer_overflow.c",
         )
 
+    # Verifica se a tarefa de ambiente chama o diagnostico esperado.
     def test_build_environment_task_runs_environment_check(self):
         task = run_pipeline.build_environment_task()
 
@@ -66,6 +69,7 @@ class RunPipelineTest(unittest.TestCase):
         self.assertEqual(task["kind"], "environment")
         self.assertEqual(task["command"], ["scripts/check_environment.py"])
 
+    # Verifica se a tarefa de relatorio executa o gerador no modo latest-only.
     def test_build_report_task_generates_latest_report(self):
         task = run_pipeline.build_report_task()
 
@@ -76,6 +80,7 @@ class RunPipelineTest(unittest.TestCase):
             ["scripts/generate_report.py", "--latest-only"],
         )
 
+    # Verifica se metricas por benchmark ignoram tarefas que nao analisam codigo.
     def test_collect_benchmark_metrics_ignores_non_benchmark_tasks(self):
         metrics = run_pipeline.collect_benchmark_metrics(
             [
@@ -106,6 +111,7 @@ class RunPipelineTest(unittest.TestCase):
         self.assertEqual(metrics[0]["category"], "memory_corruption")
         self.assertEqual(metrics[0]["duration_seconds"], "1.234")
 
+    # Verifica se as metricas sao agregadas corretamente por categoria.
     def test_build_category_metrics_groups_by_category(self):
         rows = run_pipeline.build_category_metrics(
             [
@@ -134,6 +140,7 @@ class RunPipelineTest(unittest.TestCase):
         self.assertEqual(by_category["memory_corruption"]["avg_duration_seconds"], "2.000")
         self.assertEqual(by_category["data_race"]["benchmark_count"], 1)
 
+    # Verifica se os CSVs de metricas sao criados com conteudo esperado.
     def test_write_metrics_reports_creates_csv_files(self):
         with TemporaryDirectory() as temp_dir:
             benchmark_file = Path(temp_dir) / "benchmark_metrics.csv"
@@ -159,6 +166,7 @@ class RunPipelineTest(unittest.TestCase):
             self.assertIn("duration_seconds", benchmark_file.read_text())
             self.assertIn("data_race", category_file.read_text())
 
+    # Verifica se a tabela de metricas por categoria fica legivel no terminal.
     def test_format_category_metrics_returns_readable_table(self):
         table = run_pipeline.format_category_metrics(
             [
@@ -176,6 +184,7 @@ class RunPipelineTest(unittest.TestCase):
         self.assertIn("deadlock", table)
         self.assertIn("9.000s", table)
 
+    # Verifica se o resumo CSV e exibido como tabela no terminal.
     def test_print_report_summary_prints_csv_content(self):
         with TemporaryDirectory() as temp_dir:
             summary_file = Path(temp_dir) / "summary.csv"
@@ -197,6 +206,7 @@ class RunPipelineTest(unittest.TestCase):
         self.assertIn("Nao detectado", output.getvalue())
         self.assertIn("2026-06-05 21:10:00", output.getvalue())
 
+    # Verifica se a ausencia do CSV de resumo gera mensagem de erro amigavel.
     def test_print_report_summary_handles_missing_file(self):
         output = StringIO()
 
@@ -205,12 +215,14 @@ class RunPipelineTest(unittest.TestCase):
 
         self.assertIn("Nao foi possivel ler o resumo CSV", output.getvalue())
 
+    # Verifica se timestamps ISO sao formatados para leitura humana.
     def test_format_summary_date_converts_iso_timestamp(self):
         self.assertEqual(
             run_pipeline.format_summary_date("2026-06-05T21:10:00"),
             "2026-06-05 21:10:00",
         )
 
+    # Verifica se as linhas do resumo consolidado viram uma tabela legivel.
     def test_format_summary_rows_returns_readable_table(self):
         table = run_pipeline.format_summary_rows(
             [

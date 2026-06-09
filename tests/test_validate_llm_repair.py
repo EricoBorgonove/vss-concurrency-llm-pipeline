@@ -8,6 +8,7 @@ from scripts import validate_llm_repair
 
 
 class ValidateLlmRepairTest(unittest.TestCase):
+    # Verifica se o parser extrai issue_type e detecta a secao suggestion.
     def test_parse_repair_extracts_issue_type_and_suggestion_section(self):
         issue_type, has_suggestion = validate_llm_repair.parse_repair(
             "LLM repair simulation\n"
@@ -19,6 +20,7 @@ class ValidateLlmRepairTest(unittest.TestCase):
         self.assertEqual(issue_type, "memory_corruption")
         self.assertTrue(has_suggestion)
 
+    # Verifica se uma sugestao simulada minima e aprovada.
     def test_validate_repair_approves_minimal_valid_simulation(self):
         status, issue_type, problems = validate_llm_repair.validate_repair(
             "LLM repair simulation\n"
@@ -31,6 +33,7 @@ class ValidateLlmRepairTest(unittest.TestCase):
         self.assertEqual(issue_type, "data_race")
         self.assertEqual(problems, [])
 
+    # Verifica se metadados ausentes reprovam a validacao simulada.
     def test_validate_repair_rejects_missing_metadata(self):
         status, issue_type, problems = validate_llm_repair.validate_repair(
             "texto sem metadados esperados"
@@ -41,6 +44,7 @@ class ValidateLlmRepairTest(unittest.TestCase):
         self.assertIn("campo issue_type ausente", problems)
         self.assertIn("secao suggestion ausente", problems)
 
+    # Verifica se a validacao com ASAN monta o comando esperado.
     def test_run_tool_validation_builds_asan_command(self):
         completed = subprocess.CompletedProcess(
             args=["python", "scripts/run_asan.py"],
@@ -62,10 +66,12 @@ class ValidateLlmRepairTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         run.assert_called_once()
 
+    # Verifica se ferramentas de validacao desconhecidas sao rejeitadas.
     def test_run_tool_validation_rejects_unknown_tool(self):
         with self.assertRaises(ValueError):
             validate_llm_repair.run_tool_validation("unknown", Path("sample.c"), 10)
 
+    # Verifica se o relatorio de validacao registra resultado da ferramenta.
     def test_write_validation_records_tool_result(self):
         with TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "validation.txt"

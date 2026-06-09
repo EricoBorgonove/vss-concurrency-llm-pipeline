@@ -6,15 +6,18 @@ from scripts import generate_report
 
 
 class GenerateReportTest(unittest.TestCase):
+    # Verifica se a lista de ferramentas separada por virgulas e aceita.
     def test_parse_tools_accepts_comma_separated_tools(self):
         tools = generate_report.parse_tools("asan,tsan")
 
         self.assertEqual(tools, ("asan", "tsan"))
 
+    # Verifica se ferramentas desconhecidas sao rejeitadas.
     def test_parse_tools_rejects_unknown_tool(self):
         with self.assertRaises(ValueError):
             generate_report.parse_tools("asan,unknown")
 
+    # Verifica se marcadores do AddressSanitizer classificam deteccao.
     def test_classify_result_detects_asan_marker(self):
         data = {
             "error": "",
@@ -28,6 +31,7 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(classification, "detectado")
 
+    # Verifica se falta de ferramenta e classificada como indisponibilidade.
     def test_classify_result_detects_unavailable_tool(self):
         data = {
             "error": "Ferramenta AFL++ nao encontrada: afl-clang-fast, afl-fuzz.",
@@ -38,6 +42,7 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(classification, "ferramenta indisponivel")
 
+    # Verifica se o resumo agrupa resultados e datas por ferramenta/classificacao.
     def test_build_summary_counts_by_tool_and_classification(self):
         rows = [
             {
@@ -89,6 +94,7 @@ class GenerateReportTest(unittest.TestCase):
             ],
         )
 
+    # Verifica se a data de execucao e extraida do nome do arquivo de log.
     def test_extract_execution_date_from_log_filename(self):
         execution_date = generate_report.extract_execution_date(
             Path("outputs/asan/simple_buffer_overflow_20260605-210638.log")
@@ -96,6 +102,7 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(execution_date, "2026-06-05T21:06:38")
 
+    # Verifica se sufixos de benchmark definem o comportamento esperado.
     def test_infer_expected_behavior_from_benchmark_suffix(self):
         self.assertEqual(
             generate_report.infer_expected_behavior("benchmarks/data_race/race_error.c"),
@@ -110,6 +117,7 @@ class GenerateReportTest(unittest.TestCase):
             "nao informado",
         )
 
+    # Verifica a comparacao entre comportamento esperado e classificacao.
     def test_evaluate_expectation_compares_expected_behavior_and_classification(self):
         self.assertEqual(
             generate_report.evaluate_expectation("vulneravel", "detectado"),
@@ -124,6 +132,7 @@ class GenerateReportTest(unittest.TestCase):
             "inconclusivo",
         )
 
+    # Verifica se apenas o log mais recente por ferramenta/benchmark e mantido.
     def test_filter_latest_rows_keeps_latest_log_per_tool_and_benchmark(self):
         rows = [
             {
@@ -161,6 +170,7 @@ class GenerateReportTest(unittest.TestCase):
             ],
         )
 
+    # Verifica se a tabela HTML escapa valores potencialmente perigosos.
     def test_render_html_table_escapes_cell_values(self):
         table = generate_report.render_html_table(
             [{"tool": "<script>alert(1)</script>"}],
@@ -170,6 +180,7 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", table)
         self.assertNotIn("<script>alert(1)</script>", table)
 
+    # Verifica se o relatorio HTML contem resumo e detalhes dos resultados.
     def test_write_html_report_creates_summary_and_detail_sections(self):
         rows = [
             {

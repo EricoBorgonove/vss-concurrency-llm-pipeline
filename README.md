@@ -63,7 +63,8 @@ pipeline-vss-llm/
   curta, salvando logs em `outputs/afl/`.
 - `run_pipeline.py` descobre benchmarks `.c` automaticamente nas categorias
   suportadas, registra diagnóstico do ambiente, executa as ferramentas
-  implementadas, gera relatórios CSV e salva um resumo em `outputs/pipeline/`.
+  implementadas, gera relatórios CSV, registra métricas de execução e salva um
+  resumo em `outputs/pipeline/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
   data de execução, classificação simples dos resultados e gera
   `reports/summary.csv` e `reports/report.html`, com intervalo de datas e opção
@@ -122,8 +123,9 @@ python3 run_pipeline.py
 
 Ele registra o diagnóstico do ambiente, executa os benchmarks descobertos
 automaticamente, atualiza `reports/results.csv`, `reports/summary.csv` e
-`reports/report.html`, salva um resumo textual em `outputs/pipeline/` e exibe
-uma tabela consolidada no terminal.
+`reports/report.html`, gera métricas em `reports/benchmark_metrics.csv` e
+`reports/category_metrics.csv`, salva um resumo textual em `outputs/pipeline/`
+e exibe tabelas consolidadas no terminal.
 
 Os comandos abaixo continuam disponíveis para executar etapas individuais.
 
@@ -165,6 +167,13 @@ O `reports/results.csv` inclui `execution_date`, `expected_behavior` e
 além de `first_execution_date` e `latest_execution_date` para cada combinação de
 ferramenta, expectativa e classificação. O `reports/report.html` apresenta um
 resumo e os resultados detalhados em formato mais amigável para leitura.
+
+Quando `python3 run_pipeline.py` é executado, o projeto também gera:
+
+- `reports/benchmark_metrics.csv`: duração de cada tarefa por benchmark,
+  categoria, ferramenta e código de retorno;
+- `reports/category_metrics.csv`: quantidade de benchmarks executados,
+  quantidade de execuções e duração mínima, média, máxima e total por categoria.
 
 Novos arquivos `.c` adicionados em `benchmarks/assertion_violation/`,
 `benchmarks/memory_corruption/`, `benchmarks/data_race/` e
@@ -295,5 +304,5 @@ esperado`, `divergente`, `inconclusivo` ou `nao avaliado`.
 
 ## Próxima etapa planejada
 
-Adicionar métricas por benchmark, como duração das tarefas e quantidade de
-execuções por categoria.
+Integrar as métricas ao relatório HTML para facilitar a leitura sem abrir os
+CSVs separadamente.

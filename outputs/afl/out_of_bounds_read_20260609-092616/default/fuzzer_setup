@@ -1,0 +1,8 @@
+# environment variables:
+AFL_CUSTOM_INFO_PROGRAM=<tmp>/out_of_bounds_read
+AFL_CUSTOM_INFO_PROGRAM_ARGV=
+AFL_CUSTOM_INFO_OUT=outputs/afl/out_of_bounds_read_20260609-092616/default
+AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+AFL_SKIP_CPUFREQ=1
+# command line:
+'/opt/homebrew/Cellar/afl++/5.00c/libexec/afl-fuzz' '-i' 'seeds' '-o' 'outputs/afl/out_of_bounds_read_20260609-092616' '-V' '5' '--' '<tmp>/out_of_bounds_read'

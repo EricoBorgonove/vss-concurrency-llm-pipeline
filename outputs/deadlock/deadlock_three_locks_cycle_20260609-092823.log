@@ -1,0 +1,13 @@
+tool: deadlock-timeout
+benchmark: benchmarks/deadlock/deadlock_three_locks_cycle.c
+compile_command: clang -g -O0 benchmarks/deadlock/deadlock_three_locks_cycle.c -o <tmp>/deadlock_three_locks_cycle -pthread
+run_command: <tmp>/deadlock_three_locks_cycle
+
+[error]
+Tempo limite excedido apos 3 segundos.
+
+[compile]
+returncode: 0
+
+[run]
+returncode: 124

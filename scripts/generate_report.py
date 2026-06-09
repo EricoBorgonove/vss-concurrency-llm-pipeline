@@ -15,6 +15,8 @@ REPORTS_DIR = PROJECT_ROOT / "reports"
 RESULTS_FILE = REPORTS_DIR / "results.csv"
 SUMMARY_FILE = REPORTS_DIR / "summary.csv"
 HTML_FILE = REPORTS_DIR / "report.html"
+BENCHMARK_METRICS_FILE = REPORTS_DIR / "benchmark_metrics.csv"
+CATEGORY_METRICS_FILE = REPORTS_DIR / "category_metrics.csv"
 TOOLS = ("esbmc", "asan", "tsan", "deadlock", "afl")
 DETECTED_MARKERS = (
     "AddressSanitizer:",
@@ -327,6 +329,14 @@ def write_summary_csv(rows, summary_output_file):
         writer.writerows(build_summary(rows))
 
 
+def read_csv_if_exists(path):
+    if not path.is_file():
+        return []
+
+    with path.open(encoding="utf-8", newline="") as csv_file:
+        return list(csv.DictReader(csv_file))
+
+
 def escape(value):
     return html.escape(str(value), quote=True)
 
@@ -349,9 +359,16 @@ def render_html_table(rows, fieldnames):
     )
 
 
-def write_html_report(rows, html_output_file):
+def write_html_report(
+    rows,
+    html_output_file,
+    category_metrics_rows=None,
+    benchmark_metrics_rows=None,
+):
     html_output_file.parent.mkdir(parents=True, exist_ok=True)
     summary_rows = build_summary(rows)
+    category_metrics_rows = category_metrics_rows or []
+    benchmark_metrics_rows = benchmark_metrics_rows or []
     generated_at = dt.datetime.now().isoformat(timespec="seconds")
     summary_fields = [
         "tool",
@@ -371,6 +388,23 @@ def write_html_report(rows, html_output_file):
         "classification",
         "log_file",
         "error",
+    ]
+    category_metric_fields = [
+        "category",
+        "benchmark_count",
+        "execution_count",
+        "total_duration_seconds",
+        "avg_duration_seconds",
+        "min_duration_seconds",
+        "max_duration_seconds",
+    ]
+    benchmark_metric_fields = [
+        "run_date",
+        "category",
+        "tool",
+        "benchmark",
+        "duration_seconds",
+        "returncode",
     ]
     content = f"""<!doctype html>
 <html lang="pt-BR">
@@ -431,6 +465,10 @@ def write_html_report(rows, html_output_file):
   </div>
   <h2>Resumo</h2>
   {render_html_table(summary_rows, summary_fields)}
+  <h2>Métricas por Categoria</h2>
+  {render_html_table(category_metrics_rows, category_metric_fields)}
+  <h2>Métricas por Benchmark</h2>
+  {render_html_table(benchmark_metrics_rows, benchmark_metric_fields)}
   <h2>Resultados Detalhados</h2>
   {render_html_table(rows, detail_fields)}
 </body>
@@ -451,9 +489,16 @@ def main():
         rows = collect_rows(tools)
         if args.latest_only:
             rows = filter_latest_rows(rows)
+        category_metrics_rows = read_csv_if_exists(CATEGORY_METRICS_FILE)
+        benchmark_metrics_rows = read_csv_if_exists(BENCHMARK_METRICS_FILE)
         write_csv(rows, results_file)
         write_summary_csv(rows, summary_file)
-        write_html_report(rows, html_file)
+        write_html_report(
+            rows,
+            html_file,
+            category_metrics_rows=category_metrics_rows,
+            benchmark_metrics_rows=benchmark_metrics_rows,
+        )
         print(f"Relatorio salvo em: {display_path(results_file)}")
         print(f"Resumo salvo em: {display_path(summary_file)}")
         print(f"Relatorio HTML salvo em: {display_path(html_file)}")

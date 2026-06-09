@@ -168,7 +168,8 @@ O `reports/results.csv` inclui `execution_date`, `expected_behavior` e
 `expectation_match`. O `reports/summary.csv` inclui essas mesmas dimensões,
 além de `first_execution_date` e `latest_execution_date` para cada combinação de
 ferramenta, expectativa e classificação. O `reports/report.html` apresenta um
-resumo e os resultados detalhados em formato mais amigável para leitura.
+resumo, métricas por categoria, métricas por benchmark e resultados detalhados
+em formato mais amigável para leitura.
 
 Quando `python3 run_pipeline.py` é executado, o projeto também gera:
 
@@ -306,5 +307,5 @@ esperado`, `divergente`, `inconclusivo` ou `nao avaliado`.
 
 ## Próxima etapa planejada
 
-Integrar as métricas ao relatório HTML para facilitar a leitura sem abrir os
-CSVs separadamente.
+Aprimorar o relatório HTML com filtros visuais por ferramenta, categoria e
+classificação.

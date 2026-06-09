@@ -180,7 +180,7 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", table)
         self.assertNotIn("<script>alert(1)</script>", table)
 
-    # Verifica se o relatorio HTML contem resumo e detalhes dos resultados.
+    # Verifica se o relatorio HTML contem resumo, metricas e detalhes.
     def test_write_html_report_creates_summary_and_detail_sections(self):
         rows = [
             {
@@ -200,14 +200,59 @@ class GenerateReportTest(unittest.TestCase):
 
         with TemporaryDirectory() as temp_dir:
             html_path = Path(temp_dir) / "report.html"
-            generate_report.write_html_report(rows, html_path)
+            generate_report.write_html_report(
+                rows,
+                html_path,
+                category_metrics_rows=[
+                    {
+                        "category": "memory_corruption",
+                        "benchmark_count": "1",
+                        "execution_count": "2",
+                        "total_duration_seconds": "3.000",
+                        "avg_duration_seconds": "1.500",
+                        "min_duration_seconds": "1.000",
+                        "max_duration_seconds": "2.000",
+                    }
+                ],
+                benchmark_metrics_rows=[
+                    {
+                        "run_date": "2026-06-09T12:00:00",
+                        "category": "memory_corruption",
+                        "tool": "asan",
+                        "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                        "duration_seconds": "1.000",
+                        "returncode": "1",
+                    }
+                ],
+            )
             content = html_path.read_text(encoding="utf-8")
 
         self.assertIn("Relatorio Pipeline VSS-LLM", content)
         self.assertIn("Resumo", content)
+        self.assertIn("Métricas por Categoria", content)
+        self.assertIn("Métricas por Benchmark", content)
         self.assertIn("Resultados Detalhados", content)
+        self.assertIn("memory_corruption", content)
+        self.assertIn("duration_seconds", content)
         self.assertIn("sample_error.c", content)
         self.assertIn("conforme esperado", content)
+
+    # Verifica se a leitura opcional de CSV retorna vazio quando o arquivo nao existe.
+    def test_read_csv_if_exists_returns_empty_list_for_missing_file(self):
+        with TemporaryDirectory() as temp_dir:
+            rows = generate_report.read_csv_if_exists(Path(temp_dir) / "missing.csv")
+
+        self.assertEqual(rows, [])
+
+    # Verifica se a leitura opcional de CSV carrega linhas existentes.
+    def test_read_csv_if_exists_reads_existing_csv(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_path = Path(temp_dir) / "metrics.csv"
+            csv_path.write_text("category,count\nmemory_corruption,2\n", encoding="utf-8")
+
+            rows = generate_report.read_csv_if_exists(csv_path)
+
+        self.assertEqual(rows, [{"category": "memory_corruption", "count": "2"}])
 
 
 if __name__ == "__main__":

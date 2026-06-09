@@ -39,6 +39,7 @@ pipeline-vss-llm/
 │   ├── llm/
 │   └── pipeline/
 ├── reports/ (relatórios consolidados)
+├── pipeline_runner/ (módulos internos do orquestrador)
 ├── scripts/ (scripts de automação Python)
 ├── tests/ (testes automatizados leves)
 ├── run_pipeline.py (orquestrador)
@@ -64,7 +65,8 @@ pipeline-vss-llm/
 - `run_pipeline.py` descobre benchmarks `.c` automaticamente nas categorias
   suportadas, registra diagnóstico do ambiente, executa as ferramentas
   implementadas, gera relatórios CSV, registra métricas de execução e salva um
-  resumo em `outputs/pipeline/`.
+  resumo em `outputs/pipeline/`. A implementação interna fica dividida em
+  módulos menores dentro de `pipeline_runner/`.
 - `scripts/generate_report.py` consolida logs em `reports/results.csv`, inclui
   data de execução, classificação simples dos resultados e gera
   `reports/summary.csv` e `reports/report.html`, com intervalo de datas e opção

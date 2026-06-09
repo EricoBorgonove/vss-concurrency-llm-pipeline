@@ -10,6 +10,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "llm"
 
 
+def display_path(path):
+    path = Path(path)
+    try:
+        return str(path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def build_parser():
     parser = argparse.ArgumentParser(
         description="Gera uma sugestao simulada de reparo sem chamar API externa."
@@ -66,7 +74,7 @@ def write_repair(output_path, evidence_path, issue_type, suggestion):
     with output_path.open("w", encoding="utf-8") as output_file:
         output_file.write("LLM repair simulation\n")
         output_file.write(f"generated_at: {dt.datetime.now().isoformat(timespec='seconds')}\n")
-        output_file.write(f"evidence: {evidence_path}\n")
+        output_file.write(f"evidence: {display_path(evidence_path)}\n")
         output_file.write(f"issue_type: {issue_type}\n\n")
         output_file.write("suggestion:\n")
         output_file.write(suggestion)
@@ -86,18 +94,18 @@ def main():
     output_path = make_output_path(evidence_path)
 
     if not evidence_path.exists():
-        print(f"Erro: evidencia nao encontrada: {evidence_path}", file=sys.stderr)
+        print(f"Erro: evidencia nao encontrada: {display_path(evidence_path)}", file=sys.stderr)
         return 2
 
     if not evidence_path.is_file():
-        print(f"Erro: evidencia deve ser um arquivo: {evidence_path}", file=sys.stderr)
+        print(f"Erro: evidencia deve ser um arquivo: {display_path(evidence_path)}", file=sys.stderr)
         return 2
 
     try:
         log_text = evidence_path.read_text(encoding="utf-8", errors="replace")
         issue_type, suggestion = classify_evidence(log_text)
         write_repair(output_path, evidence_path, issue_type, suggestion)
-        print(f"Sugestao simulada salva em: {output_path}")
+        print(f"Sugestao simulada salva em: {display_path(output_path)}")
         return 0
     except OSError as exc:
         print(f"Erro ao processar evidencia: {exc}", file=sys.stderr)

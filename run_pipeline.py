@@ -3,6 +3,7 @@
 
 import csv
 import datetime as dt
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -46,6 +47,21 @@ BENCHMARK_RULES = {
     "data_race": (("tsan", "scripts/run_tsan.py", ()),),
     "deadlock": (("deadlock", "scripts/run_deadlock.py", ("--timeout", "3")),),
 }
+
+
+def display_path(path):
+    path = Path(path)
+    try:
+        return str(path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def sanitize_text(text):
+    text = text.replace(str(PROJECT_ROOT) + "/", "")
+    temp_pattern = r"/var" + r"/folders/\S+/T/vss-"
+    text = re.sub(temp_pattern + r"[^/\s,;\"<>]+/(\S+)", r"<tmp>/\1", text)
+    return re.sub(temp_pattern + r"[^\s,;\"<>]+", "<tmp>", text)
 
 
 def is_experiment_benchmark(path):
@@ -126,12 +142,12 @@ def write_summary(summary_path, results):
             summary_file.write(f"returncode: {item['returncode']}\n")
             if item["stdout"]:
                 summary_file.write("stdout:\n")
-                summary_file.write(item["stdout"])
+                summary_file.write(sanitize_text(item["stdout"]))
                 if not item["stdout"].endswith("\n"):
                     summary_file.write("\n")
             if item["stderr"]:
                 summary_file.write("stderr:\n")
-                summary_file.write(item["stderr"])
+                summary_file.write(sanitize_text(item["stderr"]))
                 if not item["stderr"].endswith("\n"):
                     summary_file.write("\n")
             summary_file.write("\n")
@@ -247,7 +263,7 @@ def main():
         )
 
     write_summary(summary_path, results)
-    print(f"Resumo salvo em: {summary_path}")
+    print(f"Resumo salvo em: {display_path(summary_path)}")
     print_report_summary()
     return 0
 

@@ -19,6 +19,14 @@ TOOLS = {
 }
 
 
+def display_path(path):
+    path = Path(path)
+    try:
+        return str(path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def make_output_path():
     timestamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     return OUTPUT_DIR / f"environment_{timestamp}.txt"
@@ -91,7 +99,7 @@ def main():
     output_path = make_output_path()
     probes = {tool_name: run_probe(command) for tool_name, command in TOOLS.items()}
     write_report(output_path, probes)
-    print(f"Diagnostico salvo em: {output_path}")
+    print(f"Diagnostico salvo em: {display_path(output_path)}")
     return 0
 
 

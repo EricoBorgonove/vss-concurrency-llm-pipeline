@@ -1,18 +1,18 @@
 tool: afl++
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c
-seeds_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds
-campaign_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/out_of_bounds_read_20260609-083836
-compile_command: afl-clang-fast -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-nf41jj0w/out_of_bounds_read
-fuzz_command: afl-fuzz -i /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds -o /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/out_of_bounds_read_20260609-083836 -V 5 -- /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-nf41jj0w/out_of_bounds_read
+benchmark: benchmarks/memory_corruption/out_of_bounds_read.c
+seeds_dir: seeds
+campaign_dir: outputs/afl/out_of_bounds_read_20260609-083836
+compile_command: afl-clang-fast -g -O0 benchmarks/memory_corruption/out_of_bounds_read.c -o <tmp>/out_of_bounds_read
+fuzz_command: afl-fuzz -i seeds -o outputs/afl/out_of_bounds_read_20260609-083836 -V 5 -- <tmp>/out_of_bounds_read
 
 [compile]
 returncode: 0
 
 stderr:
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c:8:20: warning: array index 2 is past the end of the array (that has type 'int[2]') [-Warray-bounds]
+benchmarks/memory_corruption/out_of_bounds_read.c:8:20: warning: array index 2 is past the end of the array (that has type 'int[2]') [-Warray-bounds]
     8 |     printf("%d\n", values[2]);
       |                    ^      ~
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c:6:5: note: array 'values' declared here
+benchmarks/memory_corruption/out_of_bounds_read.c:6:5: note: array 'values' declared here
     6 |     int values[2] = {10, 20};
       |     ^
 1 warning generated.
@@ -49,7 +49,7 @@ available to companies that do not want to use the AGPL, see LICENSE.COMMERCIAL.
 [1;92m[+] [0mYou have 8 CPU cores and 8 runnable tasks (utilization: 100%).[0m
 [1;94m[*] [0mSetting up output directories...[0m
 [1;94m[*] [0mValidating target binary...[0m
-[1;94m[*] [0mScanning '/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds'...[0m
+[1;94m[*] [0mScanning 'seeds'...[0m
 [1;94m[*] [0mCreating hard links for all input files...[0m
 [1;92m[+] [0mLoaded a total of 2 seeds.[0m
 

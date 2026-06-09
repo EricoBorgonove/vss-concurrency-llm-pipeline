@@ -40,6 +40,7 @@ EXECUTION_ERROR_MARKERS = (
 LOG_TIMESTAMP_PATTERN = re.compile(r"_(\d{8}-\d{6})$")
 EXPECTED_VULNERABLE_SUFFIXES = ("_error.c",)
 EXPECTED_SAFE_SUFFIXES = ("_safe.c", "_fixed.c", "_pass.c")
+PROJECT_ROOT_TEXT = str(PROJECT_ROOT)
 
 
 def build_parser():
@@ -122,6 +123,25 @@ def infer_expected_behavior(benchmark):
     return "nao informado"
 
 
+def normalize_project_path(value):
+    if not value:
+        return value
+
+    project_prefix = PROJECT_ROOT_TEXT + "/"
+    if value.startswith(project_prefix):
+        return value.removeprefix(project_prefix)
+
+    return value
+
+
+def display_path(path):
+    path = Path(path)
+    try:
+        return str(path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def evaluate_expectation(expected_behavior, classification):
     if expected_behavior == "nao informado":
         return "nao avaliado"
@@ -178,7 +198,9 @@ def parse_log(log_path):
             continue
 
         if line.startswith("benchmark: "):
-            data["benchmark"] = line.removeprefix("benchmark: ").strip()
+            data["benchmark"] = normalize_project_path(
+                line.removeprefix("benchmark: ").strip()
+            )
             continue
 
         if line.startswith("returncode: "):
@@ -432,9 +454,9 @@ def main():
         write_csv(rows, results_file)
         write_summary_csv(rows, summary_file)
         write_html_report(rows, html_file)
-        print(f"Relatorio salvo em: {results_file}")
-        print(f"Resumo salvo em: {summary_file}")
-        print(f"Relatorio HTML salvo em: {html_file}")
+        print(f"Relatorio salvo em: {display_path(results_file)}")
+        print(f"Resumo salvo em: {display_path(summary_file)}")
+        print(f"Relatorio HTML salvo em: {display_path(html_file)}")
         print(f"Total de logs processados: {len(rows)}")
         return 0
     except Exception as exc:

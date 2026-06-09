@@ -1,9 +1,9 @@
 tool: afl++
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/heap_write_overflow.c
-seeds_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds
-campaign_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/heap_write_overflow_20260608-105608
-compile_command: afl-clang-fast -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/heap_write_overflow.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-ddwt116a/heap_write_overflow
-fuzz_command: afl-fuzz -i /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds -o /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/heap_write_overflow_20260608-105608 -V 5 -- /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-ddwt116a/heap_write_overflow
+benchmark: benchmarks/memory_corruption/heap_write_overflow.c
+seeds_dir: seeds
+campaign_dir: outputs/afl/heap_write_overflow_20260608-105608
+compile_command: afl-clang-fast -g -O0 benchmarks/memory_corruption/heap_write_overflow.c -o <tmp>/heap_write_overflow
+fuzz_command: afl-fuzz -i seeds -o outputs/afl/heap_write_overflow_20260608-105608 -V 5 -- <tmp>/heap_write_overflow
 
 [compile]
 returncode: 0
@@ -41,7 +41,7 @@ available to companies that do not want to use the AGPL, see LICENSE.COMMERCIAL.
 [1;92m[+] [0mTry parallel jobs - see /opt/homebrew/Cellar/afl++/5.00c/share/doc/afl/fuzzing_in_depth.md#c-using-multiple-cores[0m
 [1;94m[*] [0mSetting up output directories...[0m
 [1;94m[*] [0mValidating target binary...[0m
-[1;94m[*] [0mScanning '/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds'...[0m
+[1;94m[*] [0mScanning 'seeds'...[0m
 [1;94m[*] [0mCreating hard links for all input files...[0m
 [1;92m[+] [0mLoaded a total of 2 seeds.[0m
 

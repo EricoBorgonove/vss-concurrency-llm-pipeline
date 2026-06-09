@@ -1,9 +1,9 @@
 tool: afl++
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/ring_buffer_safe.c
-seeds_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds
-campaign_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/ring_buffer_safe_20260609-083923
-compile_command: afl-clang-fast -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/ring_buffer_safe.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-r8yk_1k8/ring_buffer_safe
-fuzz_command: afl-fuzz -i /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds -o /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/ring_buffer_safe_20260609-083923 -V 5 -- /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-r8yk_1k8/ring_buffer_safe
+benchmark: benchmarks/memory_corruption/ring_buffer_safe.c
+seeds_dir: seeds
+campaign_dir: outputs/afl/ring_buffer_safe_20260609-083923
+compile_command: afl-clang-fast -g -O0 benchmarks/memory_corruption/ring_buffer_safe.c -o <tmp>/ring_buffer_safe
+fuzz_command: afl-fuzz -i seeds -o outputs/afl/ring_buffer_safe_20260609-083923 -V 5 -- <tmp>/ring_buffer_safe
 
 [compile]
 returncode: 0
@@ -40,7 +40,7 @@ available to companies that do not want to use the AGPL, see LICENSE.COMMERCIAL.
 [1;92m[+] [0mYou have 8 CPU cores and 8 runnable tasks (utilization: 100%).[0m
 [1;94m[*] [0mSetting up output directories...[0m
 [1;94m[*] [0mValidating target binary...[0m
-[1;94m[*] [0mScanning '/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds'...[0m
+[1;94m[*] [0mScanning 'seeds'...[0m
 [1;94m[*] [0mCreating hard links for all input files...[0m
 [1;92m[+] [0mLoaded a total of 2 seeds.[0m
 

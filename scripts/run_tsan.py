@@ -3,6 +3,7 @@
 
 import argparse
 import datetime as dt
+import re
 import shutil
 import subprocess
 import sys
@@ -11,6 +12,26 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "tsan"
+
+
+def display_path(path):
+    path = Path(path)
+    try:
+        return str(path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:
+        return f"<tmp>/{path.name}" if path.is_absolute() else str(path)
+
+
+def display_command(command):
+    return [display_path(part) if "/" in str(part) else str(part) for part in command]
+
+
+def sanitize_text(text):
+    text = str(text)
+    text = text.replace(str(PROJECT_ROOT) + "/", "")
+    temp_pattern = r"/var" + r"/folders/\S+/T/vss-"
+    text = re.sub(temp_pattern + r"[^/\s,;\"<>]+/(\S+)", r"<tmp>/\1", text)
+    return re.sub(temp_pattern + r"[^\s,;\"<>]+", "<tmp>", text)
 
 
 def build_parser():
@@ -60,13 +81,17 @@ def write_log(
 ):
     with log_path.open("w", encoding="utf-8") as log_file:
         log_file.write("tool: tsan\n")
-        log_file.write(f"benchmark: {benchmark}\n")
-        log_file.write(f"compile_command: {' '.join(compile_command) if compile_command else 'N/A'}\n")
-        log_file.write(f"run_command: {' '.join(run_command) if run_command else 'N/A'}\n")
+        log_file.write(f"benchmark: {display_path(benchmark)}\n")
+        log_file.write(
+            f"compile_command: {' '.join(display_command(compile_command)) if compile_command else 'N/A'}\n"
+        )
+        log_file.write(
+            f"run_command: {' '.join(display_command(run_command)) if run_command else 'N/A'}\n"
+        )
 
         if error:
             log_file.write("\n[error]\n")
-            log_file.write(error)
+            log_file.write(sanitize_text(error))
             log_file.write("\n")
 
         if compile_result is not None:
@@ -74,20 +99,20 @@ def write_log(
             log_file.write(f"returncode: {compile_result.returncode}\n")
             if compile_result.stdout:
                 log_file.write("\nstdout:\n")
-                log_file.write(compile_result.stdout)
+                log_file.write(sanitize_text(compile_result.stdout))
             if compile_result.stderr:
                 log_file.write("\nstderr:\n")
-                log_file.write(compile_result.stderr)
+                log_file.write(sanitize_text(compile_result.stderr))
 
         if run_result is not None:
             log_file.write("\n[run]\n")
             log_file.write(f"returncode: {run_result.returncode}\n")
             if run_result.stdout:
                 log_file.write("\nstdout:\n")
-                log_file.write(run_result.stdout)
+                log_file.write(sanitize_text(run_result.stdout))
             if run_result.stderr:
                 log_file.write("\nstderr:\n")
-                log_file.write(run_result.stderr)
+                log_file.write(sanitize_text(run_result.stderr))
 
 
 def main():
@@ -100,21 +125,21 @@ def main():
 
     if not benchmark.exists():
         write_log(log_path, benchmark, [], [], error="Arquivo de benchmark nao encontrado.")
-        print(f"Erro: arquivo nao encontrado: {benchmark}", file=sys.stderr)
-        print(f"Log salvo em: {log_path}")
+        print(f"Erro: arquivo nao encontrado: {display_path(benchmark)}", file=sys.stderr)
+        print(f"Log salvo em: {display_path(log_path)}")
         return 2
 
     if benchmark.suffix != ".c":
         write_log(log_path, benchmark, [], [], error="O benchmark deve ser um arquivo .c.")
-        print(f"Erro: o benchmark deve ser um arquivo .c: {benchmark}", file=sys.stderr)
-        print(f"Log salvo em: {log_path}")
+        print(f"Erro: o benchmark deve ser um arquivo .c: {display_path(benchmark)}", file=sys.stderr)
+        print(f"Log salvo em: {display_path(log_path)}")
         return 2
 
     compiler_path, compiler_name = find_compiler(args.compiler)
     if compiler_path is None:
         write_log(log_path, benchmark, [], [], error="Compilador C nao encontrado.")
         print("Erro: compilador C nao encontrado.", file=sys.stderr)
-        print(f"Log salvo em: {log_path}")
+        print(f"Log salvo em: {display_path(log_path)}")
         return 127
 
     try:
@@ -139,7 +164,7 @@ def main():
 
             if compile_result.returncode != 0:
                 write_log(log_path, benchmark, compile_command, [], compile_result=compile_result)
-                print(f"Erro: falha na compilacao. Log salvo em: {log_path}", file=sys.stderr)
+                print(f"Erro: falha na compilacao. Log salvo em: {display_path(log_path)}", file=sys.stderr)
                 return compile_result.returncode
 
             run_command = [str(binary_path)]
@@ -158,7 +183,7 @@ def main():
                 compile_result=compile_result,
                 run_result=run_result,
             )
-            print(f"Log salvo em: {log_path}")
+            print(f"Log salvo em: {display_path(log_path)}")
             return run_result.returncode
     except subprocess.TimeoutExpired as exc:
         run_result = subprocess.CompletedProcess(
@@ -177,12 +202,12 @@ def main():
             error=f"Tempo limite excedido apos {args.timeout} segundos.",
         )
         print(f"Erro: tempo limite excedido apos {args.timeout} segundos.", file=sys.stderr)
-        print(f"Log salvo em: {log_path}")
+        print(f"Log salvo em: {display_path(log_path)}")
         return 124
     except OSError as exc:
         write_log(log_path, benchmark, [], [], error=str(exc))
         print(f"Erro ao executar TSAN: {exc}", file=sys.stderr)
-        print(f"Log salvo em: {log_path}")
+        print(f"Log salvo em: {display_path(log_path)}")
         return 1
 
 

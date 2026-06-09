@@ -3,6 +3,7 @@
 
 import argparse
 import datetime as dt
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -10,6 +11,26 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "llm"
 SUPPORTED_TOOLS = ("asan", "tsan", "esbmc", "deadlock")
+
+
+def display_path(path):
+    path = Path(path)
+    try:
+        return str(path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def display_command(command):
+    return [display_path(part) if "/" in str(part) else str(part) for part in command]
+
+
+def sanitize_text(text):
+    text = str(text)
+    text = text.replace(str(PROJECT_ROOT) + "/", "")
+    temp_pattern = r"/var" + r"/folders/\S+/T/vss-"
+    text = re.sub(temp_pattern + r"[^/\s,;\"<>]+/(\S+)", r"<tmp>/\1", text)
+    return re.sub(temp_pattern + r"[^\s,;\"<>]+", "<tmp>", text)
 
 
 def build_parser():
@@ -127,7 +148,7 @@ def write_validation(
     with output_path.open("w", encoding="utf-8") as output_file:
         output_file.write("LLM repair validation simulation\n")
         output_file.write(f"generated_at: {dt.datetime.now().isoformat(timespec='seconds')}\n")
-        output_file.write(f"repair_file: {repair_path}\n")
+        output_file.write(f"repair_file: {display_path(repair_path)}\n")
         output_file.write(f"status: {status}\n")
         output_file.write(f"issue_type: {issue_type or 'N/A'}\n\n")
         output_file.write("checks:\n")
@@ -139,16 +160,16 @@ def write_validation(
 
         if tool_command and tool_result:
             output_file.write("\ntool_validation:\n")
-            output_file.write(f"command: {' '.join(tool_command)}\n")
+            output_file.write(f"command: {' '.join(display_command(tool_command))}\n")
             output_file.write(f"returncode: {tool_result.returncode}\n")
             if tool_result.stdout:
                 output_file.write("stdout:\n")
-                output_file.write(tool_result.stdout)
+                output_file.write(sanitize_text(tool_result.stdout))
                 if not tool_result.stdout.endswith("\n"):
                     output_file.write("\n")
             if tool_result.stderr:
                 output_file.write("stderr:\n")
-                output_file.write(tool_result.stderr)
+                output_file.write(sanitize_text(tool_result.stderr))
                 if not tool_result.stderr.endswith("\n"):
                     output_file.write("\n")
         else:
@@ -164,11 +185,11 @@ def main():
     output_path = make_output_path(repair_path)
 
     if not repair_path.exists():
-        print(f"Erro: arquivo de reparo nao encontrado: {repair_path}", file=sys.stderr)
+        print(f"Erro: arquivo de reparo nao encontrado: {display_path(repair_path)}", file=sys.stderr)
         return 2
 
     if not repair_path.is_file():
-        print(f"Erro: reparo deve ser um arquivo: {repair_path}", file=sys.stderr)
+        print(f"Erro: reparo deve ser um arquivo: {display_path(repair_path)}", file=sys.stderr)
         return 2
 
     try:
@@ -180,9 +201,9 @@ def main():
         if args.fixed_benchmark:
             fixed_benchmark = Path(args.fixed_benchmark).resolve()
             if not fixed_benchmark.exists():
-                problems.append(f"benchmark reparado nao encontrado: {fixed_benchmark}")
+                problems.append(f"benchmark reparado nao encontrado: {display_path(fixed_benchmark)}")
             elif fixed_benchmark.suffix != ".c":
-                problems.append(f"benchmark reparado deve ser arquivo .c: {fixed_benchmark}")
+                problems.append(f"benchmark reparado deve ser arquivo .c: {display_path(fixed_benchmark)}")
             else:
                 tool_command, tool_result = run_tool_validation(
                     args.tool,
@@ -205,7 +226,7 @@ def main():
             tool_command=tool_command,
             tool_result=tool_result,
         )
-        print(f"Validacao simulada salva em: {output_path}")
+        print(f"Validacao simulada salva em: {display_path(output_path)}")
         return 0 if not problems else 1
     except OSError as exc:
         print(f"Erro ao validar reparo: {exc}", file=sys.stderr)

@@ -1,18 +1,18 @@
 tool: afl++
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/stack_write_overflow.c
-seeds_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds
-campaign_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/stack_write_overflow_20260609-084632
-compile_command: afl-clang-fast -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/stack_write_overflow.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-nx5lr9sf/stack_write_overflow
-fuzz_command: afl-fuzz -i /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds -o /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/stack_write_overflow_20260609-084632 -V 5 -- /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-nx5lr9sf/stack_write_overflow
+benchmark: benchmarks/memory_corruption/stack_write_overflow.c
+seeds_dir: seeds
+campaign_dir: outputs/afl/stack_write_overflow_20260609-084632
+compile_command: afl-clang-fast -g -O0 benchmarks/memory_corruption/stack_write_overflow.c -o <tmp>/stack_write_overflow
+fuzz_command: afl-fuzz -i seeds -o outputs/afl/stack_write_overflow_20260609-084632 -V 5 -- <tmp>/stack_write_overflow
 
 [compile]
 returncode: 0
 
 stderr:
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/stack_write_overflow.c:8:5: warning: array index 4 is past the end of the array (that has type 'char[4]') [-Warray-bounds]
+benchmarks/memory_corruption/stack_write_overflow.c:8:5: warning: array index 4 is past the end of the array (that has type 'char[4]') [-Warray-bounds]
     8 |     buffer[4] = 'x';
       |     ^      ~
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/stack_write_overflow.c:6:5: note: array 'buffer' declared here
+benchmarks/memory_corruption/stack_write_overflow.c:6:5: note: array 'buffer' declared here
     6 |     char buffer[4] = {'a', 'b', 'c', '\0'};
       |     ^
 1 warning generated.
@@ -49,7 +49,7 @@ available to companies that do not want to use the AGPL, see LICENSE.COMMERCIAL.
 [1;92m[+] [0mYou have 8 CPU cores and 10 runnable tasks (utilization: 125%).[0m
 [1;94m[*] [0mSetting up output directories...[0m
 [1;94m[*] [0mValidating target binary...[0m
-[1;94m[*] [0mScanning '/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds'...[0m
+[1;94m[*] [0mScanning 'seeds'...[0m
 [1;94m[*] [0mCreating hard links for all input files...[0m
 [1;92m[+] [0mLoaded a total of 2 seeds.[0m
 

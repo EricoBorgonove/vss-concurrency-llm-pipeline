@@ -1,6 +1,6 @@
 tool: esbmc
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/simple_assert_fail.c
-command: esbmc /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/simple_assert_fail.c
+benchmark: benchmarks/assertion_violation/simple_assert_fail.c
+command: esbmc benchmarks/assertion_violation/simple_assert_fail.c
 returncode: -6
 
 [stdout]
@@ -8,7 +8,7 @@ ESBMC version 8.2.0 64-bit aarch64 macos
 
 [stderr]
 Target: 64-bit little-endian aarch64-unknown-macos with esbmclibc
-Parsing /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/simple_assert_fail.c
+Parsing benchmarks/assertion_violation/simple_assert_fail.c
 Converting
 Generating GOTO Program
 GOTO program creation time: 0.491s

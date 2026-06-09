@@ -6,79 +6,79 @@ total_tarefas: 57
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/check_environment.py
 returncode: 0
 stdout:
-Diagnostico salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/environment/environment_20260608-203714.txt
+Diagnostico salvo em: outputs/environment/environment_20260608-203714.txt
 
 [esbmc_assertion_violation_assert_array_index]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_array_index.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_array_index_20260608-203716.log
+Log salvo em: outputs/esbmc/assert_array_index_20260608-203716.log
 
 [esbmc_assertion_violation_assert_bank_withdraw_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_bank_withdraw_error.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_bank_withdraw_error_20260608-203716.log
+Log salvo em: outputs/esbmc/assert_bank_withdraw_error_20260608-203716.log
 
 [esbmc_assertion_violation_assert_bank_withdraw_safe]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_bank_withdraw_safe.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_bank_withdraw_safe_20260608-203716.log
+Log salvo em: outputs/esbmc/assert_bank_withdraw_safe_20260608-203716.log
 
 [esbmc_assertion_violation_assert_counter_overflow]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_counter_overflow.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_counter_overflow_20260608-203717.log
+Log salvo em: outputs/esbmc/assert_counter_overflow_20260608-203717.log
 
 [esbmc_assertion_violation_assert_negative_value]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_negative_value.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_negative_value_20260608-203717.log
+Log salvo em: outputs/esbmc/assert_negative_value_20260608-203717.log
 
 [esbmc_assertion_violation_assert_protocol_sequence_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_protocol_sequence_error.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_protocol_sequence_error_20260608-203717.log
+Log salvo em: outputs/esbmc/assert_protocol_sequence_error_20260608-203717.log
 
 [esbmc_assertion_violation_assert_sorted_insert_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_sorted_insert_error.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_sorted_insert_error_20260608-203717.log
+Log salvo em: outputs/esbmc/assert_sorted_insert_error_20260608-203717.log
 
 [esbmc_assertion_violation_assert_sorted_insert_safe]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_sorted_insert_safe.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_sorted_insert_safe_20260608-203717.log
+Log salvo em: outputs/esbmc/assert_sorted_insert_safe_20260608-203717.log
 
 [esbmc_assertion_violation_assert_state_transition]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_state_transition.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_state_transition_20260608-203718.log
+Log salvo em: outputs/esbmc/assert_state_transition_20260608-203718.log
 
 [esbmc_assertion_violation_assert_sum_limit]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_sum_limit.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/assert_sum_limit_20260608-203718.log
+Log salvo em: outputs/esbmc/assert_sum_limit_20260608-203718.log
 
 [esbmc_assertion_violation_simple_assert_fail]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/simple_assert_fail.c
 returncode: 6
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/esbmc/simple_assert_fail_20260608-203718.log
+Log salvo em: outputs/esbmc/simple_assert_fail_20260608-203718.log
 
 [asan_memory_corruption_heap_write_overflow]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/heap_write_overflow.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/heap_write_overflow_20260608-203718.log
+Log salvo em: outputs/asan/heap_write_overflow_20260608-203718.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -86,13 +86,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/heap_write_overflow.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/heap_write_overflow_20260608-203729.log
+Log salvo em: outputs/afl/heap_write_overflow_20260608-203729.log
 
 [asan_memory_corruption_matrix_index_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/matrix_index_error.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/matrix_index_error_20260608-203731.log
+Log salvo em: outputs/asan/matrix_index_error_20260608-203731.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -100,13 +100,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/matrix_index_error.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/matrix_index_error_20260608-203742.log
+Log salvo em: outputs/afl/matrix_index_error_20260608-203742.log
 
 [asan_memory_corruption_out_of_bounds_read]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/out_of_bounds_read.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/out_of_bounds_read_20260608-203744.log
+Log salvo em: outputs/asan/out_of_bounds_read_20260608-203744.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -114,13 +114,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/out_of_bounds_read.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/out_of_bounds_read_20260608-203756.log
+Log salvo em: outputs/afl/out_of_bounds_read_20260608-203756.log
 
 [asan_memory_corruption_parser_token_overflow_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/parser_token_overflow_error.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/parser_token_overflow_error_20260608-203759.log
+Log salvo em: outputs/asan/parser_token_overflow_error_20260608-203759.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -128,13 +128,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/parser_token_overflow_error.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/parser_token_overflow_error_20260608-203812.log
+Log salvo em: outputs/afl/parser_token_overflow_error_20260608-203812.log
 
 [asan_memory_corruption_parser_token_safe]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/parser_token_safe.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/parser_token_safe_20260608-203813.log
+Log salvo em: outputs/asan/parser_token_safe_20260608-203813.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -142,13 +142,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/parser_token_safe.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/parser_token_safe_20260608-203826.log
+Log salvo em: outputs/afl/parser_token_safe_20260608-203826.log
 
 [asan_memory_corruption_ring_buffer_overwrite_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/ring_buffer_overwrite_error.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/ring_buffer_overwrite_error_20260608-203829.log
+Log salvo em: outputs/asan/ring_buffer_overwrite_error_20260608-203829.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -156,13 +156,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/ring_buffer_overwrite_error.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/ring_buffer_overwrite_error_20260608-203841.log
+Log salvo em: outputs/afl/ring_buffer_overwrite_error_20260608-203841.log
 
 [asan_memory_corruption_ring_buffer_safe]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/ring_buffer_safe.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/ring_buffer_safe_20260608-203842.log
+Log salvo em: outputs/asan/ring_buffer_safe_20260608-203842.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -170,13 +170,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/ring_buffer_safe.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/ring_buffer_safe_20260608-203853.log
+Log salvo em: outputs/afl/ring_buffer_safe_20260608-203853.log
 
 [asan_memory_corruption_simple_buffer_overflow]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/simple_buffer_overflow.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/simple_buffer_overflow_20260608-203854.log
+Log salvo em: outputs/asan/simple_buffer_overflow_20260608-203854.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -184,13 +184,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/simple_buffer_overflow_20260608-203906.log
+Log salvo em: outputs/afl/simple_buffer_overflow_20260608-203906.log
 
 [asan_memory_corruption_stack_write_overflow]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/stack_write_overflow.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/stack_write_overflow_20260608-203907.log
+Log salvo em: outputs/asan/stack_write_overflow_20260608-203907.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -198,13 +198,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/stack_write_overflow.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/stack_write_overflow_20260608-203918.log
+Log salvo em: outputs/afl/stack_write_overflow_20260608-203918.log
 
 [asan_memory_corruption_string_copy_overflow]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/string_copy_overflow.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/string_copy_overflow_20260608-203921.log
+Log salvo em: outputs/asan/string_copy_overflow_20260608-203921.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -212,13 +212,13 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/string_copy_overflow.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/string_copy_overflow_20260608-203935.log
+Log salvo em: outputs/afl/string_copy_overflow_20260608-203935.log
 
 [asan_memory_corruption_use_after_free]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/use_after_free.c
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/asan/use_after_free_20260608-203936.log
+Log salvo em: outputs/asan/use_after_free_20260608-203936.log
 stderr:
 Erro: tempo limite excedido apos 10 segundos.
 
@@ -226,79 +226,79 @@ Erro: tempo limite excedido apos 10 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/use_after_free.c
 returncode: 1
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/use_after_free_20260608-203948.log
+Log salvo em: outputs/afl/use_after_free_20260608-203948.log
 
 [tsan_data_race_race_array_cell]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_array_cell.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_array_cell_20260608-203949.log
+Log salvo em: outputs/tsan/race_array_cell_20260608-203949.log
 
 [tsan_data_race_race_config_reload_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_config_reload_error.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_config_reload_error_20260608-203953.log
+Log salvo em: outputs/tsan/race_config_reload_error_20260608-203953.log
 
 [tsan_data_race_race_config_reload_safe]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_config_reload_safe.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_config_reload_safe_20260608-203955.log
+Log salvo em: outputs/tsan/race_config_reload_safe_20260608-203955.log
 
 [tsan_data_race_race_increment_loop]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_increment_loop.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_increment_loop_20260608-203958.log
+Log salvo em: outputs/tsan/race_increment_loop_20260608-203958.log
 
 [tsan_data_race_race_lazy_init_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_lazy_init_error.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_lazy_init_error_20260608-204000.log
+Log salvo em: outputs/tsan/race_lazy_init_error_20260608-204000.log
 
 [tsan_data_race_race_order_queue_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_order_queue_error.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_order_queue_error_20260608-204002.log
+Log salvo em: outputs/tsan/race_order_queue_error_20260608-204002.log
 
 [tsan_data_race_race_order_queue_safe]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_order_queue_safe.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_order_queue_safe_20260608-204004.log
+Log salvo em: outputs/tsan/race_order_queue_safe_20260608-204004.log
 
 [tsan_data_race_race_read_write]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_read_write.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_read_write_20260608-204006.log
+Log salvo em: outputs/tsan/race_read_write_20260608-204006.log
 
 [tsan_data_race_race_shared_flag]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_shared_flag.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_shared_flag_20260608-204009.log
+Log salvo em: outputs/tsan/race_shared_flag_20260608-204009.log
 
 [tsan_data_race_race_struct_field]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_struct_field.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/race_struct_field_20260608-204012.log
+Log salvo em: outputs/tsan/race_struct_field_20260608-204012.log
 
 [tsan_data_race_simple_data_race]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/simple_data_race.c
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/simple_data_race_20260608-204015.log
+Log salvo em: outputs/tsan/simple_data_race_20260608-204015.log
 
 [deadlock_deadlock_deadlock_cache_refresh_error]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_cache_refresh_error.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_cache_refresh_error_20260608-204016.log
+Log salvo em: outputs/deadlock/deadlock_cache_refresh_error_20260608-204016.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -306,13 +306,13 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_cache_refresh_safe.c --timeout 3
 returncode: 0
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_cache_refresh_safe_20260608-204020.log
+Log salvo em: outputs/deadlock/deadlock_cache_refresh_safe_20260608-204020.log
 
 [deadlock_deadlock_deadlock_conditional_order]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_conditional_order.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_conditional_order_20260608-204022.log
+Log salvo em: outputs/deadlock/deadlock_conditional_order_20260608-204022.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -320,7 +320,7 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_nested_service_error.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_nested_service_error_20260608-204026.log
+Log salvo em: outputs/deadlock/deadlock_nested_service_error_20260608-204026.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -328,13 +328,13 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_nested_service_safe.c --timeout 3
 returncode: 0
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_nested_service_safe_20260608-204032.log
+Log salvo em: outputs/deadlock/deadlock_nested_service_safe_20260608-204032.log
 
 [deadlock_deadlock_deadlock_resource_pair]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_resource_pair.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_resource_pair_20260608-204034.log
+Log salvo em: outputs/deadlock/deadlock_resource_pair_20260608-204034.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -342,7 +342,7 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_self_lock.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_self_lock_20260608-204037.log
+Log salvo em: outputs/deadlock/deadlock_self_lock_20260608-204037.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -350,7 +350,7 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_three_locks_cycle.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_three_locks_cycle_20260608-204042.log
+Log salvo em: outputs/deadlock/deadlock_three_locks_cycle_20260608-204042.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -358,13 +358,13 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_trylock_safe.c --timeout 3
 returncode: 0
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_trylock_safe_20260608-204046.log
+Log salvo em: outputs/deadlock/deadlock_trylock_safe_20260608-204046.log
 
 [deadlock_deadlock_deadlock_two_locks_reverse]
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_two_locks_reverse.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/deadlock_two_locks_reverse_20260608-204046.log
+Log salvo em: outputs/deadlock/deadlock_two_locks_reverse_20260608-204046.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -372,7 +372,7 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/simple_deadlock.c --timeout 3
 returncode: 124
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/simple_deadlock_20260608-204050.log
+Log salvo em: outputs/deadlock/simple_deadlock_20260608-204050.log
 stderr:
 Erro: tempo limite excedido apos 3 segundos.
 
@@ -380,7 +380,7 @@ Erro: tempo limite excedido apos 3 segundos.
 command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/generate_report.py --latest-only
 returncode: 0
 stdout:
-Relatorio salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/reports/results.csv
-Resumo salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/reports/summary.csv
+Relatorio salvo em: reports/results.csv
+Resumo salvo em: reports/summary.csv
 Total de logs processados: 59
 

@@ -1,6 +1,6 @@
 tool: esbmc
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/assert_array_index.c
-command: esbmc /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/assert_array_index.c
+benchmark: benchmarks/assertion_violation/assert_array_index.c
+command: esbmc benchmarks/assertion_violation/assert_array_index.c
 returncode: 6
 
 [stdout]
@@ -8,8 +8,8 @@ ESBMC version 8.2.0 64-bit aarch64 macos
 
 [stderr]
 Target: 64-bit little-endian aarch64-unknown-macos with esbmclibc
-Parsing /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/assert_array_index.c
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/assertion_violation/assert_array_index.c:1:10: fatal error: 'assert.h' file not found
+Parsing benchmarks/assertion_violation/assert_array_index.c
+benchmarks/assertion_violation/assert_array_index.c:1:10: fatal error: 'assert.h' file not found
     1 | #include <assert.h>
       |          ^~~~~~~~~~
 ERROR: PARSING ERROR

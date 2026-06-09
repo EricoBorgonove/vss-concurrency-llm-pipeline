@@ -1,15 +1,15 @@
 tool: afl++
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/string_copy_overflow.c
-seeds_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds
-campaign_dir: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/string_copy_overflow_20260608-105703
-compile_command: afl-clang-fast -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/string_copy_overflow.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-5mb6zoqi/string_copy_overflow
-fuzz_command: afl-fuzz -i /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds -o /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/string_copy_overflow_20260608-105703 -V 5 -- /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-5mb6zoqi/string_copy_overflow
+benchmark: benchmarks/memory_corruption/string_copy_overflow.c
+seeds_dir: seeds
+campaign_dir: outputs/afl/string_copy_overflow_20260608-105703
+compile_command: afl-clang-fast -g -O0 benchmarks/memory_corruption/string_copy_overflow.c -o <tmp>/string_copy_overflow
+fuzz_command: afl-fuzz -i seeds -o outputs/afl/string_copy_overflow_20260608-105703 -V 5 -- <tmp>/string_copy_overflow
 
 [compile]
 returncode: 0
 
 stderr:
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/string_copy_overflow.c:7:5: warning: 'strcpy' will always overflow; destination buffer has size 5, but the source string has length 9 (including NUL byte) [-Wfortify-source]
+benchmarks/memory_corruption/string_copy_overflow.c:7:5: warning: 'strcpy' will always overflow; destination buffer has size 5, but the source string has length 9 (including NUL byte) [-Wfortify-source]
     7 |     strcpy(target, "overflow");
       |     ^
 /Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/usr/include/secure/_string.h:249:21: note: expanded from macro 'strcpy'
@@ -53,7 +53,7 @@ available to companies that do not want to use the AGPL, see LICENSE.COMMERCIAL.
 [1;93m[!] [1;97mWARNING: [0mSystem under apparent load, performance may be spotty.[0m
 [1;94m[*] [0mSetting up output directories...[0m
 [1;94m[*] [0mValidating target binary...[0m
-[1;94m[*] [0mScanning '/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds'...[0m
+[1;94m[*] [0mScanning 'seeds'...[0m
 [1;94m[*] [0mCreating hard links for all input files...[0m
 [1;92m[+] [0mLoaded a total of 2 seeds.[0m
 

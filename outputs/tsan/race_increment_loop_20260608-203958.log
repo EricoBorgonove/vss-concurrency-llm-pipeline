@@ -1,7 +1,7 @@
 tool: tsan
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/data_race/race_increment_loop.c
-compile_command: clang -fsanitize=thread -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/data_race/race_increment_loop.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-tsan-es_w8bfx/race_increment_loop -pthread
-run_command: /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-tsan-es_w8bfx/race_increment_loop
+benchmark: benchmarks/data_race/race_increment_loop.c
+compile_command: clang -fsanitize=thread -g -O0 benchmarks/data_race/race_increment_loop.c -o <tmp>/race_increment_loop -pthread
+run_command: <tmp>/race_increment_loop
 
 [compile]
 returncode: 0

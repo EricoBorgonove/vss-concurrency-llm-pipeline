@@ -1,0 +1,64 @@
+tool: afl++
+benchmark: benchmarks/memory_corruption/out_of_bounds_read.c
+seeds_dir: seeds
+campaign_dir: outputs/afl/out_of_bounds_read_20260609-085737
+compile_command: afl-clang-fast -g -O0 benchmarks/memory_corruption/out_of_bounds_read.c -o <tmp>/out_of_bounds_read
+fuzz_command: afl-fuzz -i seeds -o outputs/afl/out_of_bounds_read_20260609-085737 -V 5 -- <tmp>/out_of_bounds_read
+
+[compile]
+returncode: 0
+
+stderr:
+benchmarks/memory_corruption/out_of_bounds_read.c:8:20: warning: array index 2 is past the end of the array (that has type 'int[2]') [-Warray-bounds]
+    8 |     printf("%d\n", values[2]);
+      |                    ^      ~
+benchmarks/memory_corruption/out_of_bounds_read.c:6:5: note: array 'values' declared here
+    6 |     int values[2] = {10, 20};
+      |     ^
+1 warning generated.
+
+[fuzz]
+returncode: 1
+
+stdout:
+[0;36mafl-fuzz++5.00c[0m based on afl by Michal Zalewski and a large online community
+[0;32mLicensed under AGPL-3.0-or-later. A (good cause donation) commercial license is
+available to companies that do not want to use the AGPL, see LICENSE.COMMERCIAL.
+[0m[1;92m[+] [0mAFL++ is maintained by Marc "van Hauser" Heuse, Dominik Maier, Andrea Fioraldi and Heiko "hexcoder" Eißfeldt[0m
+[1;92m[+] [0mAFL++ is open source, get it at https://github.com/AFLplusplus/AFLplusplus[0m
+[1;92m[+] [0mNOTE: AFL++ >= v3 has changed defaults and behaviours - see README.md[0m
+[1;92m[+] [0mNo -M/-S set, autoconfiguring for "-S default"[0m
+[1;94m[*] [0mGetting to work...[0m
+[1;92m[+] [0mUsing exploration-based constant power schedule (EXPLORE)[0m
+[1;92m[+] [0mEnabled testcache with 50 MB[0m
+[1;92m[+] [0mGenerating fuzz data with a length of min=1 max=1048576[0m
+[1;92m[+] [0mFrameShift status: enabled (10% overhead configured)[0m
+
+[1;91m[-] [0mWhoops, your system is configured to forward crash notifications to an
+    external crash reporting utility. This will cause issues due to the
+    extended delay between the fuzzed binary malfunctioning and this fact
+    being relayed to the fuzzer via the standard waitpid() API.
+
+    To avoid having crashes misinterpreted as timeouts, please run the
+    following commands:
+
+    SL=/System/Library; PL=com.apple.ReportCrash
+    launchctl unload -w ${SL}/LaunchAgents/${PL}.plist
+    sudo launchctl unload -w ${SL}/LaunchDaemons/${PL}.Root.plist
+[1;92m[+] [0mLooks like we're not running on a tty, so I'll be a bit less verbose.[0m
+[1;92m[+] [0mYou have 8 CPU cores and 7 runnable tasks (utilization: 88%).[0m
+[1;92m[+] [0mTry parallel jobs - see /opt/homebrew/Cellar/afl++/5.00c/share/doc/afl/fuzzing_in_depth.md#c-using-multiple-cores[0m
+[1;94m[*] [0mSetting up output directories...[0m
+[1;94m[*] [0mValidating target binary...[0m
+[1;94m[*] [0mScanning 'seeds'...[0m
+[1;94m[*] [0mCreating hard links for all input files...[0m
+[1;92m[+] [0mLoaded a total of 2 seeds.[0m
+
+stderr:
+[1;92m[+] [0mEnabled environment variable AFL_SKIP_CPUFREQ with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES with value 1[0m
+[1;92m[+] [0mEnabled environment variable AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES with value 1[0m
+[?25h[0m[1;91m
+[-]  SYSTEM ERROR : [0mshmget() failed, try running afl-system-config[1;91m
+    Stop location : [0mafl_shm_init(), src/afl-sharedmem.c:305
+[1;91m       OS message : [0mInvalid argument

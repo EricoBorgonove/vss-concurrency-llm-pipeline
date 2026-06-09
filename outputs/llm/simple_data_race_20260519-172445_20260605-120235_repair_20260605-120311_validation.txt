@@ -1,6 +1,6 @@
 LLM repair validation simulation
 generated_at: 2026-06-05T12:03:14
-repair_file: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/llm/simple_data_race_20260519-172445_20260605-120235_repair.txt
+repair_file: outputs/llm/simple_data_race_20260519-172445_20260605-120235_repair.txt
 status: validacao_controlada_reprovada
 issue_type: data_race
 
@@ -8,7 +8,7 @@ checks:
 - validacao com tsan falhou com codigo 245
 
 tool_validation:
-command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/data_race/simple_data_race_fixed.c --timeout 30
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/simple_data_race_fixed.c --timeout 30
 returncode: 245
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/tsan/simple_data_race_fixed_20260605-120311.log
+Log salvo em: outputs/tsan/simple_data_race_fixed_20260605-120311.log

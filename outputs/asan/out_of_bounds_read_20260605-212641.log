@@ -1,7 +1,7 @@
 tool: asan
-benchmark: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c
-compile_command: clang -fsanitize=address -g -O0 /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c -o /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-asan-h523ydlo/out_of_bounds_read
-run_command: /var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-asan-h523ydlo/out_of_bounds_read
+benchmark: benchmarks/memory_corruption/out_of_bounds_read.c
+compile_command: clang -fsanitize=address -g -O0 benchmarks/memory_corruption/out_of_bounds_read.c -o <tmp>/out_of_bounds_read
+run_command: <tmp>/out_of_bounds_read
 
 [error]
 Tempo limite excedido apos 10 segundos.
@@ -10,10 +10,10 @@ Tempo limite excedido apos 10 segundos.
 returncode: 0
 
 stderr:
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c:7:20: warning: array index 2 is past the end of the array (that has type 'int[2]') [-Warray-bounds]
+benchmarks/memory_corruption/out_of_bounds_read.c:7:20: warning: array index 2 is past the end of the array (that has type 'int[2]') [-Warray-bounds]
     7 |     printf("%d\n", values[2]);
       |                    ^      ~
-/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/memory_corruption/out_of_bounds_read.c:5:5: note: array 'values' declared here
+benchmarks/memory_corruption/out_of_bounds_read.c:5:5: note: array 'values' declared here
     5 |     int values[2] = {10, 20};
       |     ^
 1 warning generated.

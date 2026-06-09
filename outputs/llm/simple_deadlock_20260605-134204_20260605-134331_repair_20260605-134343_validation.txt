@@ -1,6 +1,6 @@
 LLM repair validation simulation
 generated_at: 2026-06-05T13:43:45
-repair_file: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/llm/simple_deadlock_20260605-134204_20260605-134331_repair.txt
+repair_file: outputs/llm/simple_deadlock_20260605-134204_20260605-134331_repair.txt
 status: validacao_controlada_aprovada
 issue_type: deadlock
 
@@ -8,7 +8,7 @@ checks:
 - sugestao contem metadados minimos esperados
 
 tool_validation:
-command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/benchmarks/deadlock/simple_deadlock_fixed.c --timeout 3
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/simple_deadlock_fixed.c --timeout 3
 returncode: 0
 stdout:
-Log salvo em: /Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/deadlock/simple_deadlock_fixed_20260605-134344.log
+Log salvo em: outputs/deadlock/simple_deadlock_fixed_20260605-134344.log

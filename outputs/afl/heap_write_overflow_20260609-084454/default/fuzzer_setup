@@ -1,8 +1,8 @@
 # environment variables:
-AFL_CUSTOM_INFO_PROGRAM=/var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-40g4nmml/heap_write_overflow
+AFL_CUSTOM_INFO_PROGRAM=<tmp>/heap_write_overflow
 AFL_CUSTOM_INFO_PROGRAM_ARGV=
-AFL_CUSTOM_INFO_OUT=/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/heap_write_overflow_20260609-084454/default
+AFL_CUSTOM_INFO_OUT=outputs/afl/heap_write_overflow_20260609-084454/default
 AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
 AFL_SKIP_CPUFREQ=1
 # command line:
-'/opt/homebrew/Cellar/afl++/5.00c/libexec/afl-fuzz' '-i' '/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/seeds' '-o' '/Users/ericoborgonovecruz/Library/CloudStorage/OneDrive-Personal/UFAM-PPGI/2026.1/VSS/1-ARTIGO/vss/pipeline-vss-llm/outputs/afl/heap_write_overflow_20260609-084454' '-V' '5' '--' '/var/folders/kz/mnbk2h5d6f11j3cvl66yp5s40000gn/T/vss-afl-build-40g4nmml/heap_write_overflow'
+'/opt/homebrew/Cellar/afl++/5.00c/libexec/afl-fuzz' '-i' 'seeds' '-o' 'outputs/afl/heap_write_overflow_20260609-084454' '-V' '5' '--' '<tmp>/heap_write_overflow'

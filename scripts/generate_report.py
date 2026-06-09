@@ -43,6 +43,7 @@ UNAVAILABLE_MARKERS = (
 EXECUTION_ERROR_MARKERS = (
     "PARSING ERROR",
     "No solver backends built into ESBMC",
+    "FATAL: ThreadSanitizer",
     "Tempo limite excedido",
     "falha na compilacao",
     "erro ao ler log",
@@ -100,6 +101,9 @@ def classify_result(log_text, data):
 
     if any(marker.lower() in text or marker.lower() in error for marker in UNAVAILABLE_MARKERS):
         return "ferramenta indisponivel"
+
+    if "fatal: threadsanitizer" in text or "fatal: threadsanitizer" in error:
+        return "erro de execucao"
 
     if any(marker.lower() in text for marker in DETECTED_MARKERS):
         return "detectado"

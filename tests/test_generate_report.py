@@ -45,12 +45,29 @@ class GenerateReportTest(unittest.TestCase):
     # Verifica se crash de runtime sem marcador nao vira falso negativo.
     def test_classify_result_treats_negative_run_returncode_as_execution_error(self):
         data = {
+            "tool": "tsan",
             "error": "",
             "compile_returncode": "0",
             "run_returncode": "-11",
         }
 
         classification = generate_report.classify_result("returncode: -11", data)
+
+        self.assertEqual(classification, "erro de execucao")
+
+    # Verifica se falha fatal do runtime TSAN nao vira deteccao.
+    def test_classify_result_treats_tsan_fatal_runtime_as_execution_error(self):
+        data = {
+            "tool": "tsan",
+            "error": "",
+            "compile_returncode": "0",
+            "run_returncode": "66",
+        }
+
+        classification = generate_report.classify_result(
+            "FATAL: ThreadSanitizer: unexpected memory mapping",
+            data,
+        )
 
         self.assertEqual(classification, "erro de execucao")
 

@@ -22,6 +22,7 @@ RUN apt-get update \
         esbmc \
         gcc \
         g++ \
+        libclang-rt-18-dev \
         lld \
         llvm \
         make \

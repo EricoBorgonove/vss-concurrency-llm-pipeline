@@ -100,10 +100,13 @@ pipeline-vss-llm/
 ## Como preparar o ambiente reprodutivel
 
 Para resultados de pesquisa, a forma recomendada de execucao e via Docker. O
-ambiente Docker usa Ubuntu 24.04 em `linux/amd64`, instala `clang/LLVM`, `gcc`,
-AFL++ e ESBMC, e mantem as variaveis necessarias para campanhas curtas do AFL++.
+ambiente Docker usa Ubuntu 24.04 em `linux/amd64`, instala `clang/LLVM`, os
+runtimes dos sanitizers, `gcc`, AFL++ e ESBMC, e mantem as variaveis necessarias
+para campanhas curtas do AFL++.
 A arquitetura `linux/amd64` e usada de proposito porque o pacote do ESBMC no PPA
 oficial nao esta disponivel para todas as arquiteturas, como `arm64`.
+O `docker-compose.yml` tambem usa `seccomp=unconfined`, necessario para evitar
+bloqueio de chamadas usadas pelo ThreadSanitizer dentro do container.
 
 Para construir a imagem:
 
@@ -127,6 +130,11 @@ docker compose run --rm pipeline python3 scripts/generate_report.py --latest-onl
 
 Os diretorios do projeto sao montados em `/workspace`, entao `outputs/` e
 `reports/` gerados dentro do container aparecem tambem na maquina local.
+Em Docker Desktop sobre Apple Silicon, a imagem `linux/amd64` pode executar sob
+emulacao. Nesse cenario, o TSAN pode nao observar as corridas mesmo quando a
+compilacao funciona; nesses casos o resultado deve ser tratado como divergencia
+experimental, nao como erro de execucao. Para avaliar TSAN com mais fidelidade,
+prefira Linux `amd64` nativo ou o clang LLVM local descrito abaixo.
 
 ## Como preparar o ambiente local
 

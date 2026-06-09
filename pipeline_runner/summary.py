@@ -10,6 +10,8 @@ SUMMARY_HEADERS = {
     "tool": "Ferramenta",
     "expected_behavior": "Esperado",
     "expectation_match": "Comparacao",
+    "expected_tool_behavior": "Ferramenta espera",
+    "tool_expectation_match": "Comparacao ferramenta",
     "classification": "Resultado",
     "count": "Qtd",
     "first_execution_date": "Primeira execucao",
@@ -25,6 +27,13 @@ EXPECTATION_MATCH_LABELS = {
     "divergente": "Divergente",
     "inconclusivo": "Inconclusivo",
     "nao avaliado": "Nao avaliado",
+}
+EXPECTED_TOOL_BEHAVIOR_LABELS = {
+    "detectar": "Detectar",
+    "nao_detectar": "Nao detectar",
+    "inconclusivo": "Inconclusivo",
+    "nao_aplicavel": "Nao aplicavel",
+    "nao informado": "Nao informado",
 }
 CLASSIFICATION_LABELS = {
     "detectado": "Detectado",
@@ -84,6 +93,8 @@ def format_summary_rows(rows):
         "tool",
         "expected_behavior",
         "expectation_match",
+        "expected_tool_behavior",
+        "tool_expectation_match",
         "classification",
         "count",
         "first_execution_date",
@@ -103,6 +114,14 @@ def format_summary_rows(rows):
                 "expectation_match": EXPECTATION_MATCH_LABELS.get(
                     row.get("expectation_match", ""),
                     row.get("expectation_match", "-") or "-",
+                ),
+                "expected_tool_behavior": EXPECTED_TOOL_BEHAVIOR_LABELS.get(
+                    row.get("expected_tool_behavior", ""),
+                    row.get("expected_tool_behavior", "-") or "-",
+                ),
+                "tool_expectation_match": EXPECTATION_MATCH_LABELS.get(
+                    row.get("tool_expectation_match", ""),
+                    row.get("tool_expectation_match", "-") or "-",
                 ),
                 "classification": CLASSIFICATION_LABELS.get(
                     row.get("classification", ""),

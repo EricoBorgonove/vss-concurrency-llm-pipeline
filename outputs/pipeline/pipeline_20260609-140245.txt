@@ -1,0 +1,672 @@
+Pipeline VSS-LLM - resumo da rodada
+gerado_em: 2026-06-09T14:05:31
+total_tarefas: 57
+
+[environment_check]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/check_environment.py
+category: N/A
+benchmark: N/A
+started_at: 2026-06-09T14:02:45
+finished_at: 2026-06-09T14:02:47
+duration_seconds: 1.298
+returncode: 0
+stdout:
+Diagnostico salvo em: outputs/environment/environment_20260609-140245.txt
+
+[esbmc_assertion_violation_assert_array_index]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_array_index.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_array_index.c
+started_at: 2026-06-09T14:02:47
+finished_at: 2026-06-09T14:02:47
+duration_seconds: 0.279
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_array_index_20260609-140247.log
+
+[esbmc_assertion_violation_assert_bank_withdraw_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_bank_withdraw_error.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_bank_withdraw_error.c
+started_at: 2026-06-09T14:02:47
+finished_at: 2026-06-09T14:02:47
+duration_seconds: 0.189
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_bank_withdraw_error_20260609-140247.log
+
+[esbmc_assertion_violation_assert_bank_withdraw_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_bank_withdraw_safe.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_bank_withdraw_safe.c
+started_at: 2026-06-09T14:02:47
+finished_at: 2026-06-09T14:02:47
+duration_seconds: 0.189
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_bank_withdraw_safe_20260609-140247.log
+
+[esbmc_assertion_violation_assert_counter_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_counter_overflow.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_counter_overflow.c
+started_at: 2026-06-09T14:02:47
+finished_at: 2026-06-09T14:02:47
+duration_seconds: 0.186
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_counter_overflow_20260609-140247.log
+
+[esbmc_assertion_violation_assert_negative_value]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_negative_value.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_negative_value.c
+started_at: 2026-06-09T14:02:47
+finished_at: 2026-06-09T14:02:48
+duration_seconds: 0.187
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_negative_value_20260609-140247.log
+
+[esbmc_assertion_violation_assert_protocol_sequence_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_protocol_sequence_error.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_protocol_sequence_error.c
+started_at: 2026-06-09T14:02:48
+finished_at: 2026-06-09T14:02:48
+duration_seconds: 0.190
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_protocol_sequence_error_20260609-140248.log
+
+[esbmc_assertion_violation_assert_sorted_insert_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_sorted_insert_error.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_sorted_insert_error.c
+started_at: 2026-06-09T14:02:48
+finished_at: 2026-06-09T14:02:48
+duration_seconds: 0.196
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_sorted_insert_error_20260609-140248.log
+
+[esbmc_assertion_violation_assert_sorted_insert_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_sorted_insert_safe.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_sorted_insert_safe.c
+started_at: 2026-06-09T14:02:48
+finished_at: 2026-06-09T14:02:48
+duration_seconds: 0.190
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_sorted_insert_safe_20260609-140248.log
+
+[esbmc_assertion_violation_assert_state_transition]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_state_transition.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_state_transition.c
+started_at: 2026-06-09T14:02:48
+finished_at: 2026-06-09T14:02:48
+duration_seconds: 0.193
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_state_transition_20260609-140248.log
+
+[esbmc_assertion_violation_assert_sum_limit]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/assert_sum_limit.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/assert_sum_limit.c
+started_at: 2026-06-09T14:02:48
+finished_at: 2026-06-09T14:02:49
+duration_seconds: 0.186
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/assert_sum_limit_20260609-140248.log
+
+[esbmc_assertion_violation_simple_assert_fail]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_esbmc.py benchmarks/assertion_violation/simple_assert_fail.c
+category: assertion_violation
+benchmark: benchmarks/assertion_violation/simple_assert_fail.c
+started_at: 2026-06-09T14:02:49
+finished_at: 2026-06-09T14:02:49
+duration_seconds: 0.187
+returncode: 6
+stdout:
+Log salvo em: outputs/esbmc/simple_assert_fail_20260609-140249.log
+
+[tsan_data_race_race_array_cell]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_array_cell.c
+category: data_race
+benchmark: benchmarks/data_race/race_array_cell.c
+started_at: 2026-06-09T14:02:49
+finished_at: 2026-06-09T14:02:51
+duration_seconds: 2.310
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_array_cell_20260609-140249.log
+
+[tsan_data_race_race_config_reload_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_config_reload_error.c
+category: data_race
+benchmark: benchmarks/data_race/race_config_reload_error.c
+started_at: 2026-06-09T14:02:51
+finished_at: 2026-06-09T14:02:52
+duration_seconds: 0.781
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_config_reload_error_20260609-140251.log
+
+[tsan_data_race_race_config_reload_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_config_reload_safe.c
+category: data_race
+benchmark: benchmarks/data_race/race_config_reload_safe.c
+started_at: 2026-06-09T14:02:52
+finished_at: 2026-06-09T14:02:53
+duration_seconds: 0.802
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_config_reload_safe_20260609-140252.log
+
+[tsan_data_race_race_increment_loop]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_increment_loop.c
+category: data_race
+benchmark: benchmarks/data_race/race_increment_loop.c
+started_at: 2026-06-09T14:02:53
+finished_at: 2026-06-09T14:02:53
+duration_seconds: 0.826
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_increment_loop_20260609-140253.log
+
+[tsan_data_race_race_lazy_init_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_lazy_init_error.c
+category: data_race
+benchmark: benchmarks/data_race/race_lazy_init_error.c
+started_at: 2026-06-09T14:02:53
+finished_at: 2026-06-09T14:02:55
+duration_seconds: 1.142
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_lazy_init_error_20260609-140254.log
+
+[tsan_data_race_race_order_queue_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_order_queue_error.c
+category: data_race
+benchmark: benchmarks/data_race/race_order_queue_error.c
+started_at: 2026-06-09T14:02:55
+finished_at: 2026-06-09T14:02:55
+duration_seconds: 0.733
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_order_queue_error_20260609-140255.log
+
+[tsan_data_race_race_order_queue_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_order_queue_safe.c
+category: data_race
+benchmark: benchmarks/data_race/race_order_queue_safe.c
+started_at: 2026-06-09T14:02:55
+finished_at: 2026-06-09T14:02:56
+duration_seconds: 1.040
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_order_queue_safe_20260609-140255.log
+
+[tsan_data_race_race_read_write]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_read_write.c
+category: data_race
+benchmark: benchmarks/data_race/race_read_write.c
+started_at: 2026-06-09T14:02:56
+finished_at: 2026-06-09T14:02:58
+duration_seconds: 1.234
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_read_write_20260609-140257.log
+
+[tsan_data_race_race_shared_flag]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_shared_flag.c
+category: data_race
+benchmark: benchmarks/data_race/race_shared_flag.c
+started_at: 2026-06-09T14:02:58
+finished_at: 2026-06-09T14:02:59
+duration_seconds: 1.286
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_shared_flag_20260609-140258.log
+
+[tsan_data_race_race_struct_field]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/race_struct_field.c
+category: data_race
+benchmark: benchmarks/data_race/race_struct_field.c
+started_at: 2026-06-09T14:02:59
+finished_at: 2026-06-09T14:03:00
+duration_seconds: 1.039
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/race_struct_field_20260609-140259.log
+
+[tsan_data_race_simple_data_race]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_tsan.py benchmarks/data_race/simple_data_race.c
+category: data_race
+benchmark: benchmarks/data_race/simple_data_race.c
+started_at: 2026-06-09T14:03:00
+finished_at: 2026-06-09T14:03:01
+duration_seconds: 1.022
+returncode: 245
+stdout:
+Log salvo em: outputs/tsan/simple_data_race_20260609-140300.log
+
+[deadlock_deadlock_deadlock_cache_refresh_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_cache_refresh_error.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_cache_refresh_error.c
+started_at: 2026-06-09T14:03:01
+finished_at: 2026-06-09T14:03:04
+duration_seconds: 3.227
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/deadlock_cache_refresh_error_20260609-140301.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[deadlock_deadlock_deadlock_cache_refresh_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_cache_refresh_safe.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_cache_refresh_safe.c
+started_at: 2026-06-09T14:03:04
+finished_at: 2026-06-09T14:03:05
+duration_seconds: 0.585
+returncode: 0
+stdout:
+Log salvo em: outputs/deadlock/deadlock_cache_refresh_safe_20260609-140304.log
+
+[deadlock_deadlock_deadlock_conditional_order]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_conditional_order.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_conditional_order.c
+started_at: 2026-06-09T14:03:05
+finished_at: 2026-06-09T14:03:08
+duration_seconds: 3.179
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/deadlock_conditional_order_20260609-140305.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[deadlock_deadlock_deadlock_nested_service_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_nested_service_error.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_nested_service_error.c
+started_at: 2026-06-09T14:03:08
+finished_at: 2026-06-09T14:03:11
+duration_seconds: 3.221
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/deadlock_nested_service_error_20260609-140308.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[deadlock_deadlock_deadlock_nested_service_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_nested_service_safe.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_nested_service_safe.c
+started_at: 2026-06-09T14:03:11
+finished_at: 2026-06-09T14:03:12
+duration_seconds: 0.612
+returncode: 0
+stdout:
+Log salvo em: outputs/deadlock/deadlock_nested_service_safe_20260609-140311.log
+
+[deadlock_deadlock_deadlock_resource_pair]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_resource_pair.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_resource_pair.c
+started_at: 2026-06-09T14:03:12
+finished_at: 2026-06-09T14:03:15
+duration_seconds: 3.187
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/deadlock_resource_pair_20260609-140312.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[deadlock_deadlock_deadlock_self_lock]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_self_lock.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_self_lock.c
+started_at: 2026-06-09T14:03:15
+finished_at: 2026-06-09T14:03:18
+duration_seconds: 3.208
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/deadlock_self_lock_20260609-140315.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[deadlock_deadlock_deadlock_three_locks_cycle]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_three_locks_cycle.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_three_locks_cycle.c
+started_at: 2026-06-09T14:03:18
+finished_at: 2026-06-09T14:03:22
+duration_seconds: 3.567
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/deadlock_three_locks_cycle_20260609-140318.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[deadlock_deadlock_deadlock_trylock_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_trylock_safe.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_trylock_safe.c
+started_at: 2026-06-09T14:03:22
+finished_at: 2026-06-09T14:03:22
+duration_seconds: 0.629
+returncode: 0
+stdout:
+Log salvo em: outputs/deadlock/deadlock_trylock_safe_20260609-140322.log
+
+[deadlock_deadlock_deadlock_two_locks_reverse]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/deadlock_two_locks_reverse.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/deadlock_two_locks_reverse.c
+started_at: 2026-06-09T14:03:22
+finished_at: 2026-06-09T14:03:26
+duration_seconds: 3.201
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/deadlock_two_locks_reverse_20260609-140322.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[deadlock_deadlock_simple_deadlock]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_deadlock.py benchmarks/deadlock/simple_deadlock.c --timeout 3
+category: deadlock
+benchmark: benchmarks/deadlock/simple_deadlock.c
+started_at: 2026-06-09T14:03:26
+finished_at: 2026-06-09T14:03:29
+duration_seconds: 3.207
+returncode: 124
+stdout:
+Log salvo em: outputs/deadlock/simple_deadlock_20260609-140326.log
+stderr:
+Erro: tempo limite excedido apos 3 segundos.
+
+[afl_memory_corruption_heap_write_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/heap_write_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/heap_write_overflow.c
+started_at: 2026-06-09T14:03:29
+finished_at: 2026-06-09T14:03:30
+duration_seconds: 0.817
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/heap_write_overflow_20260609-140329.log
+
+[asan_memory_corruption_heap_write_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/heap_write_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/heap_write_overflow.c
+started_at: 2026-06-09T14:03:30
+finished_at: 2026-06-09T14:03:40
+duration_seconds: 10.217
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/heap_write_overflow_20260609-140330.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_matrix_index_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/matrix_index_error.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/matrix_index_error.c
+started_at: 2026-06-09T14:03:40
+finished_at: 2026-06-09T14:03:41
+duration_seconds: 0.769
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/matrix_index_error_20260609-140340.log
+
+[asan_memory_corruption_matrix_index_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/matrix_index_error.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/matrix_index_error.c
+started_at: 2026-06-09T14:03:41
+finished_at: 2026-06-09T14:03:51
+duration_seconds: 10.266
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/matrix_index_error_20260609-140341.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_out_of_bounds_read]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/out_of_bounds_read.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/out_of_bounds_read.c
+started_at: 2026-06-09T14:03:51
+finished_at: 2026-06-09T14:03:51
+duration_seconds: 0.427
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/out_of_bounds_read_20260609-140351.log
+
+[asan_memory_corruption_out_of_bounds_read]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/out_of_bounds_read.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/out_of_bounds_read.c
+started_at: 2026-06-09T14:03:51
+finished_at: 2026-06-09T14:04:01
+duration_seconds: 10.204
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/out_of_bounds_read_20260609-140351.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_parser_token_overflow_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/parser_token_overflow_error.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/parser_token_overflow_error.c
+started_at: 2026-06-09T14:04:01
+finished_at: 2026-06-09T14:04:02
+duration_seconds: 0.855
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/parser_token_overflow_error_20260609-140402.log
+
+[asan_memory_corruption_parser_token_overflow_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/parser_token_overflow_error.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/parser_token_overflow_error.c
+started_at: 2026-06-09T14:04:02
+finished_at: 2026-06-09T14:04:13
+duration_seconds: 10.198
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/parser_token_overflow_error_20260609-140402.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_parser_token_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/parser_token_safe.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/parser_token_safe.c
+started_at: 2026-06-09T14:04:13
+finished_at: 2026-06-09T14:04:13
+duration_seconds: 0.857
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/parser_token_safe_20260609-140413.log
+
+[asan_memory_corruption_parser_token_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/parser_token_safe.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/parser_token_safe.c
+started_at: 2026-06-09T14:04:13
+finished_at: 2026-06-09T14:04:24
+duration_seconds: 10.511
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/parser_token_safe_20260609-140413.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_ring_buffer_overwrite_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/ring_buffer_overwrite_error.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/ring_buffer_overwrite_error.c
+started_at: 2026-06-09T14:04:24
+finished_at: 2026-06-09T14:04:24
+duration_seconds: 0.457
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/ring_buffer_overwrite_error_20260609-140424.log
+
+[asan_memory_corruption_ring_buffer_overwrite_error]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/ring_buffer_overwrite_error.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/ring_buffer_overwrite_error.c
+started_at: 2026-06-09T14:04:24
+finished_at: 2026-06-09T14:04:35
+duration_seconds: 10.200
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/ring_buffer_overwrite_error_20260609-140424.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_ring_buffer_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/ring_buffer_safe.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/ring_buffer_safe.c
+started_at: 2026-06-09T14:04:35
+finished_at: 2026-06-09T14:04:36
+duration_seconds: 0.969
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/ring_buffer_safe_20260609-140435.log
+
+[asan_memory_corruption_ring_buffer_safe]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/ring_buffer_safe.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/ring_buffer_safe.c
+started_at: 2026-06-09T14:04:36
+finished_at: 2026-06-09T14:04:46
+duration_seconds: 10.409
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/ring_buffer_safe_20260609-140436.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_simple_buffer_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/simple_buffer_overflow.c
+started_at: 2026-06-09T14:04:46
+finished_at: 2026-06-09T14:04:47
+duration_seconds: 0.825
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/simple_buffer_overflow_20260609-140446.log
+
+[asan_memory_corruption_simple_buffer_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/simple_buffer_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/simple_buffer_overflow.c
+started_at: 2026-06-09T14:04:47
+finished_at: 2026-06-09T14:04:57
+duration_seconds: 10.364
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/simple_buffer_overflow_20260609-140447.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_stack_write_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/stack_write_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/stack_write_overflow.c
+started_at: 2026-06-09T14:04:57
+finished_at: 2026-06-09T14:04:58
+duration_seconds: 0.650
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/stack_write_overflow_20260609-140457.log
+
+[asan_memory_corruption_stack_write_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/stack_write_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/stack_write_overflow.c
+started_at: 2026-06-09T14:04:58
+finished_at: 2026-06-09T14:05:08
+duration_seconds: 10.213
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/stack_write_overflow_20260609-140458.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_string_copy_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/string_copy_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/string_copy_overflow.c
+started_at: 2026-06-09T14:05:08
+finished_at: 2026-06-09T14:05:08
+duration_seconds: 0.480
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/string_copy_overflow_20260609-140508.log
+
+[asan_memory_corruption_string_copy_overflow]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/string_copy_overflow.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/string_copy_overflow.c
+started_at: 2026-06-09T14:05:08
+finished_at: 2026-06-09T14:05:19
+duration_seconds: 10.199
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/string_copy_overflow_20260609-140509.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[afl_memory_corruption_use_after_free]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_afl.py benchmarks/memory_corruption/use_after_free.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/use_after_free.c
+started_at: 2026-06-09T14:05:19
+finished_at: 2026-06-09T14:05:20
+duration_seconds: 0.929
+returncode: 1
+stdout:
+Log salvo em: outputs/afl/use_after_free_20260609-140519.log
+
+[asan_memory_corruption_use_after_free]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/run_asan.py benchmarks/memory_corruption/use_after_free.c
+category: memory_corruption
+benchmark: benchmarks/memory_corruption/use_after_free.c
+started_at: 2026-06-09T14:05:20
+finished_at: 2026-06-09T14:05:30
+duration_seconds: 10.646
+returncode: 124
+stdout:
+Log salvo em: outputs/asan/use_after_free_20260609-140520.log
+stderr:
+Erro: tempo limite excedido apos 10 segundos.
+
+[generate_latest_report]
+command: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/generate_report.py --latest-only
+category: N/A
+benchmark: N/A
+started_at: 2026-06-09T14:05:30
+finished_at: 2026-06-09T14:05:31
+duration_seconds: 0.349
+returncode: 0
+stdout:
+Relatorio salvo em: reports/results.csv
+Resumo salvo em: reports/summary.csv
+Relatorio HTML salvo em: reports/report.html
+Total de logs processados: 59
+

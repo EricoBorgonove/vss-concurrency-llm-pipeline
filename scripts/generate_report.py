@@ -10,6 +10,14 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from pipeline_runner.metadata import (
+    expected_behavior_for,
+    expected_tool_behavior_for,
+    read_benchmark_metadata,
+)
+
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 RESULTS_FILE = REPORTS_DIR / "results.csv"
@@ -43,6 +51,7 @@ LOG_TIMESTAMP_PATTERN = re.compile(r"_(\d{8}-\d{6})$")
 EXPECTED_VULNERABLE_SUFFIXES = ("_error.c",)
 EXPECTED_SAFE_SUFFIXES = ("_safe.c", "_fixed.c", "_pass.c")
 PROJECT_ROOT_TEXT = str(PROJECT_ROOT)
+TOOL_ALIASES = {"afl++": "afl", "deadlock-timeout": "deadlock"}
 
 
 def build_parser():
@@ -125,6 +134,19 @@ def infer_expected_behavior(benchmark):
     return "nao informado"
 
 
+def get_expected_behavior(benchmark, metadata=None):
+    return expected_behavior_for(benchmark, metadata) or infer_expected_behavior(benchmark)
+
+
+def normalize_tool_name(tool):
+    return TOOL_ALIASES.get(tool, tool)
+
+
+def get_expected_tool_behavior(tool, benchmark, metadata=None):
+    expected = expected_tool_behavior_for(normalize_tool_name(tool), benchmark, metadata)
+    return expected or "nao informado"
+
+
 def normalize_project_path(value):
     if not value:
         return value
@@ -160,7 +182,26 @@ def evaluate_expectation(expected_behavior, classification):
     return "nao avaliado"
 
 
-def parse_log(log_path):
+def evaluate_tool_expectation(expected_tool_behavior, classification):
+    if expected_tool_behavior in ("", "nao informado", "nao_aplicavel"):
+        return "nao avaliado"
+
+    if classification in ("erro de execucao", "ferramenta indisponivel"):
+        return "inconclusivo"
+
+    if expected_tool_behavior == "inconclusivo":
+        return "inconclusivo"
+
+    if expected_tool_behavior == "detectar":
+        return "conforme esperado" if classification == "detectado" else "divergente"
+
+    if expected_tool_behavior == "nao_detectar":
+        return "conforme esperado" if classification == "nao detectado" else "divergente"
+
+    return "nao avaliado"
+
+
+def parse_log(log_path, metadata=None):
     data = {
         "tool": "",
         "benchmark": "",
@@ -168,6 +209,8 @@ def parse_log(log_path):
         "execution_date": extract_execution_date(log_path),
         "expected_behavior": "",
         "expectation_match": "",
+        "expected_tool_behavior": "",
+        "tool_expectation_match": "",
         "returncode": "",
         "compile_returncode": "",
         "run_returncode": "",
@@ -181,9 +224,18 @@ def parse_log(log_path):
     except OSError as exc:
         data["error"] = f"erro ao ler log: {exc}"
         data["classification"] = classify_result("", data)
-        data["expected_behavior"] = infer_expected_behavior(data["benchmark"])
+        data["expected_behavior"] = get_expected_behavior(data["benchmark"], metadata)
         data["expectation_match"] = evaluate_expectation(
             data["expected_behavior"],
+            data["classification"],
+        )
+        data["expected_tool_behavior"] = get_expected_tool_behavior(
+            data["tool"],
+            data["benchmark"],
+            metadata,
+        )
+        data["tool_expectation_match"] = evaluate_tool_expectation(
+            data["expected_tool_behavior"],
             data["classification"],
         )
         return data
@@ -220,9 +272,18 @@ def parse_log(log_path):
             section = "error_captured"
 
     data["classification"] = classify_result(log_text, data)
-    data["expected_behavior"] = infer_expected_behavior(data["benchmark"])
+    data["expected_behavior"] = get_expected_behavior(data["benchmark"], metadata)
     data["expectation_match"] = evaluate_expectation(
         data["expected_behavior"],
+        data["classification"],
+    )
+    data["expected_tool_behavior"] = get_expected_tool_behavior(
+        data["tool"],
+        data["benchmark"],
+        metadata,
+    )
+    data["tool_expectation_match"] = evaluate_tool_expectation(
+        data["expected_tool_behavior"],
         data["classification"],
     )
     return data
@@ -230,12 +291,13 @@ def parse_log(log_path):
 
 def collect_rows(tools):
     rows = []
+    metadata = read_benchmark_metadata()
     for tool in tools:
         tool_dir = OUTPUTS_DIR / tool
         if not tool_dir.is_dir():
             continue
         for log_path in sorted(tool_dir.glob("*.log")):
-            rows.append(parse_log(log_path))
+            rows.append(parse_log(log_path, metadata))
     return rows
 
 
@@ -259,6 +321,8 @@ def write_csv(rows, output_file):
         "execution_date",
         "expected_behavior",
         "expectation_match",
+        "expected_tool_behavior",
+        "tool_expectation_match",
         "returncode",
         "compile_returncode",
         "run_returncode",
@@ -278,6 +342,8 @@ def build_summary(rows):
             row["tool"],
             row.get("expected_behavior", "nao informado"),
             row.get("expectation_match", "nao avaliado"),
+            row.get("expected_tool_behavior", "nao informado"),
+            row.get("tool_expectation_match", "nao avaliado"),
             row["classification"],
         )
         if key not in summary:
@@ -301,14 +367,21 @@ def build_summary(rows):
             "tool": tool,
             "expected_behavior": expected_behavior,
             "expectation_match": expectation_match,
+            "expected_tool_behavior": expected_tool_behavior,
+            "tool_expectation_match": tool_expectation_match,
             "classification": classification,
             "count": item["count"],
             "first_execution_date": item["first_execution_date"],
             "latest_execution_date": item["latest_execution_date"],
         }
-        for (tool, expected_behavior, expectation_match, classification), item in sorted(
-            summary.items()
-        )
+        for (
+            tool,
+            expected_behavior,
+            expectation_match,
+            expected_tool_behavior,
+            tool_expectation_match,
+            classification,
+        ), item in sorted(summary.items())
     ]
 
 
@@ -318,6 +391,8 @@ def write_summary_csv(rows, summary_output_file):
         "tool",
         "expected_behavior",
         "expectation_match",
+        "expected_tool_behavior",
+        "tool_expectation_match",
         "classification",
         "count",
         "first_execution_date",
@@ -374,6 +449,8 @@ def write_html_report(
         "tool",
         "expected_behavior",
         "expectation_match",
+        "expected_tool_behavior",
+        "tool_expectation_match",
         "classification",
         "count",
         "first_execution_date",
@@ -385,6 +462,8 @@ def write_html_report(
         "execution_date",
         "expected_behavior",
         "expectation_match",
+        "expected_tool_behavior",
+        "tool_expectation_match",
         "classification",
         "log_file",
         "error",
@@ -462,6 +541,7 @@ def write_html_report(
     <strong>Leitura:</strong> <code>expected_behavior</code> indica se o benchmark era esperado
     como vulneravel, correto ou nao informado. <code>expectation_match</code> indica se o
     resultado observado ficou conforme, divergente, inconclusivo ou nao avaliado.
+    <code>expected_tool_behavior</code> registra a expectativa especifica para a ferramenta.
   </div>
   <h2>Resumo</h2>
   {render_html_table(summary_rows, summary_fields)}

@@ -1,0 +1,8 @@
+# environment variables:
+AFL_CUSTOM_INFO_PROGRAM=<tmp>/random_heap_use_after_free
+AFL_CUSTOM_INFO_PROGRAM_ARGV=
+AFL_CUSTOM_INFO_OUT=outputs/afl/random_heap_use_after_free_20260609-142112/default
+AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+AFL_SKIP_CPUFREQ=1
+# command line:
+'/opt/homebrew/Cellar/afl++/5.00c/libexec/afl-fuzz' '-i' 'seeds' '-o' 'outputs/afl/random_heap_use_after_free_20260609-142112' '-V' '5' '--' '<tmp>/random_heap_use_after_free'

@@ -1,0 +1,10 @@
+tool: tsan
+benchmark: benchmarks/random_tests/random_race_counter.c
+compile_command: clang -fsanitize=thread -g -O0 benchmarks/random_tests/random_race_counter.c -o <tmp>/random_race_counter -pthread
+run_command: <tmp>/random_race_counter
+
+[compile]
+returncode: 0
+
+[run]
+returncode: -11

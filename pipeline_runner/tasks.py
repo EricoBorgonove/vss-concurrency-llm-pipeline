@@ -5,8 +5,22 @@ import subprocess
 import sys
 import time
 
+from .analyzer import infer_tools_from_file
+from .metadata import (
+    applicable_tools_for,
+    get_benchmark_metadata,
+    include_in_pipeline,
+    read_benchmark_metadata,
+)
 from .paths import PROJECT_ROOT
 
+TOOL_COMMANDS = {
+    "afl": ("scripts/run_afl.py", ()),
+    "asan": ("scripts/run_asan.py", ()),
+    "deadlock": ("scripts/run_deadlock.py", ("--timeout", "3")),
+    "esbmc": ("scripts/run_esbmc.py", ()),
+    "tsan": ("scripts/run_tsan.py", ()),
+}
 BENCHMARK_RULES = {
     "assertion_violation": (("esbmc", "scripts/run_esbmc.py", ()),),
     "memory_corruption": (
@@ -23,33 +37,71 @@ def is_experiment_benchmark(path):
     return path.suffix == ".c" and not path.name.endswith(ignored_suffixes)
 
 
+def tools_for_benchmark(benchmark_path, category, metadata):
+    row = get_benchmark_metadata(benchmark_path, metadata)
+    if row:
+        return tuple(
+            (tool, *TOOL_COMMANDS[tool])
+            for tool in applicable_tools_for(benchmark_path, metadata)
+            if tool in TOOL_COMMANDS
+        )
+
+    inferred_tools = infer_tools_from_file(benchmark_path)
+    if inferred_tools:
+        return tuple(
+            (tool, *TOOL_COMMANDS[tool])
+            for tool in inferred_tools
+            if tool in TOOL_COMMANDS
+        )
+
+    return BENCHMARK_RULES.get(category, ())
+
+
+def build_benchmark_task(tool_name, script_path, extra_args, category, benchmark_path):
+    relative_benchmark = benchmark_path.relative_to(PROJECT_ROOT)
+    return {
+        "name": f"{tool_name}_{category}_{benchmark_path.stem}",
+        "kind": "benchmark",
+        "category": category,
+        "tool": tool_name,
+        "benchmark": str(relative_benchmark),
+        "command": [
+            script_path,
+            str(relative_benchmark),
+            *extra_args,
+        ],
+    }
+
+
 def discover_tasks(benchmarks_dir=PROJECT_ROOT / "benchmarks"):
     tasks = []
-    for category, tools in BENCHMARK_RULES.items():
-        category_dir = benchmarks_dir / category
-        if not category_dir.is_dir():
+    metadata = read_benchmark_metadata()
+    for benchmark_path in sorted(benchmarks_dir.glob("*/*.c")):
+        category = benchmark_path.parent.name
+        row = get_benchmark_metadata(benchmark_path, metadata)
+        metadata_include = include_in_pipeline(benchmark_path, metadata)
+
+        if row:
+            category = row.get("category", category) or category
+        if metadata_include is False:
+            continue
+        if metadata_include is None and not is_experiment_benchmark(benchmark_path):
             continue
 
-        for benchmark_path in sorted(category_dir.glob("*.c")):
-            if not is_experiment_benchmark(benchmark_path):
-                continue
-
-            relative_benchmark = benchmark_path.relative_to(PROJECT_ROOT)
-            for tool_name, script_path, extra_args in tools:
-                tasks.append(
-                    {
-                        "name": f"{tool_name}_{category}_{benchmark_path.stem}",
-                        "kind": "benchmark",
-                        "category": category,
-                        "tool": tool_name,
-                        "benchmark": str(relative_benchmark),
-                        "command": [
-                            script_path,
-                            str(relative_benchmark),
-                            *extra_args,
-                        ],
-                    }
+        for tool_name, script_path, extra_args in tools_for_benchmark(
+            benchmark_path,
+            category,
+            metadata,
+        ):
+            tasks.append(
+                build_benchmark_task(
+                    tool_name,
+                    script_path,
+                    extra_args,
+                    category,
+                    benchmark_path,
                 )
+            )
 
     return tasks
 

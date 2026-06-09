@@ -49,6 +49,8 @@ class GenerateReportTest(unittest.TestCase):
                 "tool": "asan",
                 "expected_behavior": "vulneravel",
                 "expectation_match": "conforme esperado",
+                "expected_tool_behavior": "detectar",
+                "tool_expectation_match": "conforme esperado",
                 "classification": "detectado",
                 "execution_date": "2026-06-05T20:00:00",
             },
@@ -56,6 +58,8 @@ class GenerateReportTest(unittest.TestCase):
                 "tool": "asan",
                 "expected_behavior": "vulneravel",
                 "expectation_match": "conforme esperado",
+                "expected_tool_behavior": "detectar",
+                "tool_expectation_match": "conforme esperado",
                 "classification": "detectado",
                 "execution_date": "2026-06-05T21:00:00",
             },
@@ -63,6 +67,8 @@ class GenerateReportTest(unittest.TestCase):
                 "tool": "tsan",
                 "expected_behavior": "correto",
                 "expectation_match": "conforme esperado",
+                "expected_tool_behavior": "nao_detectar",
+                "tool_expectation_match": "conforme esperado",
                 "classification": "nao detectado",
                 "execution_date": "2026-06-05T20:30:00",
             },
@@ -77,6 +83,8 @@ class GenerateReportTest(unittest.TestCase):
                     "tool": "asan",
                     "expected_behavior": "vulneravel",
                     "expectation_match": "conforme esperado",
+                    "expected_tool_behavior": "detectar",
+                    "tool_expectation_match": "conforme esperado",
                     "classification": "detectado",
                     "count": 2,
                     "first_execution_date": "2026-06-05T20:00:00",
@@ -86,6 +94,8 @@ class GenerateReportTest(unittest.TestCase):
                     "tool": "tsan",
                     "expected_behavior": "correto",
                     "expectation_match": "conforme esperado",
+                    "expected_tool_behavior": "nao_detectar",
+                    "tool_expectation_match": "conforme esperado",
                     "classification": "nao detectado",
                     "count": 1,
                     "first_execution_date": "2026-06-05T20:30:00",
@@ -117,6 +127,31 @@ class GenerateReportTest(unittest.TestCase):
             "nao informado",
         )
 
+    # Verifica se metadados explicitos substituem a inferencia por sufixo.
+    def test_get_expected_behavior_from_metadata(self):
+        metadata = {
+            "benchmarks/data_race/simple_data_race.c": {
+                "expected_behavior": "vulneravel",
+                "expected_tsan": "detectar",
+            }
+        }
+
+        self.assertEqual(
+            generate_report.get_expected_behavior(
+                "benchmarks/data_race/simple_data_race.c",
+                metadata,
+            ),
+            "vulneravel",
+        )
+        self.assertEqual(
+            generate_report.get_expected_tool_behavior(
+                "tsan",
+                "benchmarks/data_race/simple_data_race.c",
+                metadata,
+            ),
+            "detectar",
+        )
+
     # Verifica a comparacao entre comportamento esperado e classificacao.
     def test_evaluate_expectation_compares_expected_behavior_and_classification(self):
         self.assertEqual(
@@ -129,6 +164,21 @@ class GenerateReportTest(unittest.TestCase):
         )
         self.assertEqual(
             generate_report.evaluate_expectation("correto", "erro de execucao"),
+            "inconclusivo",
+        )
+
+    # Verifica a comparacao especifica da expectativa da ferramenta.
+    def test_evaluate_tool_expectation_compares_tool_behavior_and_classification(self):
+        self.assertEqual(
+            generate_report.evaluate_tool_expectation("detectar", "detectado"),
+            "conforme esperado",
+        )
+        self.assertEqual(
+            generate_report.evaluate_tool_expectation("nao_detectar", "detectado"),
+            "divergente",
+        )
+        self.assertEqual(
+            generate_report.evaluate_tool_expectation("inconclusivo", "nao detectado"),
             "inconclusivo",
         )
 
@@ -190,6 +240,8 @@ class GenerateReportTest(unittest.TestCase):
                 "execution_date": "2026-06-09T12:00:00",
                 "expected_behavior": "vulneravel",
                 "expectation_match": "conforme esperado",
+                "expected_tool_behavior": "detectar",
+                "tool_expectation_match": "conforme esperado",
                 "returncode": "",
                 "compile_returncode": "0",
                 "run_returncode": "1",

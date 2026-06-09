@@ -3,6 +3,7 @@
 
 import sys
 
+from pipeline_runner.analyzer import infer_tools_from_source
 from pipeline_runner.metrics import (
     build_category_metrics,
     collect_benchmark_metrics,
@@ -29,11 +30,13 @@ from pipeline_runner.summary import (
 )
 from pipeline_runner.tasks import (
     BENCHMARK_RULES,
+    TOOL_COMMANDS,
     build_environment_task,
     build_report_task,
     discover_tasks,
     is_experiment_benchmark,
     run_task,
+    tools_for_benchmark,
 )
 
 __all__ = [
@@ -44,6 +47,7 @@ __all__ = [
     "PROJECT_ROOT",
     "REPORTS_DIR",
     "REPORT_SUMMARY_FILE",
+    "TOOL_COMMANDS",
     "build_category_metrics",
     "build_environment_task",
     "build_report_task",
@@ -54,6 +58,7 @@ __all__ = [
     "format_category_metrics",
     "format_summary_date",
     "format_summary_rows",
+    "infer_tools_from_source",
     "is_experiment_benchmark",
     "main",
     "make_summary_path",
@@ -62,6 +67,7 @@ __all__ = [
     "sanitize_text",
     "write_metrics_reports",
     "write_summary",
+    "tools_for_benchmark",
 ]
 
 

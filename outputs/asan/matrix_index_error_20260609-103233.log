@@ -1,0 +1,13 @@
+tool: asan
+benchmark: benchmarks/memory_corruption/matrix_index_error.c
+compile_command: clang -fsanitize=address -g -O0 benchmarks/memory_corruption/matrix_index_error.c -o <tmp>/matrix_index_error
+run_command: <tmp>/matrix_index_error
+
+[error]
+Tempo limite excedido apos 10 segundos.
+
+[compile]
+returncode: 0
+
+[run]
+returncode: 124

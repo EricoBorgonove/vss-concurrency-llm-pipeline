@@ -1,0 +1,15 @@
+tool: esbmc
+benchmark: benchmarks/assertion_violation/assert_bank_withdraw_safe.c
+command: esbmc benchmarks/assertion_violation/assert_bank_withdraw_safe.c
+returncode: 6
+
+[stdout]
+ESBMC version 8.2.0 64-bit aarch64 macos
+
+[stderr]
+Target: 64-bit little-endian aarch64-unknown-macos with esbmclibc
+Parsing benchmarks/assertion_violation/assert_bank_withdraw_safe.c
+benchmarks/assertion_violation/assert_bank_withdraw_safe.c:2:10: fatal error: 'assert.h' file not found
+    2 | #include <assert.h>
+      |          ^~~~~~~~~~
+ERROR: PARSING ERROR

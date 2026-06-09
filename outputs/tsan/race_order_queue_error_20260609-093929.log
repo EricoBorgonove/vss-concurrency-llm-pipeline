@@ -1,0 +1,10 @@
+tool: tsan
+benchmark: benchmarks/data_race/race_order_queue_error.c
+compile_command: clang -fsanitize=thread -g -O0 benchmarks/data_race/race_order_queue_error.c -o <tmp>/race_order_queue_error -pthread
+run_command: <tmp>/race_order_queue_error
+
+[compile]
+returncode: 0
+
+[run]
+returncode: -11

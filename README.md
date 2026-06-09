@@ -24,10 +24,12 @@ Desenvolver um pipeline reprodutível para:
 ```text
 pipeline-vss-llm/
 ├── benchmarks/ (benchmarks C categorizados)
+│   ├── metadata.csv (metadados auditáveis dos benchmarks)
 │   ├── data_race/
 │   ├── deadlock/
 │   ├── memory_corruption/
-│   └── assertion_violation/
+│   ├── assertion_violation/
+│   └── random_tests/ (códigos exploratórios sem metadados)
 ├── seeds/ (seeds para AFL++)
 ├── outputs/ (logs e artefatos gerados pelas ferramentas)
 │   ├── esbmc/
@@ -77,10 +79,16 @@ pipeline-vss-llm/
   e pode reexecutar uma ferramenta sobre um benchmark reparado controlado.
 - `scripts/check_environment.py` registra um diagnóstico básico das ferramentas
   e runtimes disponíveis em `outputs/environment/`.
-- A base possui 48 benchmarks C, incluindo casos mínimos, casos mais complexos,
-  exemplos vulneráveis e exemplos corretos.
+- A base controlada possui 48 benchmarks C, incluindo casos mínimos, casos mais
+  complexos, exemplos vulneráveis e exemplos corretos.
+- `benchmarks/random_tests/` possui 5 códigos exploratórios sem metadados para
+  exercitar a inferência automática de ferramentas a partir do conteúdo do
+  arquivo C.
 - Os benchmarks possuem comentários iniciais indicando se são casos com erro ou
   casos corretos.
+- `benchmarks/metadata.csv` registra, para cada benchmark, identificador,
+  categoria, caminho, comportamento esperado, expectativa por ferramenta,
+  descrição e participação na rodada principal.
 - Os scripts Python possuem tratamento básico de erros e geram saídas em
   `outputs/` ou `reports/`.
 - A suíte de testes cobre geração de relatórios, descoberta de benchmarks,
@@ -165,7 +173,8 @@ python3 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
 ```
 
 O `reports/results.csv` inclui `execution_date`, `expected_behavior` e
-`expectation_match`. O `reports/summary.csv` inclui essas mesmas dimensões,
+`expectation_match`, além de `expected_tool_behavior` e
+`tool_expectation_match`. O `reports/summary.csv` inclui essas mesmas dimensões,
 além de `first_execution_date` e `latest_execution_date` para cada combinação de
 ferramenta, expectativa e classificação. O `reports/report.html` apresenta um
 resumo, métricas por categoria, métricas por benchmark e resultados detalhados
@@ -180,9 +189,55 @@ Quando `python3 run_pipeline.py` é executado, o projeto também gera:
 
 Novos arquivos `.c` adicionados em `benchmarks/assertion_violation/`,
 `benchmarks/memory_corruption/`, `benchmarks/data_race/` e
-`benchmarks/deadlock/` entram automaticamente na rodada. Arquivos terminados em
-`_fixed.c` ou `_pass.c` são ignorados pelo pipeline principal, pois ficam
-reservados para validação de reparos e controles positivos.
+`benchmarks/deadlock/` devem ser registrados em `benchmarks/metadata.csv`. O
+campo `include_in_pipeline` define se o arquivo entra na rodada principal. O
+campo `expected_behavior` registra se o benchmark é `vulneravel` ou `correto`,
+enquanto `expected_esbmc`, `expected_asan`, `expected_tsan`,
+`expected_deadlock` e `expected_afl` registram a expectativa específica de cada
+ferramenta, usando valores como `detectar`, `nao_detectar`, `inconclusivo` e
+`nao_aplicavel`.
+
+A descoberta da rodada principal usa esses campos `expected_*` para decidir
+quais testes devem ser executados para cada benchmark. Uma ferramenta é
+executada quando sua coluna possui uma expectativa aplicável, como `detectar`,
+`nao_detectar` ou `inconclusivo`. Quando a coluna está como `nao_aplicavel`, a
+ferramenta não é executada para aquele benchmark.
+
+Para uso exploratório, também é possível colocar um arquivo `.c` sem registro em
+`metadata.csv`, por exemplo em `benchmarks/random_tests/`. Nesse caso, o
+pipeline lê o conteúdo do código e infere uma lista inicial de ferramentas:
+
+- chamadas de `assert` ou `__ESBMC_assert`: ESBMC;
+- uso de alocação, `free`, cópias inseguras ou escrita em vetor: ASAN;
+- uso de entrada externa ou padrões de memória: AFL++;
+- uso de `pthread`: TSAN;
+- uso de `pthread_mutex_lock`: detector de deadlock por timeout.
+
+Essa inferência serve para triagem automática. Para resultados de pesquisa, o
+recomendado continua sendo registrar o caso em `benchmarks/metadata.csv`, pois
+os metadados tornam explícitos o comportamento esperado e a expectativa por
+ferramenta.
+
+Os códigos exploratórios atuais em `benchmarks/random_tests/` exercitam essa
+decisão automática:
+
+- `random_assert_check.c`: seleciona ESBMC;
+- `random_heap_use_after_free.c`: seleciona ASAN e AFL++;
+- `random_race_counter.c`: seleciona TSAN;
+- `random_deadlock_pair.c`: seleciona TSAN e detector de deadlock;
+- `random_plain_program.c`: não seleciona ferramenta, pois não possui sinais
+  suficientes para triagem automática.
+
+Esses arquivos não entram em `benchmarks/metadata.csv` de propósito. Eles
+servem para validar a capacidade da aplicação de escolher ferramentas para
+códigos ainda não catalogados. Depois que `python3 run_pipeline.py` executa as
+tarefas inferidas e gera logs em `outputs/`, eles passam a aparecer em
+`reports/results.csv`, `reports/summary.csv` e `reports/report.html` na próxima
+geração de relatório.
+
+Os sufixos `_error.c`, `_safe.c`, `_fixed.c` e `_pass.c` permanecem como uma
+convenção de leitura e como fallback para logs antigos, mas os relatórios e a
+descoberta de benchmarks usam os metadados explícitos quando disponíveis.
 
 Para gerar os relatórios CSV a partir dos logs:
 
@@ -284,26 +339,34 @@ python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt --fix
 
 ## Benchmarks
 
-A base atual possui exemplos em quatro categorias:
+A base controlada atual possui exemplos em quatro categorias:
 
 - `benchmarks/assertion_violation/`
 - `benchmarks/memory_corruption/`
 - `benchmarks/data_race/`
 - `benchmarks/deadlock/`
 
+Além dessas categorias, `benchmarks/random_tests/` contém códigos exploratórios
+sem metadados usados para validar a escolha automática de ferramentas. Essa
+pasta é útil para triagem e demonstração, mas não substitui os metadados quando
+o resultado precisa ser auditável.
+
 Os benchmarks incluem casos mínimos, casos mais complexos, exemplos com erro e
 exemplos corretos nomeados com o sufixo `_safe.c`. Arquivos terminados em
-`_fixed.c` ou `_pass.c` ficam reservados para validação de reparos e controles e
-não entram na rodada principal.
+`_fixed.c` ou `_pass.c` normalmente ficam reservados para validação de reparos e
+controles. A decisão efetiva de entrada na rodada principal fica registrada no
+campo `include_in_pipeline` de `benchmarks/metadata.csv`.
 
-Nos relatórios, os sufixos são interpretados assim:
+Nos relatórios, o comportamento esperado vem primeiro de
+`benchmarks/metadata.csv`:
 
-- `_error.c`: comportamento esperado `vulneravel`;
-- `_safe.c`, `_fixed.c` e `_pass.c`: comportamento esperado `correto`;
-- demais nomes: comportamento esperado `nao informado`.
+- `expected_behavior`: comportamento esperado do benchmark;
+- `expected_tool_behavior`: comportamento esperado da ferramenta aplicada;
+- `expectation_match`: comparação entre resultado observado e benchmark;
+- `tool_expectation_match`: comparação entre resultado observado e ferramenta.
 
-A coluna `expectation_match` indica se o resultado observado ficou `conforme
-esperado`, `divergente`, `inconclusivo` ou `nao avaliado`.
+Os sufixos `_error.c`, `_safe.c`, `_fixed.c` e `_pass.c` são usados apenas como
+fallback para logs ou benchmarks ainda sem metadados.
 
 ## Próxima etapa planejada
 

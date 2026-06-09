@@ -1,495 +1,66 @@
-tool,benchmark,log_file,execution_date,expected_behavior,expectation_match,returncode,compile_returncode,run_returncode,classification,error
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260605-210613.log,2026-06-05T21:06:13,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260605-212202.log,2026-06-05T21:22:02,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260605-212629.log,2026-06-05T21:26:29,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260608-105555.log,2026-06-08T10:55:55,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260608-203716.log,2026-06-08T20:37:16,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260609-083800.log,2026-06-09T08:38:00,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260609-084441.log,2026-06-09T08:44:41,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260609-085657.log,2026-06-09T08:56:57,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260609-085918.log,2026-06-09T08:59:18,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260609-092536.log,2026-06-09T09:25:36,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260609-093707.log,2026-06-09T09:37:07,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_error.c,outputs/esbmc/assert_bank_withdraw_error_20260608-203716.log,2026-06-08T20:37:16,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_error.c,outputs/esbmc/assert_bank_withdraw_error_20260609-083800.log,2026-06-09T08:38:00,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_error.c,outputs/esbmc/assert_bank_withdraw_error_20260609-084441.log,2026-06-09T08:44:41,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_error.c,outputs/esbmc/assert_bank_withdraw_error_20260609-085658.log,2026-06-09T08:56:58,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_error.c,outputs/esbmc/assert_bank_withdraw_error_20260609-092537.log,2026-06-09T09:25:37,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_error.c,outputs/esbmc/assert_bank_withdraw_error_20260609-093707.log,2026-06-09T09:37:07,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_safe.c,outputs/esbmc/assert_bank_withdraw_safe_20260608-203716.log,2026-06-08T20:37:16,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_safe.c,outputs/esbmc/assert_bank_withdraw_safe_20260609-083800.log,2026-06-09T08:38:00,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_safe.c,outputs/esbmc/assert_bank_withdraw_safe_20260609-084441.log,2026-06-09T08:44:41,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_safe.c,outputs/esbmc/assert_bank_withdraw_safe_20260609-085658.log,2026-06-09T08:56:58,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_safe.c,outputs/esbmc/assert_bank_withdraw_safe_20260609-092537.log,2026-06-09T09:25:37,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_bank_withdraw_safe.c,outputs/esbmc/assert_bank_withdraw_safe_20260609-093708.log,2026-06-09T09:37:08,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260605-210614.log,2026-06-05T21:06:14,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260605-212203.log,2026-06-05T21:22:03,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260605-212629.log,2026-06-05T21:26:29,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260608-105556.log,2026-06-08T10:55:56,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260608-203717.log,2026-06-08T20:37:17,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260609-083800.log,2026-06-09T08:38:00,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260609-084442.log,2026-06-09T08:44:42,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260609-085658.log,2026-06-09T08:56:58,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260609-092537.log,2026-06-09T09:25:37,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260609-093708.log,2026-06-09T09:37:08,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260605-210614.log,2026-06-05T21:06:14,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260605-212203.log,2026-06-05T21:22:03,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260605-212629.log,2026-06-05T21:26:29,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260608-105556.log,2026-06-08T10:55:56,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260608-203717.log,2026-06-08T20:37:17,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260609-083800.log,2026-06-09T08:38:00,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260609-084442.log,2026-06-09T08:44:42,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260609-085659.log,2026-06-09T08:56:59,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260609-092538.log,2026-06-09T09:25:38,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260609-093708.log,2026-06-09T09:37:08,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_protocol_sequence_error.c,outputs/esbmc/assert_protocol_sequence_error_20260608-203717.log,2026-06-08T20:37:17,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_protocol_sequence_error.c,outputs/esbmc/assert_protocol_sequence_error_20260609-083801.log,2026-06-09T08:38:01,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_protocol_sequence_error.c,outputs/esbmc/assert_protocol_sequence_error_20260609-084442.log,2026-06-09T08:44:42,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_protocol_sequence_error.c,outputs/esbmc/assert_protocol_sequence_error_20260609-085659.log,2026-06-09T08:56:59,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_protocol_sequence_error.c,outputs/esbmc/assert_protocol_sequence_error_20260609-092538.log,2026-06-09T09:25:38,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_protocol_sequence_error.c,outputs/esbmc/assert_protocol_sequence_error_20260609-093708.log,2026-06-09T09:37:08,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_error.c,outputs/esbmc/assert_sorted_insert_error_20260608-203717.log,2026-06-08T20:37:17,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_error.c,outputs/esbmc/assert_sorted_insert_error_20260609-083801.log,2026-06-09T08:38:01,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_error.c,outputs/esbmc/assert_sorted_insert_error_20260609-084442.log,2026-06-09T08:44:42,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_error.c,outputs/esbmc/assert_sorted_insert_error_20260609-085659.log,2026-06-09T08:56:59,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_error.c,outputs/esbmc/assert_sorted_insert_error_20260609-092538.log,2026-06-09T09:25:38,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_error.c,outputs/esbmc/assert_sorted_insert_error_20260609-093709.log,2026-06-09T09:37:09,vulneravel,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_safe.c,outputs/esbmc/assert_sorted_insert_safe_20260608-203717.log,2026-06-08T20:37:17,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_safe.c,outputs/esbmc/assert_sorted_insert_safe_20260609-083801.log,2026-06-09T08:38:01,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_safe.c,outputs/esbmc/assert_sorted_insert_safe_20260609-084442.log,2026-06-09T08:44:42,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_safe.c,outputs/esbmc/assert_sorted_insert_safe_20260609-085659.log,2026-06-09T08:56:59,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_safe.c,outputs/esbmc/assert_sorted_insert_safe_20260609-092539.log,2026-06-09T09:25:39,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sorted_insert_safe.c,outputs/esbmc/assert_sorted_insert_safe_20260609-093709.log,2026-06-09T09:37:09,correto,inconclusivo,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260605-210614.log,2026-06-05T21:06:14,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260605-212203.log,2026-06-05T21:22:03,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260605-212629.log,2026-06-05T21:26:29,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260608-105556.log,2026-06-08T10:55:56,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260608-203718.log,2026-06-08T20:37:18,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260609-083801.log,2026-06-09T08:38:01,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260609-084443.log,2026-06-09T08:44:43,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260609-085659.log,2026-06-09T08:56:59,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260609-092539.log,2026-06-09T09:25:39,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260609-093709.log,2026-06-09T09:37:09,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260605-210614.log,2026-06-05T21:06:14,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260605-212203.log,2026-06-05T21:22:03,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260605-212629.log,2026-06-05T21:26:29,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260608-105556.log,2026-06-08T10:55:56,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260608-203718.log,2026-06-08T20:37:18,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260609-083801.log,2026-06-09T08:38:01,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260609-084443.log,2026-06-09T08:44:43,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260609-085700.log,2026-06-09T08:57:00,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260609-092540.log,2026-06-09T09:25:40,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260609-093709.log,2026-06-09T09:37:09,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260519-164535.log,2026-05-19T16:45:35,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260519-164606.log,2026-05-19T16:46:06,nao informado,nao avaliado,-6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260519-172440.log,2026-05-19T17:24:40,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260605-134813.log,2026-06-05T13:48:13,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260605-200047.log,2026-06-05T20:00:47,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260605-204908.log,2026-06-05T20:49:08,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260605-210026.log,2026-06-05T21:00:26,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260605-210614.log,2026-06-05T21:06:14,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260605-212203.log,2026-06-05T21:22:03,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260605-212630.log,2026-06-05T21:26:30,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260608-105557.log,2026-06-08T10:55:57,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260608-203718.log,2026-06-08T20:37:18,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260609-083802.log,2026-06-09T08:38:02,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260609-084443.log,2026-06-09T08:44:43,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260609-085700.log,2026-06-09T08:57:00,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260609-092540.log,2026-06-09T09:25:40,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260609-093709.log,2026-06-09T09:37:09,nao informado,nao avaliado,6,,,erro de execucao,
-esbmc,benchmarks/assertion_violation/simple_assert_pass.c,outputs/esbmc/simple_assert_pass_20260605-120647.log,2026-06-05T12:06:47,correto,inconclusivo,6,,,erro de execucao,
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260605-210615.log,2026-06-05T21:06:15,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260605-212204.log,2026-06-05T21:22:04,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260605-212630.log,2026-06-05T21:26:30,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260608-105557.log,2026-06-08T10:55:57,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260608-203718.log,2026-06-08T20:37:18,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260609-083802.log,2026-06-09T08:38:02,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260609-084443.log,2026-06-09T08:44:43,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260609-085700.log,2026-06-09T08:57:00,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260609-092540.log,2026-06-09T09:25:40,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260609-093710.log,2026-06-09T09:37:10,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/matrix_index_error.c,outputs/asan/matrix_index_error_20260608-203731.log,2026-06-08T20:37:31,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/matrix_index_error.c,outputs/asan/matrix_index_error_20260609-083814.log,2026-06-09T08:38:14,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/matrix_index_error.c,outputs/asan/matrix_index_error_20260609-084455.log,2026-06-09T08:44:55,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/matrix_index_error.c,outputs/asan/matrix_index_error_20260609-085713.log,2026-06-09T08:57:13,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/matrix_index_error.c,outputs/asan/matrix_index_error_20260609-092553.log,2026-06-09T09:25:53,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/matrix_index_error.c,outputs/asan/matrix_index_error_20260609-093722.log,2026-06-09T09:37:22,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260605-210626.log,2026-06-05T21:06:26,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260605-212215.log,2026-06-05T21:22:15,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260605-212641.log,2026-06-05T21:26:41,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260608-105609.log,2026-06-08T10:56:09,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260608-203744.log,2026-06-08T20:37:44,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260609-083825.log,2026-06-09T08:38:25,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260609-084506.log,2026-06-09T08:45:06,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260609-085726.log,2026-06-09T08:57:26,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260609-092605.log,2026-06-09T09:26:05,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260609-093733.log,2026-06-09T09:37:33,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/asan/parser_token_overflow_error_20260608-203759.log,2026-06-08T20:37:59,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/asan/parser_token_overflow_error_20260609-083837.log,2026-06-09T08:38:37,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/asan/parser_token_overflow_error_20260609-084519.log,2026-06-09T08:45:19,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/asan/parser_token_overflow_error_20260609-085738.log,2026-06-09T08:57:38,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/asan/parser_token_overflow_error_20260609-092617.log,2026-06-09T09:26:17,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/asan/parser_token_overflow_error_20260609-093745.log,2026-06-09T09:37:45,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_safe.c,outputs/asan/parser_token_safe_20260608-203813.log,2026-06-08T20:38:13,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_safe.c,outputs/asan/parser_token_safe_20260609-083849.log,2026-06-09T08:38:49,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_safe.c,outputs/asan/parser_token_safe_20260609-084531.log,2026-06-09T08:45:31,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_safe.c,outputs/asan/parser_token_safe_20260609-085750.log,2026-06-09T08:57:50,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_safe.c,outputs/asan/parser_token_safe_20260609-092629.log,2026-06-09T09:26:29,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/parser_token_safe.c,outputs/asan/parser_token_safe_20260609-093757.log,2026-06-09T09:37:57,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/asan/ring_buffer_overwrite_error_20260608-203829.log,2026-06-08T20:38:29,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/asan/ring_buffer_overwrite_error_20260609-083900.log,2026-06-09T08:39:00,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/asan/ring_buffer_overwrite_error_20260609-084543.log,2026-06-09T08:45:43,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/asan/ring_buffer_overwrite_error_20260609-085802.log,2026-06-09T08:58:02,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/asan/ring_buffer_overwrite_error_20260609-092640.log,2026-06-09T09:26:40,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/asan/ring_buffer_overwrite_error_20260609-093809.log,2026-06-09T09:38:09,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/asan/ring_buffer_safe_20260608-203842.log,2026-06-08T20:38:42,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/asan/ring_buffer_safe_20260609-083912.log,2026-06-09T08:39:12,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/asan/ring_buffer_safe_20260609-084556.log,2026-06-09T08:45:56,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/asan/ring_buffer_safe_20260609-085818.log,2026-06-09T08:58:18,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/asan/ring_buffer_safe_20260609-092653.log,2026-06-09T09:26:53,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/asan/ring_buffer_safe_20260609-093821.log,2026-06-09T09:38:21,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260519-165548.log,2026-05-19T16:55:48,nao informado,nao avaliado,,0,0,nao detectado,
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260519-165611.log,2026-05-19T16:56:11,nao informado,nao avaliado,,0,0,nao detectado,
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260519-165641.log,2026-05-19T16:56:41,nao informado,nao avaliado,,0,-6,detectado,
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260519-172441.log,2026-05-19T17:24:41,nao informado,nao avaliado,,0,-6,detectado,
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260603-105004.log,2026-06-03T10:50:04,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 30 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260605-134814.log,2026-06-05T13:48:14,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260605-200048.log,2026-06-05T20:00:48,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260605-204908.log,2026-06-05T20:49:08,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260605-210027.log,2026-06-05T21:00:27,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260605-210638.log,2026-06-05T21:06:38,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260605-212227.log,2026-06-05T21:22:27,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260605-212654.log,2026-06-05T21:26:54,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260608-105621.log,2026-06-08T10:56:21,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260608-203854.log,2026-06-08T20:38:54,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260609-083924.log,2026-06-09T08:39:24,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260609-084609.log,2026-06-09T08:46:09,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260609-085830.log,2026-06-09T08:58:30,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260609-092705.log,2026-06-09T09:27:05,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260609-093833.log,2026-06-09T09:38:33,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow_fixed.c,outputs/asan/simple_buffer_overflow_fixed_20260603-104650.log,2026-06-03T10:46:50,correto,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow_fixed.c,outputs/asan/simple_buffer_overflow_fixed_20260603-104742.log,2026-06-03T10:47:42,correto,divergente,,0,124,detectado,Tempo limite excedido apos 30 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow_fixed.c,outputs/asan/simple_buffer_overflow_fixed_20260603-104901.log,2026-06-03T10:49:01,correto,divergente,,0,124,detectado,Tempo limite excedido apos 30 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow_fixed.c,outputs/asan/simple_buffer_overflow_fixed_20260603-105004.log,2026-06-03T10:50:04,correto,divergente,,0,124,detectado,Tempo limite excedido apos 30 segundos.
-asan,benchmarks/memory_corruption/simple_buffer_overflow_fixed.c,outputs/asan/simple_buffer_overflow_fixed_20260603-105048.log,2026-06-03T10:50:48,correto,divergente,,0,124,detectado,Tempo limite excedido apos 30 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260605-210649.log,2026-06-05T21:06:49,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260605-212237.log,2026-06-05T21:22:37,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260605-212705.log,2026-06-05T21:27:05,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260608-105637.log,2026-06-08T10:56:37,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260608-203907.log,2026-06-08T20:39:07,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260609-083936.log,2026-06-09T08:39:36,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260609-084621.log,2026-06-09T08:46:21,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260609-085843.log,2026-06-09T08:58:43,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260609-092717.log,2026-06-09T09:27:17,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260609-093845.log,2026-06-09T09:38:45,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260605-210700.log,2026-06-05T21:07:00,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260605-212249.log,2026-06-05T21:22:49,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260605-212716.log,2026-06-05T21:27:16,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260608-105651.log,2026-06-08T10:56:51,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260608-203921.log,2026-06-08T20:39:21,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260609-083947.log,2026-06-09T08:39:47,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260609-084633.log,2026-06-09T08:46:33,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260609-085855.log,2026-06-09T08:58:55,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260609-092728.log,2026-06-09T09:27:28,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260609-093856.log,2026-06-09T09:38:56,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260605-210711.log,2026-06-05T21:07:11,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260605-212300.log,2026-06-05T21:23:00,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260605-212727.log,2026-06-05T21:27:27,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260608-105712.log,2026-06-08T10:57:12,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260608-203936.log,2026-06-08T20:39:36,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260609-083958.log,2026-06-09T08:39:58,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260609-084646.log,2026-06-09T08:46:46,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260609-085907.log,2026-06-09T08:59:07,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260609-092741.log,2026-06-09T09:27:41,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260609-093908.log,2026-06-09T09:39:08,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260605-210724.log,2026-06-05T21:07:24,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260605-212311.log,2026-06-05T21:23:11,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260605-212738.log,2026-06-05T21:27:38,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260608-105728.log,2026-06-08T10:57:28,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260608-203949.log,2026-06-08T20:39:49,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260609-084010.log,2026-06-09T08:40:10,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260609-084659.log,2026-06-09T08:46:59,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260609-085919.log,2026-06-09T08:59:19,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260609-092752.log,2026-06-09T09:27:52,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260609-093920.log,2026-06-09T09:39:20,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_error.c,outputs/tsan/race_config_reload_error_20260608-203953.log,2026-06-08T20:39:53,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_error.c,outputs/tsan/race_config_reload_error_20260609-084011.log,2026-06-09T08:40:11,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_error.c,outputs/tsan/race_config_reload_error_20260609-084702.log,2026-06-09T08:47:02,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_error.c,outputs/tsan/race_config_reload_error_20260609-085921.log,2026-06-09T08:59:21,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_error.c,outputs/tsan/race_config_reload_error_20260609-092754.log,2026-06-09T09:27:54,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_error.c,outputs/tsan/race_config_reload_error_20260609-093923.log,2026-06-09T09:39:23,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_safe.c,outputs/tsan/race_config_reload_safe_20260608-203955.log,2026-06-08T20:39:55,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_safe.c,outputs/tsan/race_config_reload_safe_20260609-084012.log,2026-06-09T08:40:12,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_safe.c,outputs/tsan/race_config_reload_safe_20260609-084703.log,2026-06-09T08:47:03,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_safe.c,outputs/tsan/race_config_reload_safe_20260609-085922.log,2026-06-09T08:59:22,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_safe.c,outputs/tsan/race_config_reload_safe_20260609-092755.log,2026-06-09T09:27:55,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_config_reload_safe.c,outputs/tsan/race_config_reload_safe_20260609-093925.log,2026-06-09T09:39:25,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260605-210726.log,2026-06-05T21:07:26,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260605-212313.log,2026-06-05T21:23:13,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260605-212739.log,2026-06-05T21:27:39,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260608-105731.log,2026-06-08T10:57:31,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260608-203958.log,2026-06-08T20:39:58,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260609-084013.log,2026-06-09T08:40:13,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260609-084704.log,2026-06-09T08:47:04,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260609-085923.log,2026-06-09T08:59:23,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260609-092756.log,2026-06-09T09:27:56,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260609-093926.log,2026-06-09T09:39:26,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_lazy_init_error.c,outputs/tsan/race_lazy_init_error_20260608-204000.log,2026-06-08T20:40:00,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_lazy_init_error.c,outputs/tsan/race_lazy_init_error_20260609-084013.log,2026-06-09T08:40:13,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_lazy_init_error.c,outputs/tsan/race_lazy_init_error_20260609-084706.log,2026-06-09T08:47:06,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_lazy_init_error.c,outputs/tsan/race_lazy_init_error_20260609-085924.log,2026-06-09T08:59:24,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_lazy_init_error.c,outputs/tsan/race_lazy_init_error_20260609-092757.log,2026-06-09T09:27:57,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_lazy_init_error.c,outputs/tsan/race_lazy_init_error_20260609-093927.log,2026-06-09T09:39:27,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_error.c,outputs/tsan/race_order_queue_error_20260608-204002.log,2026-06-08T20:40:02,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_error.c,outputs/tsan/race_order_queue_error_20260609-084014.log,2026-06-09T08:40:14,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_error.c,outputs/tsan/race_order_queue_error_20260609-084707.log,2026-06-09T08:47:07,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_error.c,outputs/tsan/race_order_queue_error_20260609-085925.log,2026-06-09T08:59:25,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_error.c,outputs/tsan/race_order_queue_error_20260609-092758.log,2026-06-09T09:27:58,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_error.c,outputs/tsan/race_order_queue_error_20260609-093929.log,2026-06-09T09:39:29,vulneravel,divergente,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_safe.c,outputs/tsan/race_order_queue_safe_20260608-204004.log,2026-06-08T20:40:04,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_safe.c,outputs/tsan/race_order_queue_safe_20260609-084015.log,2026-06-09T08:40:15,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_safe.c,outputs/tsan/race_order_queue_safe_20260609-084708.log,2026-06-09T08:47:08,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_safe.c,outputs/tsan/race_order_queue_safe_20260609-085926.log,2026-06-09T08:59:26,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_safe.c,outputs/tsan/race_order_queue_safe_20260609-092759.log,2026-06-09T09:27:59,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_order_queue_safe.c,outputs/tsan/race_order_queue_safe_20260609-093932.log,2026-06-09T09:39:32,correto,conforme esperado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260605-210728.log,2026-06-05T21:07:28,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260605-212314.log,2026-06-05T21:23:14,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260605-212740.log,2026-06-05T21:27:40,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260608-105732.log,2026-06-08T10:57:32,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260608-204006.log,2026-06-08T20:40:06,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260609-084016.log,2026-06-09T08:40:16,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260609-084709.log,2026-06-09T08:47:09,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260609-085927.log,2026-06-09T08:59:27,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260609-092801.log,2026-06-09T09:28:01,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260609-093934.log,2026-06-09T09:39:34,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260605-210730.log,2026-06-05T21:07:30,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260605-212314.log,2026-06-05T21:23:14,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260605-212740.log,2026-06-05T21:27:40,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260608-105733.log,2026-06-08T10:57:33,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260608-204009.log,2026-06-08T20:40:09,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260609-084017.log,2026-06-09T08:40:17,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260609-084710.log,2026-06-09T08:47:10,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260609-085928.log,2026-06-09T08:59:28,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260609-092802.log,2026-06-09T09:28:02,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260609-093935.log,2026-06-09T09:39:35,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260605-210730.log,2026-06-05T21:07:30,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260605-212315.log,2026-06-05T21:23:15,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260605-212741.log,2026-06-05T21:27:41,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260608-105734.log,2026-06-08T10:57:34,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260608-204012.log,2026-06-08T20:40:12,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260609-084017.log,2026-06-09T08:40:17,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260609-084711.log,2026-06-09T08:47:11,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260609-085929.log,2026-06-09T08:59:29,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260609-092803.log,2026-06-09T09:28:03,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260609-093937.log,2026-06-09T09:39:37,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260519-165900.log,2026-05-19T16:59:00,nao informado,nao avaliado,,0,-6,detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260519-172445.log,2026-05-19T17:24:45,nao informado,nao avaliado,,0,-6,detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260605-134825.log,2026-06-05T13:48:25,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260605-200059.log,2026-06-05T20:00:59,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260605-204919.log,2026-06-05T20:49:19,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260605-210039.log,2026-06-05T21:00:39,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260605-210731.log,2026-06-05T21:07:31,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260605-212316.log,2026-06-05T21:23:16,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260605-212742.log,2026-06-05T21:27:42,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260608-105735.log,2026-06-08T10:57:35,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260608-204015.log,2026-06-08T20:40:15,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260609-084018.log,2026-06-09T08:40:18,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260609-084712.log,2026-06-09T08:47:12,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260609-085929.log,2026-06-09T08:59:29,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260609-092804.log,2026-06-09T09:28:04,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260609-093938.log,2026-06-09T09:39:38,nao informado,nao avaliado,,0,-11,nao detectado,
-tsan,benchmarks/data_race/simple_data_race_fixed.c,outputs/tsan/simple_data_race_fixed_20260605-120311.log,2026-06-05T12:03:11,correto,conforme esperado,,0,-11,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_error.c,outputs/deadlock/deadlock_cache_refresh_error_20260608-204016.log,2026-06-08T20:40:16,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_error.c,outputs/deadlock/deadlock_cache_refresh_error_20260609-084019.log,2026-06-09T08:40:19,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_error.c,outputs/deadlock/deadlock_cache_refresh_error_20260609-084713.log,2026-06-09T08:47:13,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_error.c,outputs/deadlock/deadlock_cache_refresh_error_20260609-085930.log,2026-06-09T08:59:30,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_error.c,outputs/deadlock/deadlock_cache_refresh_error_20260609-092804.log,2026-06-09T09:28:04,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_error.c,outputs/deadlock/deadlock_cache_refresh_error_20260609-093939.log,2026-06-09T09:39:39,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_safe.c,outputs/deadlock/deadlock_cache_refresh_safe_20260608-204020.log,2026-06-08T20:40:20,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_safe.c,outputs/deadlock/deadlock_cache_refresh_safe_20260609-084022.log,2026-06-09T08:40:22,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_safe.c,outputs/deadlock/deadlock_cache_refresh_safe_20260609-084717.log,2026-06-09T08:47:17,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_safe.c,outputs/deadlock/deadlock_cache_refresh_safe_20260609-085934.log,2026-06-09T08:59:34,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_safe.c,outputs/deadlock/deadlock_cache_refresh_safe_20260609-092808.log,2026-06-09T09:28:08,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_safe.c,outputs/deadlock/deadlock_cache_refresh_safe_20260609-093943.log,2026-06-09T09:39:43,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260605-210732.log,2026-06-05T21:07:32,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260605-212317.log,2026-06-05T21:23:17,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260605-212743.log,2026-06-05T21:27:43,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260608-105738.log,2026-06-08T10:57:38,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260608-204022.log,2026-06-08T20:40:22,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260609-084023.log,2026-06-09T08:40:23,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260609-084718.log,2026-06-09T08:47:18,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260609-085934.log,2026-06-09T08:59:34,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260609-092809.log,2026-06-09T09:28:09,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260609-093944.log,2026-06-09T09:39:44,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_error.c,outputs/deadlock/deadlock_nested_service_error_20260608-204026.log,2026-06-08T20:40:26,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_error.c,outputs/deadlock/deadlock_nested_service_error_20260609-084026.log,2026-06-09T08:40:26,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_error.c,outputs/deadlock/deadlock_nested_service_error_20260609-084722.log,2026-06-09T08:47:22,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_error.c,outputs/deadlock/deadlock_nested_service_error_20260609-085937.log,2026-06-09T08:59:37,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_error.c,outputs/deadlock/deadlock_nested_service_error_20260609-092812.log,2026-06-09T09:28:12,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_error.c,outputs/deadlock/deadlock_nested_service_error_20260609-093948.log,2026-06-09T09:39:48,vulneravel,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_safe.c,outputs/deadlock/deadlock_nested_service_safe_20260608-204032.log,2026-06-08T20:40:32,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_safe.c,outputs/deadlock/deadlock_nested_service_safe_20260609-084030.log,2026-06-09T08:40:30,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_safe.c,outputs/deadlock/deadlock_nested_service_safe_20260609-084727.log,2026-06-09T08:47:27,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_safe.c,outputs/deadlock/deadlock_nested_service_safe_20260609-085941.log,2026-06-09T08:59:41,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_safe.c,outputs/deadlock/deadlock_nested_service_safe_20260609-092816.log,2026-06-09T09:28:16,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_safe.c,outputs/deadlock/deadlock_nested_service_safe_20260609-093952.log,2026-06-09T09:39:52,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260605-210736.log,2026-06-05T21:07:36,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260605-212320.log,2026-06-05T21:23:20,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260605-212746.log,2026-06-05T21:27:46,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260608-105743.log,2026-06-08T10:57:43,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260608-204034.log,2026-06-08T20:40:34,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260609-084031.log,2026-06-09T08:40:31,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260609-084729.log,2026-06-09T08:47:29,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260609-085942.log,2026-06-09T08:59:42,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260609-092816.log,2026-06-09T09:28:16,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260609-093953.log,2026-06-09T09:39:53,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260605-210739.log,2026-06-05T21:07:39,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260605-212323.log,2026-06-05T21:23:23,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260605-212749.log,2026-06-05T21:27:49,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260608-105747.log,2026-06-08T10:57:47,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260608-204037.log,2026-06-08T20:40:37,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260609-084034.log,2026-06-09T08:40:34,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260609-084732.log,2026-06-09T08:47:32,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260609-085945.log,2026-06-09T08:59:45,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260609-092820.log,2026-06-09T09:28:20,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260609-093957.log,2026-06-09T09:39:57,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260605-210743.log,2026-06-05T21:07:43,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260605-212327.log,2026-06-05T21:23:27,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260605-212753.log,2026-06-05T21:27:53,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260608-105751.log,2026-06-08T10:57:51,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260608-204042.log,2026-06-08T20:40:42,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260609-084037.log,2026-06-09T08:40:37,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260609-084736.log,2026-06-09T08:47:36,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260609-085949.log,2026-06-09T08:59:49,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260609-092823.log,2026-06-09T09:28:23,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260609-094000.log,2026-06-09T09:40:00,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_trylock_safe.c,outputs/deadlock/deadlock_trylock_safe_20260608-204046.log,2026-06-08T20:40:46,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_trylock_safe.c,outputs/deadlock/deadlock_trylock_safe_20260609-084040.log,2026-06-09T08:40:40,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_trylock_safe.c,outputs/deadlock/deadlock_trylock_safe_20260609-084740.log,2026-06-09T08:47:40,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_trylock_safe.c,outputs/deadlock/deadlock_trylock_safe_20260609-085953.log,2026-06-09T08:59:53,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_trylock_safe.c,outputs/deadlock/deadlock_trylock_safe_20260609-092826.log,2026-06-09T09:28:26,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_trylock_safe.c,outputs/deadlock/deadlock_trylock_safe_20260609-094004.log,2026-06-09T09:40:04,correto,conforme esperado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260605-210746.log,2026-06-05T21:07:46,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260605-212330.log,2026-06-05T21:23:30,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260605-212756.log,2026-06-05T21:27:56,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260608-105756.log,2026-06-08T10:57:56,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260608-204046.log,2026-06-08T20:40:46,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260609-084041.log,2026-06-09T08:40:41,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260609-084741.log,2026-06-09T08:47:41,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260609-085954.log,2026-06-09T08:59:54,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260609-092827.log,2026-06-09T09:28:27,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260609-094005.log,2026-06-09T09:40:05,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-134137.log,2026-06-05T13:41:37,nao informado,nao avaliado,,0,0,nao detectado,
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-134204.log,2026-06-05T13:42:04,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-134841.log,2026-06-05T13:48:41,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-200102.log,2026-06-05T20:01:02,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-204920.log,2026-06-05T20:49:20,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-210040.log,2026-06-05T21:00:40,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-210750.log,2026-06-05T21:07:50,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-212333.log,2026-06-05T21:23:33,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260605-212759.log,2026-06-05T21:27:59,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260608-105800.log,2026-06-08T10:58:00,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260608-204050.log,2026-06-08T20:40:50,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260609-084044.log,2026-06-09T08:40:44,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260609-084744.log,2026-06-09T08:47:44,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260609-085958.log,2026-06-09T08:59:58,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260609-092830.log,2026-06-09T09:28:30,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260609-094008.log,2026-06-09T09:40:08,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
-deadlock-timeout,benchmarks/deadlock/simple_deadlock_fixed.c,outputs/deadlock/simple_deadlock_fixed_20260605-134344.log,2026-06-05T13:43:44,correto,conforme esperado,,0,0,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260605-210625.log,2026-06-05T21:06:25,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260605-212214.log,2026-06-05T21:22:14,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260605-212640.log,2026-06-05T21:26:40,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260608-105608.log,2026-06-08T10:56:08,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260608-203729.log,2026-06-08T20:37:29,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260609-083813.log,2026-06-09T08:38:13,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260609-084454.log,2026-06-09T08:44:54,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260609-085711.log,2026-06-09T08:57:11,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260609-092551.log,2026-06-09T09:25:51,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260609-093721.log,2026-06-09T09:37:21,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/matrix_index_error.c,outputs/afl/matrix_index_error_20260608-203742.log,2026-06-08T20:37:42,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/matrix_index_error.c,outputs/afl/matrix_index_error_20260609-083824.log,2026-06-09T08:38:24,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/matrix_index_error.c,outputs/afl/matrix_index_error_20260609-084505.log,2026-06-09T08:45:05,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/matrix_index_error.c,outputs/afl/matrix_index_error_20260609-085725.log,2026-06-09T08:57:25,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/matrix_index_error.c,outputs/afl/matrix_index_error_20260609-092604.log,2026-06-09T09:26:04,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/matrix_index_error.c,outputs/afl/matrix_index_error_20260609-093733.log,2026-06-09T09:37:33,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260605-210637.log,2026-06-05T21:06:37,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260605-212226.log,2026-06-05T21:22:26,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260605-212652.log,2026-06-05T21:26:52,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260608-105620.log,2026-06-08T10:56:20,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260608-203756.log,2026-06-08T20:37:56,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260609-083836.log,2026-06-09T08:38:36,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260609-084517.log,2026-06-09T08:45:17,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260609-085737.log,2026-06-09T08:57:37,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260609-092616.log,2026-06-09T09:26:16,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260609-093744.log,2026-06-09T09:37:44,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/afl/parser_token_overflow_error_20260608-203812.log,2026-06-08T20:38:12,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/afl/parser_token_overflow_error_20260609-083848.log,2026-06-09T08:38:48,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/afl/parser_token_overflow_error_20260609-084530.log,2026-06-09T08:45:30,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/afl/parser_token_overflow_error_20260609-085749.log,2026-06-09T08:57:49,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/afl/parser_token_overflow_error_20260609-092628.log,2026-06-09T09:26:28,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/afl/parser_token_overflow_error_20260609-093756.log,2026-06-09T09:37:56,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_safe.c,outputs/afl/parser_token_safe_20260608-203826.log,2026-06-08T20:38:26,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_safe.c,outputs/afl/parser_token_safe_20260609-083859.log,2026-06-09T08:38:59,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_safe.c,outputs/afl/parser_token_safe_20260609-084542.log,2026-06-09T08:45:42,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_safe.c,outputs/afl/parser_token_safe_20260609-085801.log,2026-06-09T08:58:01,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_safe.c,outputs/afl/parser_token_safe_20260609-092639.log,2026-06-09T09:26:39,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/parser_token_safe.c,outputs/afl/parser_token_safe_20260609-093808.log,2026-06-09T09:38:08,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/afl/ring_buffer_overwrite_error_20260608-203841.log,2026-06-08T20:38:41,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/afl/ring_buffer_overwrite_error_20260609-083911.log,2026-06-09T08:39:11,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/afl/ring_buffer_overwrite_error_20260609-084554.log,2026-06-09T08:45:54,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/afl/ring_buffer_overwrite_error_20260609-085813.log,2026-06-09T08:58:13,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/afl/ring_buffer_overwrite_error_20260609-092651.log,2026-06-09T09:26:51,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/afl/ring_buffer_overwrite_error_20260609-093820.log,2026-06-09T09:38:20,vulneravel,divergente,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/afl/ring_buffer_safe_20260608-203853.log,2026-06-08T20:38:53,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/afl/ring_buffer_safe_20260609-083923.log,2026-06-09T08:39:23,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/afl/ring_buffer_safe_20260609-084607.log,2026-06-09T08:46:07,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/afl/ring_buffer_safe_20260609-085829.log,2026-06-09T08:58:29,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/afl/ring_buffer_safe_20260609-092704.log,2026-06-09T09:27:04,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/afl/ring_buffer_safe_20260609-093832.log,2026-06-09T09:38:32,correto,conforme esperado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260519-170253.log,2026-05-19T17:02:53,nao informado,nao avaliado,,,,ferramenta indisponivel,"Ferramenta AFL++ nao encontrada: afl-clang-fast, afl-fuzz."
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260519-172447.log,2026-05-19T17:24:47,nao informado,nao avaliado,,,,ferramenta indisponivel,"Ferramenta AFL++ nao encontrada: afl-clang-fast, afl-fuzz."
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-134845.log,2026-06-05T13:48:45,nao informado,nao avaliado,,,,ferramenta indisponivel,"Ferramenta AFL++ nao encontrada: afl-clang-fast, afl-fuzz."
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-200105.log,2026-06-05T20:01:05,nao informado,nao avaliado,,,,ferramenta indisponivel,"Ferramenta AFL++ nao encontrada: afl-clang-fast, afl-fuzz."
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-204834.log,2026-06-05T20:48:34,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-204924.log,2026-06-05T20:49:24,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-210038.log,2026-06-05T21:00:38,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-210648.log,2026-06-05T21:06:48,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-212237.log,2026-06-05T21:22:37,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260605-212704.log,2026-06-05T21:27:04,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260608-105633.log,2026-06-08T10:56:33,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260608-203906.log,2026-06-08T20:39:06,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260609-083935.log,2026-06-09T08:39:35,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260609-084619.log,2026-06-09T08:46:19,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260609-085841.log,2026-06-09T08:58:41,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260609-092716.log,2026-06-09T09:27:16,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260609-093844.log,2026-06-09T09:38:44,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260605-210700.log,2026-06-05T21:07:00,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260605-212248.log,2026-06-05T21:22:48,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260605-212716.log,2026-06-05T21:27:16,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260608-105649.log,2026-06-08T10:56:49,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260608-203918.log,2026-06-08T20:39:18,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260609-083947.log,2026-06-09T08:39:47,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260609-084632.log,2026-06-09T08:46:32,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260609-085854.log,2026-06-09T08:58:54,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260609-092727.log,2026-06-09T09:27:27,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260609-093855.log,2026-06-09T09:38:55,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260605-210711.log,2026-06-05T21:07:11,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260605-212259.log,2026-06-05T21:22:59,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260605-212726.log,2026-06-05T21:27:26,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260608-105703.log,2026-06-08T10:57:03,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260608-203935.log,2026-06-08T20:39:35,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260609-083957.log,2026-06-09T08:39:57,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260609-084644.log,2026-06-09T08:46:44,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260609-085906.log,2026-06-09T08:59:06,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260609-092740.log,2026-06-09T09:27:40,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260609-093907.log,2026-06-09T09:39:07,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260605-210722.log,2026-06-05T21:07:22,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260605-212310.log,2026-06-05T21:23:10,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260605-212737.log,2026-06-05T21:27:37,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260608-105725.log,2026-06-08T10:57:25,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260608-203948.log,2026-06-08T20:39:48,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260609-084009.log,2026-06-09T08:40:09,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260609-084657.log,2026-06-09T08:46:57,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260609-085918.log,2026-06-09T08:59:18,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260609-092751.log,2026-06-09T09:27:51,nao informado,nao avaliado,,0,1,nao detectado,
-afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260609-093919.log,2026-06-09T09:39:19,nao informado,nao avaliado,,0,1,nao detectado,
+tool,benchmark,log_file,execution_date,expected_behavior,expectation_match,expected_tool_behavior,tool_expectation_match,returncode,compile_returncode,run_returncode,classification,error
+afl++,benchmarks/memory_corruption/heap_write_overflow.c,outputs/afl/heap_write_overflow_20260609-141900.log,2026-06-09T14:19:00,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/matrix_index_error.c,outputs/afl/matrix_index_error_20260609-141911.log,2026-06-09T14:19:11,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/afl/out_of_bounds_read_20260609-141922.log,2026-06-09T14:19:22,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/afl/parser_token_overflow_error_20260609-141935.log,2026-06-09T14:19:35,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/parser_token_safe.c,outputs/afl/parser_token_safe_20260609-141946.log,2026-06-09T14:19:46,correto,conforme esperado,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/afl/ring_buffer_overwrite_error_20260609-141957.log,2026-06-09T14:19:57,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/afl/ring_buffer_safe_20260609-142009.log,2026-06-09T14:20:09,correto,conforme esperado,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/afl/simple_buffer_overflow_20260609-142022.log,2026-06-09T14:20:22,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/stack_write_overflow.c,outputs/afl/stack_write_overflow_20260609-142033.log,2026-06-09T14:20:33,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/string_copy_overflow.c,outputs/afl/string_copy_overflow_20260609-142044.log,2026-06-09T14:20:44,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/memory_corruption/use_after_free.c,outputs/afl/use_after_free_20260609-142056.log,2026-06-09T14:20:56,vulneravel,divergente,inconclusivo,inconclusivo,,0,1,nao detectado,
+afl++,benchmarks/random_tests/random_heap_use_after_free.c,outputs/afl/random_heap_use_after_free_20260609-142112.log,2026-06-09T14:21:12,nao informado,nao avaliado,nao informado,nao avaliado,,0,1,nao detectado,
+asan,benchmarks/memory_corruption/heap_write_overflow.c,outputs/asan/heap_write_overflow_20260609-141900.log,2026-06-09T14:19:00,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/matrix_index_error.c,outputs/asan/matrix_index_error_20260609-141912.log,2026-06-09T14:19:12,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/out_of_bounds_read.c,outputs/asan/out_of_bounds_read_20260609-141924.log,2026-06-09T14:19:24,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/parser_token_overflow_error.c,outputs/asan/parser_token_overflow_error_20260609-141935.log,2026-06-09T14:19:35,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/parser_token_safe.c,outputs/asan/parser_token_safe_20260609-141947.log,2026-06-09T14:19:47,correto,divergente,nao_detectar,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/ring_buffer_overwrite_error.c,outputs/asan/ring_buffer_overwrite_error_20260609-141959.log,2026-06-09T14:19:59,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/ring_buffer_safe.c,outputs/asan/ring_buffer_safe_20260609-142011.log,2026-06-09T14:20:11,correto,divergente,nao_detectar,divergente,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/simple_buffer_overflow.c,outputs/asan/simple_buffer_overflow_20260609-142023.log,2026-06-09T14:20:23,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/simple_buffer_overflow_fixed.c,outputs/asan/simple_buffer_overflow_fixed_20260603-105048.log,2026-06-03T10:50:48,correto,divergente,nao_detectar,divergente,,0,124,detectado,Tempo limite excedido apos 30 segundos.
+asan,benchmarks/memory_corruption/stack_write_overflow.c,outputs/asan/stack_write_overflow_20260609-142034.log,2026-06-09T14:20:34,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/string_copy_overflow.c,outputs/asan/string_copy_overflow_20260609-142045.log,2026-06-09T14:20:45,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/memory_corruption/use_after_free.c,outputs/asan/use_after_free_20260609-142057.log,2026-06-09T14:20:57,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+asan,benchmarks/random_tests/random_heap_use_after_free.c,outputs/asan/random_heap_use_after_free_20260609-142112.log,2026-06-09T14:21:12,nao informado,nao avaliado,nao informado,nao avaliado,,0,124,detectado,Tempo limite excedido apos 10 segundos.
+deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_error.c,outputs/deadlock/deadlock_cache_refresh_error_20260609-141831.log,2026-06-09T14:18:31,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/deadlock_cache_refresh_safe.c,outputs/deadlock/deadlock_cache_refresh_safe_20260609-141835.log,2026-06-09T14:18:35,correto,conforme esperado,nao_detectar,conforme esperado,,0,0,nao detectado,
+deadlock-timeout,benchmarks/deadlock/deadlock_conditional_order.c,outputs/deadlock/deadlock_conditional_order_20260609-141836.log,2026-06-09T14:18:36,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_error.c,outputs/deadlock/deadlock_nested_service_error_20260609-141839.log,2026-06-09T14:18:39,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/deadlock_nested_service_safe.c,outputs/deadlock/deadlock_nested_service_safe_20260609-141842.log,2026-06-09T14:18:42,correto,conforme esperado,nao_detectar,conforme esperado,,0,0,nao detectado,
+deadlock-timeout,benchmarks/deadlock/deadlock_resource_pair.c,outputs/deadlock/deadlock_resource_pair_20260609-141843.log,2026-06-09T14:18:43,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/deadlock_self_lock.c,outputs/deadlock/deadlock_self_lock_20260609-141846.log,2026-06-09T14:18:46,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/deadlock_three_locks_cycle.c,outputs/deadlock/deadlock_three_locks_cycle_20260609-141850.log,2026-06-09T14:18:50,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/deadlock_trylock_safe.c,outputs/deadlock/deadlock_trylock_safe_20260609-141853.log,2026-06-09T14:18:53,correto,conforme esperado,nao_detectar,conforme esperado,,0,0,nao detectado,
+deadlock-timeout,benchmarks/deadlock/deadlock_two_locks_reverse.c,outputs/deadlock/deadlock_two_locks_reverse_20260609-141854.log,2026-06-09T14:18:54,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/simple_deadlock.c,outputs/deadlock/simple_deadlock_20260609-141857.log,2026-06-09T14:18:57,vulneravel,conforme esperado,detectar,conforme esperado,,0,124,detectado,Tempo limite excedido apos 3 segundos.
+deadlock-timeout,benchmarks/deadlock/simple_deadlock_fixed.c,outputs/deadlock/simple_deadlock_fixed_20260605-134344.log,2026-06-05T13:43:44,correto,conforme esperado,nao_detectar,conforme esperado,,0,0,nao detectado,
+deadlock-timeout,benchmarks/random_tests/random_deadlock_pair.c,outputs/deadlock/random_deadlock_pair_20260609-142109.log,2026-06-09T14:21:09,nao informado,nao avaliado,nao informado,nao avaliado,,0,0,nao detectado,
+esbmc,benchmarks/assertion_violation/assert_array_index.c,outputs/esbmc/assert_array_index_20260609-141818.log,2026-06-09T14:18:18,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_bank_withdraw_error.c,outputs/esbmc/assert_bank_withdraw_error_20260609-141818.log,2026-06-09T14:18:18,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_bank_withdraw_safe.c,outputs/esbmc/assert_bank_withdraw_safe_20260609-141819.log,2026-06-09T14:18:19,correto,inconclusivo,nao_detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_counter_overflow.c,outputs/esbmc/assert_counter_overflow_20260609-141819.log,2026-06-09T14:18:19,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_negative_value.c,outputs/esbmc/assert_negative_value_20260609-141819.log,2026-06-09T14:18:19,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_protocol_sequence_error.c,outputs/esbmc/assert_protocol_sequence_error_20260609-141819.log,2026-06-09T14:18:19,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_sorted_insert_error.c,outputs/esbmc/assert_sorted_insert_error_20260609-141819.log,2026-06-09T14:18:19,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_sorted_insert_safe.c,outputs/esbmc/assert_sorted_insert_safe_20260609-141820.log,2026-06-09T14:18:20,correto,inconclusivo,nao_detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_state_transition.c,outputs/esbmc/assert_state_transition_20260609-141820.log,2026-06-09T14:18:20,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/assert_sum_limit.c,outputs/esbmc/assert_sum_limit_20260609-141820.log,2026-06-09T14:18:20,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/simple_assert_fail.c,outputs/esbmc/simple_assert_fail_20260609-141820.log,2026-06-09T14:18:20,vulneravel,inconclusivo,detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/assertion_violation/simple_assert_pass.c,outputs/esbmc/simple_assert_pass_20260605-120647.log,2026-06-05T12:06:47,correto,inconclusivo,nao_detectar,inconclusivo,6,,,erro de execucao,
+esbmc,benchmarks/random_tests/random_assert_check.c,outputs/esbmc/random_assert_check_20260609-142108.log,2026-06-09T14:21:08,nao informado,nao avaliado,nao informado,nao avaliado,6,,,erro de execucao,
+tsan,benchmarks/data_race/race_array_cell.c,outputs/tsan/race_array_cell_20260609-141820.log,2026-06-09T14:18:20,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_config_reload_error.c,outputs/tsan/race_config_reload_error_20260609-141823.log,2026-06-09T14:18:23,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_config_reload_safe.c,outputs/tsan/race_config_reload_safe_20260609-141823.log,2026-06-09T14:18:23,correto,conforme esperado,nao_detectar,conforme esperado,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_increment_loop.c,outputs/tsan/race_increment_loop_20260609-141824.log,2026-06-09T14:18:24,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_lazy_init_error.c,outputs/tsan/race_lazy_init_error_20260609-141825.log,2026-06-09T14:18:25,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_order_queue_error.c,outputs/tsan/race_order_queue_error_20260609-141826.log,2026-06-09T14:18:26,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_order_queue_safe.c,outputs/tsan/race_order_queue_safe_20260609-141827.log,2026-06-09T14:18:27,correto,conforme esperado,nao_detectar,conforme esperado,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_read_write.c,outputs/tsan/race_read_write_20260609-141828.log,2026-06-09T14:18:28,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_shared_flag.c,outputs/tsan/race_shared_flag_20260609-141829.log,2026-06-09T14:18:29,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/race_struct_field.c,outputs/tsan/race_struct_field_20260609-141829.log,2026-06-09T14:18:29,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/simple_data_race.c,outputs/tsan/simple_data_race_20260609-141830.log,2026-06-09T14:18:30,vulneravel,divergente,detectar,divergente,,0,-11,nao detectado,
+tsan,benchmarks/data_race/simple_data_race_fixed.c,outputs/tsan/simple_data_race_fixed_20260605-120311.log,2026-06-05T12:03:11,correto,conforme esperado,nao_detectar,conforme esperado,,0,-11,nao detectado,
+tsan,benchmarks/random_tests/random_deadlock_pair.c,outputs/tsan/random_deadlock_pair_20260609-142110.log,2026-06-09T14:21:10,nao informado,nao avaliado,nao informado,nao avaliado,,0,-11,nao detectado,
+tsan,benchmarks/random_tests/random_race_counter.c,outputs/tsan/random_race_counter_20260609-142123.log,2026-06-09T14:21:23,nao informado,nao avaliado,nao informado,nao avaliado,,0,-11,nao detectado,

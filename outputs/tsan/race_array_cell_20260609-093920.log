@@ -1,0 +1,10 @@
+tool: tsan
+benchmark: benchmarks/data_race/race_array_cell.c
+compile_command: clang -fsanitize=thread -g -O0 benchmarks/data_race/race_array_cell.c -o <tmp>/race_array_cell -pthread
+run_command: <tmp>/race_array_cell
+
+[compile]
+returncode: 0
+
+[run]
+returncode: -11

@@ -5,6 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import run_pipeline
+from pipeline_runner.metadata import read_benchmark_metadata
 
 
 class RunPipelineTest(unittest.TestCase):
@@ -30,6 +31,14 @@ class RunPipelineTest(unittest.TestCase):
         )
         self.assertIn(
             "afl_memory_corruption_simple_buffer_overflow",
+            task_names,
+        )
+        self.assertNotIn(
+            "esbmc_memory_corruption_simple_buffer_overflow",
+            task_names,
+        )
+        self.assertNotIn(
+            "tsan_memory_corruption_simple_buffer_overflow",
             task_names,
         )
         self.assertIn(
@@ -59,6 +68,121 @@ class RunPipelineTest(unittest.TestCase):
         self.assertEqual(
             simple_asan["benchmark"],
             "benchmarks/memory_corruption/simple_buffer_overflow.c",
+        )
+
+    # Verifica se as ferramentas aplicaveis sao descobertas por metadados.
+    def test_tools_for_benchmark_uses_metadata_expected_tool_columns(self):
+        metadata = read_benchmark_metadata()
+        benchmark = (
+            run_pipeline.PROJECT_ROOT
+            / "benchmarks"
+            / "memory_corruption"
+            / "simple_buffer_overflow.c"
+        )
+
+        tools = run_pipeline.tools_for_benchmark(
+            benchmark,
+            "memory_corruption",
+            metadata,
+        )
+        tool_names = {tool[0] for tool in tools}
+
+        self.assertEqual(tool_names, {"afl", "asan"})
+
+    # Verifica se codigo sem metadados tem ferramentas inferidas pelo conteudo.
+    def test_infer_tools_from_source_detects_arbitrary_c_code(self):
+        tools = run_pipeline.infer_tools_from_source(
+            """
+            #include <pthread.h>
+            #include <string.h>
+
+            char target[4];
+            pthread_mutex_t lock;
+
+            int main(void) {
+                pthread_mutex_lock(&lock);
+                strcpy(target, "overflow");
+                assert(target[0] != 0);
+                pthread_mutex_unlock(&lock);
+                return 0;
+            }
+            """
+        )
+
+        self.assertEqual(set(tools), {"afl", "asan", "deadlock", "esbmc", "tsan"})
+
+    # Verifica se a descoberta escolhe ferramentas para um .c sem metadata.csv.
+    def test_discover_tasks_infers_tools_for_unregistered_benchmark(self):
+        benchmarks_dir = run_pipeline.PROJECT_ROOT / "benchmarks"
+        with TemporaryDirectory(dir=benchmarks_dir) as temp_dir:
+            category_dir = Path(temp_dir) / "custom"
+            category_dir.mkdir()
+            sample = category_dir / "sample.c"
+            sample.write_text(
+                """
+                #include <stdlib.h>
+
+                int main(void) {
+                    int *value = malloc(sizeof(int));
+                    free(value);
+                    return *value;
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            tasks = run_pipeline.discover_tasks(Path(temp_dir))
+
+        task_names = {task["name"] for task in tasks}
+        self.assertEqual(
+            task_names,
+            {
+                "afl_custom_sample",
+                "asan_custom_sample",
+            },
+        )
+
+    # Verifica se a pasta exploratoria sem metadados usa inferencia automatica.
+    def test_random_tests_are_discovered_by_source_inference(self):
+        tasks = run_pipeline.discover_tasks()
+        task_names = {task["name"] for task in tasks}
+
+        self.assertIn("esbmc_random_tests_random_assert_check", task_names)
+        self.assertIn("asan_random_tests_random_heap_use_after_free", task_names)
+        self.assertIn("afl_random_tests_random_heap_use_after_free", task_names)
+        self.assertIn("tsan_random_tests_random_race_counter", task_names)
+        self.assertIn("deadlock_random_tests_random_deadlock_pair", task_names)
+        self.assertNotIn("asan_random_tests_random_plain_program", task_names)
+
+    # Verifica se os benchmarks controlados possuem metadados rastreaveis.
+    def test_controlled_c_benchmarks_have_metadata(self):
+        metadata = read_benchmark_metadata()
+        controlled_categories = {
+            "assertion_violation",
+            "data_race",
+            "deadlock",
+            "memory_corruption",
+        }
+        benchmark_paths = {
+            str(path.relative_to(run_pipeline.PROJECT_ROOT))
+            for path in (run_pipeline.PROJECT_ROOT / "benchmarks").glob("*/*.c")
+            if path.parent.name in controlled_categories
+        }
+
+        self.assertEqual(benchmark_paths, set(metadata))
+        self.assertEqual(
+            metadata["benchmarks/data_race/simple_data_race.c"]["expected_behavior"],
+            "vulneravel",
+        )
+        self.assertEqual(
+            metadata["benchmarks/data_race/simple_data_race.c"]["expected_tsan"],
+            "detectar",
+        )
+        self.assertEqual(
+            metadata["benchmarks/data_race/simple_data_race_fixed.c"][
+                "include_in_pipeline"
+            ],
+            "false",
         )
 
     # Verifica se a tarefa de ambiente chama o diagnostico esperado.

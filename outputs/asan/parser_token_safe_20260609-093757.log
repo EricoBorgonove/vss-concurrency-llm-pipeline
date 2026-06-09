@@ -1,0 +1,13 @@
+tool: asan
+benchmark: benchmarks/memory_corruption/parser_token_safe.c
+compile_command: clang -fsanitize=address -g -O0 benchmarks/memory_corruption/parser_token_safe.c -o <tmp>/parser_token_safe
+run_command: <tmp>/parser_token_safe
+
+[error]
+Tempo limite excedido apos 10 segundos.
+
+[compile]
+returncode: 0
+
+[run]
+returncode: 124

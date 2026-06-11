@@ -78,6 +78,11 @@ def build_parser():
         default="afl-fuzz",
         help="Executor AFL++ a usar. Padrao: afl-fuzz.",
     )
+    parser.add_argument(
+        "--disable-asan",
+        action="store_true",
+        help="Compila sem AFL_USE_ASAN. Por padrao, ASAN e usado para transformar violacoes de memoria em crashes.",
+    )
     return parser
 
 
@@ -95,6 +100,7 @@ def write_log(
     compile_result=None,
     fuzz_result=None,
     campaign_dir=None,
+    use_asan=False,
     error="",
 ):
     with log_path.open("w", encoding="utf-8") as log_file:
@@ -102,6 +108,7 @@ def write_log(
         log_file.write(f"benchmark: {display_path(benchmark)}\n")
         log_file.write(f"seeds_dir: {display_path(seeds_dir)}\n")
         log_file.write(f"campaign_dir: {display_path(campaign_dir) if campaign_dir else 'N/A'}\n")
+        log_file.write(f"use_asan: {str(use_asan).lower()}\n")
         log_file.write(
             f"compile_command: {' '.join(display_command(compile_command)) if compile_command else 'N/A'}\n"
         )
@@ -201,11 +208,16 @@ def main():
                 "-o",
                 str(binary_path),
             ]
+            compile_env = os.environ.copy()
+            use_asan = not args.disable_asan
+            if use_asan:
+                compile_env["AFL_USE_ASAN"] = "1"
             compile_result = subprocess.run(
                 compile_command,
                 capture_output=True,
                 text=True,
                 check=False,
+                env=compile_env,
             )
 
             if compile_result.returncode != 0:
@@ -217,6 +229,7 @@ def main():
                     [],
                     compile_result=compile_result,
                     campaign_dir=campaign_dir,
+                    use_asan=use_asan,
                 )
                 print(f"Erro: falha na compilacao AFL++. Log salvo em: {display_path(log_path)}", file=sys.stderr)
                 return compile_result.returncode
@@ -235,6 +248,8 @@ def main():
             env = os.environ.copy()
             env.setdefault("AFL_SKIP_CPUFREQ", "1")
             env.setdefault("AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES", "1")
+            if use_asan:
+                env.setdefault("AFL_USE_ASAN", "1")
 
             fuzz_result = subprocess.run(
                 fuzz_command,
@@ -253,6 +268,7 @@ def main():
                 compile_result=compile_result,
                 fuzz_result=fuzz_result,
                 campaign_dir=campaign_dir,
+                use_asan=use_asan,
             )
             print(f"Log salvo em: {display_path(log_path)}")
             return fuzz_result.returncode

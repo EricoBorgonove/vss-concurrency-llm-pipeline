@@ -235,6 +235,11 @@ Para preparar uma execução curta com AFL++:
 python3 scripts/run_afl.py benchmarks/memory_corruption/simple_buffer_overflow.c
 ```
 
+O executor do AFL++ usa `AFL_USE_ASAN=1` por padrão para transformar violações
+de memória em crashes quando a campanha alcança o comportamento problemático.
+Campanhas curtas que terminam sem crash são classificadas como `inconclusivo`,
+pois ausência de crash em poucos segundos não prova ausência de vulnerabilidade.
+
 O `reports/results.csv` inclui `execution_date`, `expected_behavior` e
 `expectation_match`, além de `expected_tool_behavior` e
 `tool_expectation_match`. O `reports/summary.csv` inclui essas mesmas dimensões,

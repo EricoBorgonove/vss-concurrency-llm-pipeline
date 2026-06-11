@@ -1,7 +1,7 @@
 tool,expected_behavior,expectation_match,expected_tool_behavior,tool_expectation_match,classification,count,first_execution_date,latest_execution_date
-afl++,correto,conforme esperado,inconclusivo,inconclusivo,nao detectado,2,2026-06-09T21:31:10,2026-06-09T21:31:32
-afl++,nao informado,nao avaliado,nao informado,nao avaliado,nao detectado,1,2026-06-09T21:32:29,2026-06-09T21:32:29
-afl++,vulneravel,divergente,inconclusivo,inconclusivo,nao detectado,9,2026-06-09T21:30:29,2026-06-09T21:32:13
+afl++,correto,inconclusivo,inconclusivo,inconclusivo,inconclusivo,2,2026-06-09T21:31:10,2026-06-09T21:31:32
+afl++,nao informado,nao avaliado,nao informado,nao avaliado,inconclusivo,1,2026-06-09T21:32:29,2026-06-09T21:32:29
+afl++,vulneravel,inconclusivo,inconclusivo,inconclusivo,inconclusivo,9,2026-06-09T21:30:29,2026-06-09T21:32:13
 asan,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-09T21:31:18,2026-06-11T17:59:39
 asan,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-09T21:32:36,2026-06-09T21:32:36
 asan,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-09T21:30:36,2026-06-11T17:59:39

@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from scripts import run_asan, run_deadlock, run_esbmc, run_tsan
+from scripts import run_afl, run_asan, run_deadlock, run_esbmc, run_tsan
 
 
 class ExecutorHelpersTest(unittest.TestCase):
@@ -97,6 +97,24 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertIn("[run]", content)
         self.assertIn("compile stderr", content)
         self.assertIn("run stdout", content)
+
+    # Verifica se o log do AFL++ registra uso de ASAN.
+    def test_afl_write_log_records_asan_mode(self):
+        with TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "afl.log"
+
+            run_afl.write_log(
+                log_path,
+                Path("sample.c"),
+                Path("seeds"),
+                ["afl-clang-fast", "sample.c"],
+                ["afl-fuzz"],
+                use_asan=True,
+            )
+            content = log_path.read_text(encoding="utf-8")
+
+        self.assertIn("tool: afl++", content)
+        self.assertIn("use_asan: true", content)
 
     # Verifica se o log de deadlock registra corretamente erro de timeout.
     def test_deadlock_write_log_records_timeout_error(self):

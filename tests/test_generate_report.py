@@ -71,6 +71,38 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(classification, "erro de execucao")
 
+    # Verifica se AFL++ sem crash em campanha curta fica inconclusivo.
+    def test_classify_result_treats_afl_timeout_without_crashes_as_inconclusive(self):
+        data = {
+            "tool": "afl++",
+            "error": "",
+            "compile_returncode": "0",
+            "run_returncode": "0",
+        }
+
+        classification = generate_report.classify_result(
+            "Time limit was reached\nStatistics: 0 crashes saved",
+            data,
+        )
+
+        self.assertEqual(classification, "inconclusivo")
+
+    # Verifica se AFL++ com crash salvo fica detectado.
+    def test_classify_result_treats_afl_saved_crashes_as_detected(self):
+        data = {
+            "tool": "afl++",
+            "error": "",
+            "compile_returncode": "0",
+            "run_returncode": "0",
+        }
+
+        classification = generate_report.classify_result(
+            "Statistics: 1 crashes saved",
+            data,
+        )
+
+        self.assertEqual(classification, "detectado")
+
     # Verifica se o resumo agrupa resultados e datas por ferramenta/classificacao.
     def test_build_summary_counts_by_tool_and_classification(self):
         rows = [
@@ -195,6 +227,10 @@ class GenerateReportTest(unittest.TestCase):
             generate_report.evaluate_expectation("correto", "erro de execucao"),
             "inconclusivo",
         )
+        self.assertEqual(
+            generate_report.evaluate_expectation("vulneravel", "inconclusivo"),
+            "inconclusivo",
+        )
 
     # Verifica a comparacao especifica da expectativa da ferramenta.
     def test_evaluate_tool_expectation_compares_tool_behavior_and_classification(self):
@@ -208,6 +244,10 @@ class GenerateReportTest(unittest.TestCase):
         )
         self.assertEqual(
             generate_report.evaluate_tool_expectation("inconclusivo", "nao detectado"),
+            "inconclusivo",
+        )
+        self.assertEqual(
+            generate_report.evaluate_tool_expectation("detectar", "inconclusivo"),
             "inconclusivo",
         )
 

@@ -38,6 +38,7 @@ EXPECTED_TOOL_BEHAVIOR_LABELS = {
 CLASSIFICATION_LABELS = {
     "detectado": "Detectado",
     "nao detectado": "Nao detectado",
+    "inconclusivo": "Inconclusivo",
     "erro de execucao": "Erro de execucao",
     "ferramenta indisponivel": "Ferramenta indisponivel",
 }

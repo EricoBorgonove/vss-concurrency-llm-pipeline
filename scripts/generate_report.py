@@ -98,6 +98,7 @@ def parse_tools(tools_arg):
 def classify_result(log_text, data):
     text = log_text.lower()
     error = data["error"].lower()
+    tool = data.get("tool", "")
 
     if any(marker.lower() in text or marker.lower() in error for marker in UNAVAILABLE_MARKERS):
         return "ferramenta indisponivel"
@@ -110,6 +111,13 @@ def classify_result(log_text, data):
 
     if "tool: deadlock-timeout" in text and "returncode: 124" in text:
         return "detectado"
+
+    if tool == "afl++":
+        crashes_match = re.search(r"(\d+)\s+crashes saved", text)
+        if crashes_match and int(crashes_match.group(1)) > 0:
+            return "detectado"
+        if "time limit was reached" in text and "0 crashes saved" in text:
+            return "inconclusivo"
 
     if any(marker.lower() in text or marker.lower() in error for marker in EXECUTION_ERROR_MARKERS):
         return "erro de execucao"
@@ -179,6 +187,8 @@ def evaluate_expectation(expected_behavior, classification):
 
     if classification in ("erro de execucao", "ferramenta indisponivel"):
         return "inconclusivo"
+    if classification == "inconclusivo":
+        return "inconclusivo"
 
     if expected_behavior == "vulneravel":
         return "conforme esperado" if classification == "detectado" else "divergente"
@@ -194,6 +204,8 @@ def evaluate_tool_expectation(expected_tool_behavior, classification):
         return "nao avaliado"
 
     if classification in ("erro de execucao", "ferramenta indisponivel"):
+        return "inconclusivo"
+    if classification == "inconclusivo":
         return "inconclusivo"
 
     if expected_tool_behavior == "inconclusivo":

@@ -116,6 +116,43 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertIn("tool: afl++", content)
         self.assertIn("use_asan: true", content)
 
+    # Verifica se o log do AFL++ preserva a tentativa ASAN descartada.
+    def test_afl_write_log_records_asan_fallback(self):
+        with TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "afl.log"
+            asan_result = subprocess.CompletedProcess(
+                args=["afl-clang-fast"],
+                returncode=1,
+                stdout="",
+                stderr="missing asan runtime",
+            )
+            compile_result = subprocess.CompletedProcess(
+                args=["afl-clang-fast"],
+                returncode=0,
+                stdout="",
+                stderr="",
+            )
+
+            run_afl.write_log(
+                log_path,
+                Path("sample.c"),
+                Path("seeds"),
+                ["afl-clang-fast", "sample.c"],
+                ["afl-fuzz"],
+                compile_result=compile_result,
+                use_asan=False,
+                asan_compile_result=asan_result,
+                asan_fallback=True,
+            )
+            content = log_path.read_text(encoding="utf-8")
+
+        self.assertIn("use_asan: false", content)
+        self.assertIn("asan_compile_fallback: true", content)
+        self.assertIn("[asan_compile_attempt]", content)
+        self.assertIn("missing asan runtime", content)
+        self.assertIn("[compile]", content)
+        self.assertIn("returncode: 0", content)
+
     # Verifica se o log de deadlock registra corretamente erro de timeout.
     def test_deadlock_write_log_records_timeout_error(self):
         with TemporaryDirectory() as temp_dir:

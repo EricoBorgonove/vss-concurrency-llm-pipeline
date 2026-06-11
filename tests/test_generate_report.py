@@ -103,6 +103,22 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(classification, "detectado")
 
+    # Verifica se AFL++ considera crash no dry run como deteccao.
+    def test_classify_result_treats_afl_seed_crash_as_detected(self):
+        data = {
+            "tool": "afl++",
+            "error": "",
+            "compile_returncode": "0",
+            "run_returncode": "1",
+        }
+
+        classification = generate_report.classify_result(
+            "Oops, the program crashed with one of the test cases provided.",
+            data,
+        )
+
+        self.assertEqual(classification, "detectado")
+
     # Verifica se o resumo agrupa resultados e datas por ferramenta/classificacao.
     def test_build_summary_counts_by_tool_and_classification(self):
         rows = [

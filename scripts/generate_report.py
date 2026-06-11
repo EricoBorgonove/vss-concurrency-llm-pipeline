@@ -116,6 +116,11 @@ def classify_result(log_text, data):
         crashes_match = re.search(r"(\d+)\s+crashes saved", text)
         if crashes_match and int(crashes_match.group(1)) > 0:
             return "detectado"
+        if (
+            "program crashed with one of the test cases provided" in text
+            or "results in a crash" in text
+        ):
+            return "detectado"
         if "time limit was reached" in text and "0 crashes saved" in text:
             return "inconclusivo"
 

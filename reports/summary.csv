@@ -1,17 +1,16 @@
 tool,expected_behavior,expectation_match,expected_tool_behavior,tool_expectation_match,classification,count,first_execution_date,latest_execution_date
-afl++,correto,inconclusivo,inconclusivo,inconclusivo,inconclusivo,2,2026-06-09T21:31:10,2026-06-09T21:31:32
-afl++,nao informado,nao avaliado,nao informado,nao avaliado,inconclusivo,1,2026-06-09T21:32:29,2026-06-09T21:32:29
-afl++,vulneravel,inconclusivo,inconclusivo,inconclusivo,inconclusivo,9,2026-06-09T21:30:29,2026-06-09T21:32:13
-asan,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-09T21:31:18,2026-06-11T17:59:39
-asan,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-09T21:32:36,2026-06-09T21:32:36
-asan,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-09T21:30:36,2026-06-11T17:59:39
-deadlock-timeout,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,4,2026-06-05T13:43:44,2026-06-09T21:30:18
-deadlock-timeout,nao informado,nao avaliado,nao informado,nao avaliado,nao detectado,1,2026-06-09T21:32:26,2026-06-09T21:32:26
-deadlock-timeout,vulneravel,conforme esperado,detectar,conforme esperado,detectado,8,2026-06-09T21:29:47,2026-06-09T21:30:25
-esbmc,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-09T21:27:54,2026-06-09T21:29:17
-esbmc,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-09T21:32:23,2026-06-09T21:32:23
-esbmc,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-09T21:29:07,2026-06-09T21:29:22
-tsan,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-11T17:47:55,2026-06-11T17:48:08
-tsan,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-11T17:48:11,2026-06-11T17:48:11
-tsan,nao informado,nao avaliado,nao informado,nao avaliado,nao detectado,1,2026-06-11T17:48:13,2026-06-11T17:48:13
-tsan,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-11T17:47:50,2026-06-11T17:48:05
+afl++,correto,inconclusivo,inconclusivo,inconclusivo,inconclusivo,2,2026-06-11T23:06:38,2026-06-11T23:06:51
+afl++,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-11T23:07:34,2026-06-11T23:07:34
+afl++,vulneravel,conforme esperado,inconclusivo,inconclusivo,detectado,9,2026-06-11T23:06:21,2026-06-11T23:07:23
+asan,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-09T21:33:06,2026-06-11T23:06:58
+asan,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-11T23:07:37,2026-06-11T23:07:37
+asan,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-11T23:06:23,2026-06-11T23:07:26
+deadlock-timeout,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,4,2026-06-05T13:43:44,2026-06-11T23:06:11
+deadlock-timeout,nao informado,nao avaliado,nao informado,nao avaliado,nao detectado,1,2026-06-11T23:07:31,2026-06-11T23:07:31
+deadlock-timeout,vulneravel,conforme esperado,detectar,conforme esperado,detectado,8,2026-06-11T23:05:41,2026-06-11T23:06:17
+esbmc,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-09T21:27:54,2026-06-11T23:05:18
+esbmc,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-11T23:07:29,2026-06-11T23:07:29
+esbmc,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-11T23:05:09,2026-06-11T23:05:22
+tsan,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-11T17:48:08,2026-06-11T23:05:33
+tsan,nao informado,nao avaliado,nao informado,nao avaliado,nao detectado,2,2026-06-11T23:07:32,2026-06-11T23:07:39
+tsan,vulneravel,divergente,detectar,divergente,nao detectado,9,2026-06-11T23:05:23,2026-06-11T23:05:40

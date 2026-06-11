@@ -101,6 +101,8 @@ def write_log(
     fuzz_result=None,
     campaign_dir=None,
     use_asan=False,
+    asan_compile_result=None,
+    asan_fallback=False,
     error="",
 ):
     with log_path.open("w", encoding="utf-8") as log_file:
@@ -109,6 +111,7 @@ def write_log(
         log_file.write(f"seeds_dir: {display_path(seeds_dir)}\n")
         log_file.write(f"campaign_dir: {display_path(campaign_dir) if campaign_dir else 'N/A'}\n")
         log_file.write(f"use_asan: {str(use_asan).lower()}\n")
+        log_file.write(f"asan_compile_fallback: {str(asan_fallback).lower()}\n")
         log_file.write(
             f"compile_command: {' '.join(display_command(compile_command)) if compile_command else 'N/A'}\n"
         )
@@ -120,6 +123,16 @@ def write_log(
             log_file.write("\n[error]\n")
             log_file.write(sanitize_text(error))
             log_file.write("\n")
+
+        if asan_compile_result is not None:
+            log_file.write("\n[asan_compile_attempt]\n")
+            log_file.write(f"returncode: {asan_compile_result.returncode}\n")
+            if asan_compile_result.stdout:
+                log_file.write("\nstdout:\n")
+                log_file.write(sanitize_text(asan_compile_result.stdout))
+            if asan_compile_result.stderr:
+                log_file.write("\nstderr:\n")
+                log_file.write(sanitize_text(asan_compile_result.stderr))
 
         if compile_result is not None:
             log_file.write("\n[compile]\n")
@@ -208,17 +221,43 @@ def main():
                 "-o",
                 str(binary_path),
             ]
-            compile_env = os.environ.copy()
             use_asan = not args.disable_asan
+            asan_compile_result = None
+            asan_fallback = False
+
+            compile_env = os.environ.copy()
             if use_asan:
-                compile_env["AFL_USE_ASAN"] = "1"
-            compile_result = subprocess.run(
-                compile_command,
-                capture_output=True,
-                text=True,
-                check=False,
-                env=compile_env,
-            )
+                asan_env = os.environ.copy()
+                asan_env["AFL_USE_ASAN"] = "1"
+                asan_compile_result = subprocess.run(
+                    compile_command,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    env=asan_env,
+                )
+                if asan_compile_result.returncode == 0:
+                    compile_result = asan_compile_result
+                else:
+                    use_asan = False
+                    asan_fallback = True
+                    compile_env.pop("AFL_USE_ASAN", None)
+                    compile_result = subprocess.run(
+                        compile_command,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        env=compile_env,
+                    )
+            else:
+                compile_env.pop("AFL_USE_ASAN", None)
+                compile_result = subprocess.run(
+                    compile_command,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    env=compile_env,
+                )
 
             if compile_result.returncode != 0:
                 write_log(
@@ -230,6 +269,8 @@ def main():
                     compile_result=compile_result,
                     campaign_dir=campaign_dir,
                     use_asan=use_asan,
+                    asan_compile_result=asan_compile_result if asan_fallback else None,
+                    asan_fallback=asan_fallback,
                 )
                 print(f"Erro: falha na compilacao AFL++. Log salvo em: {display_path(log_path)}", file=sys.stderr)
                 return compile_result.returncode
@@ -250,6 +291,8 @@ def main():
             env.setdefault("AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES", "1")
             if use_asan:
                 env.setdefault("AFL_USE_ASAN", "1")
+            else:
+                env.pop("AFL_USE_ASAN", None)
 
             fuzz_result = subprocess.run(
                 fuzz_command,
@@ -269,6 +312,8 @@ def main():
                 fuzz_result=fuzz_result,
                 campaign_dir=campaign_dir,
                 use_asan=use_asan,
+                asan_compile_result=asan_compile_result if asan_fallback else None,
+                asan_fallback=asan_fallback,
             )
             print(f"Log salvo em: {display_path(log_path)}")
             return fuzz_result.returncode

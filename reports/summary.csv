@@ -12,6 +12,7 @@ deadlock-timeout,vulneravel,conforme esperado,detectar,conforme esperado,detecta
 esbmc,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-09T21:27:54,2026-06-09T21:29:17
 esbmc,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-09T21:32:23,2026-06-09T21:32:23
 esbmc,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-09T21:29:07,2026-06-09T21:29:22
-tsan,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-09T21:29:28,2026-06-09T21:36:13
-tsan,nao informado,nao avaliado,nao informado,nao avaliado,nao detectado,2,2026-06-09T21:32:28,2026-06-09T21:32:39
-tsan,vulneravel,divergente,detectar,divergente,nao detectado,9,2026-06-09T21:29:24,2026-06-09T21:36:13
+tsan,correto,conforme esperado,nao_detectar,conforme esperado,nao detectado,3,2026-06-11T17:47:55,2026-06-11T17:48:08
+tsan,nao informado,nao avaliado,nao informado,nao avaliado,detectado,1,2026-06-11T17:48:11,2026-06-11T17:48:11
+tsan,nao informado,nao avaliado,nao informado,nao avaliado,nao detectado,1,2026-06-11T17:48:13,2026-06-11T17:48:13
+tsan,vulneravel,conforme esperado,detectar,conforme esperado,detectado,9,2026-06-11T17:47:50,2026-06-11T17:48:05

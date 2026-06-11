@@ -136,6 +136,17 @@ compilacao funciona; nesses casos o resultado deve ser tratado como divergencia
 experimental, nao como erro de execucao. Para avaliar TSAN com mais fidelidade,
 prefira Linux `amd64` nativo ou o clang LLVM local descrito abaixo.
 
+Em macOS/Apple Silicon, depois de uma rodada Docker, a etapa TSAN pode ser
+refeita nativamente com Homebrew LLVM para substituir os logs emulados por logs
+do runtime nativo:
+
+```bash
+for f in benchmarks/data_race/*.c benchmarks/random_tests/random_race_counter.c benchmarks/random_tests/random_deadlock_pair.c; do
+  python3 scripts/run_tsan.py "$f" --compiler /opt/homebrew/opt/llvm/bin/clang || true
+done
+python3 scripts/generate_report.py --latest-only
+```
+
 ## Como preparar o ambiente local
 
 Os scripts Python usam apenas a biblioteca padrão atualmente. O

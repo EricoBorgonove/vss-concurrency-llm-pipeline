@@ -169,7 +169,7 @@ def main():
         print(f"Log salvo em: {display_path(log_path)}")
         return 2
 
-    seed_files = [path for path in seeds_dir.iterdir() if path.is_file() and path.name != ".gitkeep"]
+    seed_files = [path for path in seeds_dir.iterdir() if path.is_file()]
     if not seed_files:
         write_log(log_path, benchmark, seeds_dir, [], [], error="Nenhum arquivo de seed encontrado.")
         print(f"Erro: nenhum arquivo de seed encontrado em: {seeds_dir}", file=sys.stderr)

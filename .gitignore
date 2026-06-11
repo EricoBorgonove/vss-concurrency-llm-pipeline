@@ -31,7 +31,6 @@ var/
 # Generated execution artifacts
 outputs/**
 !outputs/**/
-!outputs/**/.gitkeep
 
 # OneDrive temp files
 ~$*

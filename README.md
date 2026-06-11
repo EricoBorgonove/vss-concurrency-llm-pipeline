@@ -55,7 +55,7 @@ pipeline-vss-llm/
 ## Estado atual
 
 - Estrutura inicial criada.
-- Diretórios vazios preservados com `.gitkeep`.
+- Diretórios de saída são criados automaticamente pelos scripts quando necessário.
 - `scripts/run_esbmc.py` executa o ESBMC sobre um arquivo `.c` e salva logs em
   `outputs/esbmc/`.
 - `scripts/run_asan.py` compila e executa um benchmark C com AddressSanitizer,

@@ -206,6 +206,11 @@ Para executar AddressSanitizer sobre o benchmark de buffer overflow:
 python3 scripts/run_asan.py benchmarks/memory_corruption/simple_buffer_overflow.c
 ```
 
+No macOS, o executor de ASAN tambem prefere automaticamente o clang do LLVM
+instalado via Homebrew, quando disponivel. Essa preferencia evita timeouts e
+comportamentos inconsistentes observados com Apple clang em alguns runtimes de
+sanitizer.
+
 Para executar ThreadSanitizer sobre o benchmark de data race:
 
 ```bash

@@ -17,16 +17,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         afl++ \
         clang \
-        clang-tools \
-        cmake \
         esbmc \
         gcc \
         g++ \
         libclang-rt-17-dev \
         libclang-rt-18-dev \
-        lld \
-        llvm \
-        make \
         python3 \
         python3-pip \
         python3-venv \

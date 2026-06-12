@@ -9,6 +9,8 @@ services:
       AFL_SKIP_CPUFREQ: "1"
       AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES: "1"
       PYTHONUNBUFFERED: "1"
+    init: true
+    shm_size: "1gb"
     security_opt:
       - seccomp=unconfined
     volumes:

@@ -132,9 +132,62 @@ Os diretorios do projeto sao montados em `/workspace`, entao `outputs/` e
 `reports/` gerados dentro do container aparecem tambem na maquina local.
 Em Docker Desktop sobre Apple Silicon, a imagem `linux/amd64` pode executar sob
 emulacao. Nesse cenario, o TSAN pode nao observar as corridas mesmo quando a
-compilacao funciona; nesses casos o resultado deve ser tratado como divergencia
-experimental, nao como erro de execucao. Para avaliar TSAN com mais fidelidade,
-prefira Linux `amd64` nativo ou o clang LLVM local descrito abaixo.
+compilacao funciona. Quando o runtime termina com codigo `66` sem diagnostico
+`ThreadSanitizer`, o relatorio classifica o caso como `inconclusivo`, pois o
+ambiente nao produziu evidencia confiavel. Para avaliar TSAN com mais
+fidelidade, prefira Linux `amd64` nativo ou o clang LLVM local descrito abaixo.
+
+## Execucao recomendada na AWS Lightsail
+
+Para a instancia Ubuntu 24.04 com 2 GB de RAM e 2 vCPU, use swap antes de
+construir a imagem. O repositorio inclui scripts para preparar a maquina e
+rodar a coleta final.
+
+Na instancia:
+
+```bash
+sudo apt update
+sudo apt install -y git
+git clone https://github.com/EricoBorgonove/vss-concurrency-llm-pipeline.git
+cd vss-concurrency-llm-pipeline
+./scripts/setup_lightsail_ubuntu.sh
+```
+
+Se o script adicionar o usuario ao grupo `docker`, saia e entre novamente na
+sessao SSH, ou rode:
+
+```bash
+newgrp docker
+```
+
+Depois execute:
+
+```bash
+cd vss-concurrency-llm-pipeline
+./scripts/run_lightsail_report.sh
+```
+
+Ao final, os principais resultados ficam em:
+
+```text
+reports/results.csv
+reports/summary.csv
+reports/report.html
+reports/benchmark_metrics.csv
+reports/category_metrics.csv
+reports-lightsail.tar.gz
+```
+
+Para baixar os relatorios para a maquina local:
+
+```bash
+scp ubuntu@IP_DA_INSTANCIA:~/vss-concurrency-llm-pipeline/reports-lightsail.tar.gz .
+```
+
+Em Linux `amd64` nativo, o TSAN deve deixar de aparecer apenas como
+`inconclusivo` por incompatibilidade de runtime. Se ainda aparecer
+`inconclusivo`, o proximo ponto de investigacao passa a ser o benchmark ou a
+configuracao especifica do runtime, nao a emulacao do Docker no macOS.
 
 Em macOS/Apple Silicon, depois de uma rodada Docker, a etapa TSAN pode ser
 refeita nativamente com Homebrew LLVM para substituir os logs emulados por logs

@@ -71,6 +71,19 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(classification, "erro de execucao")
 
+    # Verifica se TSAN sem diagnostico explicito nao vira divergencia falsa.
+    def test_classify_result_treats_empty_tsan_exit_66_as_inconclusive(self):
+        data = {
+            "tool": "tsan",
+            "error": "",
+            "compile_returncode": "0",
+            "run_returncode": "66",
+        }
+
+        classification = generate_report.classify_result("returncode: 66", data)
+
+        self.assertEqual(classification, "inconclusivo")
+
     # Verifica se AFL++ sem crash em campanha curta fica inconclusivo.
     def test_classify_result_treats_afl_timeout_without_crashes_as_inconclusive(self):
         data = {

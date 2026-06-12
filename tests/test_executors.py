@@ -98,6 +98,32 @@ class ExecutorHelpersTest(unittest.TestCase):
         self.assertIn("compile stderr", content)
         self.assertIn("run stdout", content)
 
+    # Verifica se o log do TSAN registra ambiente incompativel explicitamente.
+    def test_tsan_write_log_records_runtime_error(self):
+        with TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "tsan.log"
+            run_result = subprocess.CompletedProcess(
+                args=["binary"],
+                returncode=66,
+                stdout="",
+                stderr="",
+            )
+
+            run_tsan.write_log(
+                log_path,
+                Path("race.c"),
+                ["clang", "race.c"],
+                ["./race"],
+                run_result=run_result,
+                error="TSAN terminou com codigo 66 sem diagnostico.",
+            )
+            content = log_path.read_text(encoding="utf-8")
+
+        self.assertIn("tool: tsan", content)
+        self.assertIn("[error]", content)
+        self.assertIn("TSAN terminou com codigo 66", content)
+        self.assertIn("returncode: 66", content)
+
     # Verifica se o log do AFL++ registra uso de ASAN.
     def test_afl_write_log_records_asan_mode(self):
         with TemporaryDirectory() as temp_dir:

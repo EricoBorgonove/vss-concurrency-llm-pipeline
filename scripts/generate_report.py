@@ -109,6 +109,9 @@ def classify_result(log_text, data):
     if any(marker.lower() in text for marker in DETECTED_MARKERS):
         return "detectado"
 
+    if tool == "tsan" and data.get("run_returncode") == "66":
+        return "inconclusivo"
+
     if "tool: deadlock-timeout" in text and "returncode: 124" in text:
         return "detectado"
 

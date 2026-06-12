@@ -183,6 +183,13 @@ def main():
                 timeout=args.timeout,
                 check=False,
             )
+            runtime_error = ""
+            if run_result.returncode == 66 and not run_result.stdout and not run_result.stderr:
+                runtime_error = (
+                    "TSAN terminou com codigo 66 sem diagnostico. "
+                    "Esse padrao indica ambiente de execucao incompativel, "
+                    "por exemplo Docker linux/amd64 emulado em Apple Silicon."
+                )
             write_log(
                 log_path,
                 benchmark,
@@ -190,6 +197,7 @@ def main():
                 run_command,
                 compile_result=compile_result,
                 run_result=run_result,
+                error=runtime_error,
             )
             print(f"Log salvo em: {display_path(log_path)}")
             return run_result.returncode

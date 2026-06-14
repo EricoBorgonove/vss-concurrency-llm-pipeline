@@ -23,8 +23,8 @@ int main(void)
     }
 
     memset(decoder->window, 0, sizeof(decoder->window));
-    decoder->offset = 12;
-    append_chunk(decoder, "payload");
+    decoder->offset = 14;
+    append_chunk(decoder, "payload-window-overflow");
 
     int result = decoder->window[0];
     free(decoder);

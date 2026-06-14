@@ -4,6 +4,16 @@ set -eu
 REPORT_ARCHIVE="${REPORT_ARCHIVE:-reports-lightsail.tar.gz}"
 ARCHIVE_OLD_RESULTS="${ARCHIVE_OLD_RESULTS:-1}"
 OLD_RESULTS_DIR="${OLD_RESULTS_DIR:-antigos}"
+HOST_UID="$(id -u)"
+HOST_GID="$(id -g)"
+
+take_ownership() {
+  for path in "$@"; do
+    if [ -e "$path" ]; then
+      sudo chown -R "$HOST_UID:$HOST_GID" "$path"
+    fi
+  done
+}
 
 echo "Diagnostico rapido da instancia:"
 uname -a
@@ -23,6 +33,7 @@ if [ "$ARCHIVE_OLD_RESULTS" = "1" ]; then
 
   if [ "$has_old_results" = "1" ]; then
     echo "Arquivando logs e relatorios antigos em $archive_dir..."
+    take_ownership outputs reports "$REPORT_ARCHIVE" "$OLD_RESULTS_DIR"
     mkdir -p "$archive_dir"
     for path in outputs reports "$REPORT_ARCHIVE"; do
       if [ -e "$path" ]; then
@@ -38,12 +49,13 @@ echo "Construindo imagem do pipeline..."
 docker compose build
 
 echo "Executando pipeline completo..."
-docker compose run --rm pipeline
+docker compose run --rm --user "$HOST_UID:$HOST_GID" pipeline
 
 echo "Conferindo resumo TSAN:"
 grep '^tsan' reports/summary.csv || true
 
 echo "Empacotando reports/ e outputs/ principais em $REPORT_ARCHIVE..."
+take_ownership outputs reports
 tar -czf "$REPORT_ARCHIVE" reports outputs/environment outputs/pipeline
 
 echo "Finalizado."

@@ -328,6 +328,81 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", table)
         self.assertNotIn("<script>alert(1)</script>", table)
 
+    # Verifica se metricas por categoria sao derivadas dos resultados quando o CSV auxiliar falta.
+    def test_build_category_metrics_from_rows_counts_benchmarks_and_executions(self):
+        rows = generate_report.dashboard_rows(
+            [
+                {
+                    "tool": "asan",
+                    "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                },
+                {
+                    "tool": "tsan",
+                    "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                },
+                {
+                    "tool": "tsan",
+                    "benchmark": "benchmarks/data_race/race_error.c",
+                },
+            ]
+        )
+
+        metrics = generate_report.build_category_metrics_from_rows(rows)
+
+        self.assertEqual(
+            metrics,
+            [
+                {
+                    "category": "data_race",
+                    "benchmark_count": 1,
+                    "execution_count": 1,
+                    "total_duration_seconds": "nao informado",
+                    "avg_duration_seconds": "nao informado",
+                    "min_duration_seconds": "nao informado",
+                    "max_duration_seconds": "nao informado",
+                },
+                {
+                    "category": "memory_corruption",
+                    "benchmark_count": 1,
+                    "execution_count": 2,
+                    "total_duration_seconds": "nao informado",
+                    "avg_duration_seconds": "nao informado",
+                    "min_duration_seconds": "nao informado",
+                    "max_duration_seconds": "nao informado",
+                },
+            ],
+        )
+
+    # Verifica se metricas por benchmark sao derivadas dos resultados quando o CSV auxiliar falta.
+    def test_build_benchmark_metrics_from_rows_uses_result_rows(self):
+        rows = generate_report.dashboard_rows(
+            [
+                {
+                    "tool": "asan",
+                    "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                    "execution_date": "2026-06-09T12:00:00",
+                    "run_returncode": "1",
+                    "returncode": "",
+                }
+            ]
+        )
+
+        metrics = generate_report.build_benchmark_metrics_from_rows(rows)
+
+        self.assertEqual(
+            metrics,
+            [
+                {
+                    "run_date": "2026-06-09T12:00:00",
+                    "category": "memory_corruption",
+                    "tool": "asan",
+                    "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                    "duration_seconds": "nao informado",
+                    "returncode": "1",
+                }
+            ],
+        )
+
     # Verifica se o relatorio HTML contem resumo, metricas e detalhes.
     def test_write_html_report_creates_summary_and_detail_sections(self):
         rows = [
@@ -390,6 +465,35 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("duration_seconds", content)
         self.assertIn("sample_error.c", content)
         self.assertIn("conforme esperado", content)
+
+    # Verifica se o HTML preenche metricas derivadas quando os CSVs auxiliares nao sao informados.
+    def test_write_html_report_derives_metrics_when_auxiliary_rows_are_missing(self):
+        rows = [
+            {
+                "tool": "asan",
+                "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                "log_file": "outputs/asan/sample_error_20260609-120000.log",
+                "execution_date": "2026-06-09T12:00:00",
+                "expected_behavior": "vulneravel",
+                "expectation_match": "conforme esperado",
+                "expected_tool_behavior": "detectar",
+                "tool_expectation_match": "conforme esperado",
+                "returncode": "",
+                "compile_returncode": "0",
+                "run_returncode": "1",
+                "classification": "detectado",
+                "error": "",
+            }
+        ]
+
+        with TemporaryDirectory() as temp_dir:
+            html_path = Path(temp_dir) / "report.html"
+            generate_report.write_html_report(rows, html_path)
+            content = html_path.read_text(encoding="utf-8")
+
+        self.assertIn("memory_corruption", content)
+        self.assertIn("nao informado", content)
+        self.assertNotIn("Nenhum registro encontrado.", content)
 
     # Verifica se a leitura opcional de CSV retorna vazio quando o arquivo nao existe.
     def test_read_csv_if_exists_returns_empty_list_for_missing_file(self):

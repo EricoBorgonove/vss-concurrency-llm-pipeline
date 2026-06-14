@@ -461,6 +461,59 @@ def dashboard_rows(rows):
     return enriched_rows
 
 
+def build_category_metrics_from_rows(rows):
+    metrics = {}
+    for row in rows:
+        category = row.get("category") or benchmark_category(row.get("benchmark", ""))
+        if not category:
+            category = "nao informado"
+        item = metrics.setdefault(
+            category,
+            {
+                "benchmarks": set(),
+                "execution_count": 0,
+            },
+        )
+        benchmark = row.get("benchmark", "")
+        if benchmark:
+            item["benchmarks"].add(benchmark)
+        item["execution_count"] += 1
+
+    return [
+        {
+            "category": category,
+            "benchmark_count": len(item["benchmarks"]),
+            "execution_count": item["execution_count"],
+            "total_duration_seconds": "nao informado",
+            "avg_duration_seconds": "nao informado",
+            "min_duration_seconds": "nao informado",
+            "max_duration_seconds": "nao informado",
+        }
+        for category, item in sorted(metrics.items())
+    ]
+
+
+def build_benchmark_metrics_from_rows(rows):
+    return [
+        {
+            "run_date": row.get("execution_date", ""),
+            "category": row.get("category") or benchmark_category(row.get("benchmark", "")),
+            "tool": row.get("tool", ""),
+            "benchmark": row.get("benchmark", ""),
+            "duration_seconds": "nao informado",
+            "returncode": row.get("run_returncode") or row.get("returncode", ""),
+        }
+        for row in sorted(
+            rows,
+            key=lambda item: (
+                item.get("category") or benchmark_category(item.get("benchmark", "")),
+                item.get("tool", ""),
+                item.get("benchmark", ""),
+            ),
+        )
+    ]
+
+
 def unique_values(rows, field):
     return sorted({row.get(field, "") for row in rows if row.get(field, "")})
 
@@ -596,8 +649,8 @@ def write_html_report(
     html_output_file.parent.mkdir(parents=True, exist_ok=True)
     summary_rows = build_summary(rows)
     rows = dashboard_rows(rows)
-    category_metrics_rows = category_metrics_rows or []
-    benchmark_metrics_rows = benchmark_metrics_rows or []
+    category_metrics_rows = category_metrics_rows or build_category_metrics_from_rows(rows)
+    benchmark_metrics_rows = benchmark_metrics_rows or build_benchmark_metrics_from_rows(rows)
     generated_at = dt.datetime.now().isoformat(timespec="seconds")
     summary_fields = [
         "tool",

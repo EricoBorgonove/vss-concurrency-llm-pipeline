@@ -443,6 +443,98 @@ def escape(value):
     return html.escape(str(value), quote=True)
 
 
+def benchmark_category(benchmark):
+    parts = Path(benchmark).parts
+    if "benchmarks" in parts:
+        index = parts.index("benchmarks")
+        if len(parts) > index + 1:
+            return parts[index + 1]
+    return ""
+
+
+def dashboard_rows(rows):
+    enriched_rows = []
+    for row in rows:
+        enriched = dict(row)
+        enriched["category"] = benchmark_category(row.get("benchmark", ""))
+        enriched_rows.append(enriched)
+    return enriched_rows
+
+
+def unique_values(rows, field):
+    return sorted({row.get(field, "") for row in rows if row.get(field, "")})
+
+
+def render_options(values):
+    return "".join(f"<option value=\"{escape(value)}\">{escape(value)}</option>" for value in values)
+
+
+def render_dashboard_cards(rows):
+    total = len(rows)
+    detected = sum(1 for row in rows if row.get("classification") == "detectado")
+    not_detected = sum(1 for row in rows if row.get("classification") == "nao detectado")
+    inconclusive = sum(1 for row in rows if row.get("classification") == "inconclusivo")
+    divergent = sum(
+        1
+        for row in rows
+        if row.get("expectation_match") == "divergente"
+        or row.get("tool_expectation_match") == "divergente"
+    )
+    execution_errors = sum(1 for row in rows if row.get("classification") == "erro de execucao")
+    cards = [
+        ("Execucoes", total, "Total de resultados consolidados"),
+        ("Detectados", detected, "Problemas observados pelas ferramentas"),
+        ("Nao detectados", not_detected, "Casos sem evidencia de falha"),
+        ("Inconclusivos", inconclusive, "Resultados sem conclusao suficiente"),
+        ("Divergentes", divergent, "Resultados contra a expectativa"),
+        ("Erros", execution_errors, "Falhas operacionais de execucao"),
+    ]
+    return "".join(
+        "<section class=\"metric-card\">"
+        f"<span>{escape(label)}</span>"
+        f"<strong>{escape(value)}</strong>"
+        f"<small>{escape(description)}</small>"
+        "</section>"
+        for label, value, description in cards
+    )
+
+
+def render_filter_controls(rows):
+    return f"""
+    <section class="filters" aria-label="Filtros do dashboard">
+      <label>Ferramenta
+        <select id="filter-tool">
+          <option value="">Todas</option>
+          {render_options(unique_values(rows, "tool"))}
+        </select>
+      </label>
+      <label>Categoria
+        <select id="filter-category">
+          <option value="">Todas</option>
+          {render_options(unique_values(rows, "category"))}
+        </select>
+      </label>
+      <label>Classificacao
+        <select id="filter-classification">
+          <option value="">Todas</option>
+          {render_options(unique_values(rows, "classification"))}
+        </select>
+      </label>
+      <label>Comparacao
+        <select id="filter-match">
+          <option value="">Todas</option>
+          {render_options(unique_values(rows, "expectation_match"))}
+        </select>
+      </label>
+      <label>Busca
+        <input id="filter-search" type="search" placeholder="benchmark, log ou erro">
+      </label>
+      <button id="clear-filters" type="button">Limpar</button>
+      <output id="visible-count">{len(rows)} registros visiveis</output>
+    </section>
+    """
+
+
 def render_html_table(rows, fieldnames):
     if not rows:
         return "<p>Nenhum registro encontrado.</p>"
@@ -461,6 +553,40 @@ def render_html_table(rows, fieldnames):
     )
 
 
+def render_dashboard_detail_table(rows, fieldnames):
+    if not rows:
+        return "<p>Nenhum registro encontrado.</p>"
+
+    header_cells = "".join(f"<th>{escape(field)}</th>" for field in fieldnames)
+    body_rows = []
+    for row in rows:
+        search_text = " ".join(str(row.get(field, "")) for field in fieldnames)
+        cells = []
+        for field in fieldnames:
+            value = row.get(field, "")
+            if field == "log_file" and value:
+                href = f"../{value}" if str(value).startswith("outputs/") else str(value)
+                cells.append(f"<td><a href=\"{escape(href)}\">{escape(value)}</a></td>")
+            else:
+                cells.append(f"<td>{escape(value)}</td>")
+        body_rows.append(
+            "<tr "
+            f"data-tool=\"{escape(row.get('tool', ''))}\" "
+            f"data-category=\"{escape(row.get('category', ''))}\" "
+            f"data-classification=\"{escape(row.get('classification', ''))}\" "
+            f"data-match=\"{escape(row.get('expectation_match', ''))}\" "
+            f"data-search=\"{escape(search_text.lower())}\">"
+            f"{''.join(cells)}</tr>"
+        )
+
+    return (
+        "<table id=\"detail-table\">\n"
+        f"<thead><tr>{header_cells}</tr></thead>\n"
+        f"<tbody>{''.join(body_rows)}</tbody>\n"
+        "</table>"
+    )
+
+
 def write_html_report(
     rows,
     html_output_file,
@@ -469,6 +595,7 @@ def write_html_report(
 ):
     html_output_file.parent.mkdir(parents=True, exist_ok=True)
     summary_rows = build_summary(rows)
+    rows = dashboard_rows(rows)
     category_metrics_rows = category_metrics_rows or []
     benchmark_metrics_rows = benchmark_metrics_rows or []
     generated_at = dt.datetime.now().isoformat(timespec="seconds")
@@ -485,6 +612,7 @@ def write_html_report(
     ]
     detail_fields = [
         "tool",
+        "category",
         "benchmark",
         "execution_date",
         "expected_behavior",
@@ -516,36 +644,115 @@ def write_html_report(
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <title>Relatorio Pipeline VSS-LLM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Pipeline VSS-LLM</title>
   <style>
+    :root {{
+      color-scheme: light;
+      --bg: #f3f6f8;
+      --surface: #ffffff;
+      --line: #d9e2ec;
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #2563eb;
+      --header: #e4edf7;
+    }}
     body {{
-      font-family: Arial, sans-serif;
-      margin: 32px;
-      color: #1f2933;
-      background: #f7f9fb;
+      font-family: Inter, Arial, sans-serif;
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+    }}
+    main {{
+      width: min(1440px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
     }}
     h1, h2 {{
       margin-bottom: 8px;
     }}
+    h1 {{
+      font-size: 28px;
+    }}
     .meta {{
-      color: #52606d;
+      color: var(--muted);
       margin-bottom: 24px;
+    }}
+    .cards {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 18px 0 24px;
+    }}
+    .metric-card {{
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }}
+    .metric-card span, .metric-card small {{
+      color: var(--muted);
+      display: block;
+    }}
+    .metric-card strong {{
+      display: block;
+      font-size: 28px;
+      margin: 6px 0;
+    }}
+    .filters {{
+      align-items: end;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      margin: 16px 0 24px;
+      padding: 14px;
+    }}
+    label {{
+      color: var(--muted);
+      display: grid;
+      font-size: 13px;
+      gap: 6px;
+    }}
+    select, input, button {{
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      font: inherit;
+      min-height: 36px;
+      padding: 7px 9px;
+    }}
+    button {{
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+    }}
+    output {{
+      color: var(--muted);
+      min-height: 36px;
+      padding: 9px 0;
+    }}
+    .table-wrap {{
+      overflow-x: auto;
     }}
     table {{
       border-collapse: collapse;
       width: 100%;
       margin: 16px 0 32px;
-      background: #ffffff;
+      background: var(--surface);
       font-size: 14px;
     }}
     th, td {{
-      border: 1px solid #d9e2ec;
+      border: 1px solid var(--line);
       padding: 8px 10px;
       text-align: left;
       vertical-align: top;
     }}
     th {{
-      background: #e4edf7;
+      background: var(--header);
       color: #102a43;
       position: sticky;
       top: 0;
@@ -559,25 +766,83 @@ def write_html_report(
       padding: 12px 16px;
       margin-bottom: 24px;
     }}
+    a {{
+      color: var(--accent);
+    }}
   </style>
 </head>
 <body>
-  <h1>Relatorio Pipeline VSS-LLM</h1>
-  <p class="meta">Gerado em: {escape(generated_at)} | Logs processados: {len(rows)}</p>
-  <div class="note">
-    <strong>Leitura:</strong> <code>expected_behavior</code> indica se o benchmark era esperado
-    como vulneravel, correto ou nao informado. <code>expectation_match</code> indica se o
-    resultado observado ficou conforme, divergente, inconclusivo ou nao avaliado.
-    <code>expected_tool_behavior</code> registra a expectativa especifica para a ferramenta.
-  </div>
-  <h2>Resumo</h2>
-  {render_html_table(summary_rows, summary_fields)}
-  <h2>Métricas por Categoria</h2>
-  {render_html_table(category_metrics_rows, category_metric_fields)}
-  <h2>Métricas por Benchmark</h2>
-  {render_html_table(benchmark_metrics_rows, benchmark_metric_fields)}
-  <h2>Resultados Detalhados</h2>
-  {render_html_table(rows, detail_fields)}
+  <main>
+    <h1>Dashboard Pipeline VSS-LLM</h1>
+    <p class="meta">Gerado em: {escape(generated_at)} | Logs processados: {len(rows)}</p>
+    <div class="note">
+      <strong>Leitura:</strong> <code>expected_behavior</code> indica se o benchmark era esperado
+      como vulneravel, correto ou nao informado. <code>expectation_match</code> indica se o
+      resultado observado ficou conforme, divergente, inconclusivo ou nao avaliado.
+      <code>expected_tool_behavior</code> registra a expectativa especifica para a ferramenta.
+    </div>
+    <section class="cards" aria-label="Indicadores principais">
+      {render_dashboard_cards(rows)}
+    </section>
+    <h2>Resultados Detalhados</h2>
+    {render_filter_controls(rows)}
+    <div class="table-wrap">
+      {render_dashboard_detail_table(rows, detail_fields)}
+    </div>
+    <h2>Resumo</h2>
+    <div class="table-wrap">{render_html_table(summary_rows, summary_fields)}</div>
+    <h2>Metricas por Categoria</h2>
+    <div class="table-wrap">{render_html_table(category_metrics_rows, category_metric_fields)}</div>
+    <h2>Metricas por Benchmark</h2>
+    <div class="table-wrap">{render_html_table(benchmark_metrics_rows, benchmark_metric_fields)}</div>
+  </main>
+  <script>
+    const filters = {{
+      tool: document.getElementById('filter-tool'),
+      category: document.getElementById('filter-category'),
+      classification: document.getElementById('filter-classification'),
+      match: document.getElementById('filter-match'),
+      search: document.getElementById('filter-search')
+    }};
+    const rows = Array.from(document.querySelectorAll('#detail-table tbody tr'));
+    const visibleCount = document.getElementById('visible-count');
+
+    function normalize(value) {{
+      return (value || '').toString().toLowerCase();
+    }}
+
+    function applyFilters() {{
+      const selected = {{
+        tool: filters.tool.value,
+        category: filters.category.value,
+        classification: filters.classification.value,
+        match: filters.match.value,
+        search: normalize(filters.search.value)
+      }};
+      let visible = 0;
+      rows.forEach((row) => {{
+        const matches =
+          (!selected.tool || row.dataset.tool === selected.tool) &&
+          (!selected.category || row.dataset.category === selected.category) &&
+          (!selected.classification || row.dataset.classification === selected.classification) &&
+          (!selected.match || row.dataset.match === selected.match) &&
+          (!selected.search || normalize(row.dataset.search).includes(selected.search));
+        row.style.display = matches ? '' : 'none';
+        if (matches) visible += 1;
+      }});
+      visibleCount.value = `${{visible}} registros visiveis`;
+    }}
+
+    Object.values(filters).forEach((field) => {{
+      field.addEventListener('input', applyFilters);
+      field.addEventListener('change', applyFilters);
+    }});
+    document.getElementById('clear-filters').addEventListener('click', () => {{
+      Object.values(filters).forEach((field) => field.value = '');
+      applyFilters();
+    }});
+    applyFilters();
+  </script>
 </body>
 </html>
 """

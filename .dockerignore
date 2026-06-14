@@ -6,4 +6,5 @@ __pycache__/
 .DS_Store
 outputs/
 reports/
+antigos/
 outputs/afl/*/default/.cur_input

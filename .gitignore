@@ -31,6 +31,9 @@ var/
 # Generated execution artifacts
 outputs/**
 !outputs/**/
+antigos/**
+!antigos/
+!antigos/README.md
 
 # OneDrive temp files
 ~$*

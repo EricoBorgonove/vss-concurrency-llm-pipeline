@@ -2,12 +2,18 @@
 set -eu
 
 REPORT_ARCHIVE="${REPORT_ARCHIVE:-reports-lightsail.tar.gz}"
+CLEAN_RESULTS="${CLEAN_RESULTS:-1}"
 
 echo "Diagnostico rapido da instancia:"
 uname -a
 free -h
 docker version --format 'Docker {{.Server.Version}}'
 docker compose version
+
+if [ "$CLEAN_RESULTS" = "1" ]; then
+  echo "Limpando logs e relatorios antigos antes da rodada..."
+  rm -rf outputs reports "$REPORT_ARCHIVE"
+fi
 
 echo "Construindo imagem do pipeline..."
 docker compose build

@@ -45,10 +45,17 @@ cd ~/vss-concurrency-llm-pipeline
 Esse comando:
 
 - mostra diagnostico rapido da instancia;
+- remove logs e relatorios antigos para evitar mistura com rodadas anteriores;
 - constroi a imagem Docker;
 - executa o pipeline completo;
 - mostra o resumo do TSAN;
 - empacota `reports/`, `outputs/environment/` e `outputs/pipeline/`.
+
+Se for necessario preservar logs antigos para comparacao, execute com:
+
+```bash
+CLEAN_RESULTS=0 ./scripts/run_lightsail_report.sh
+```
 
 ## 5. Verificar TSAN
 

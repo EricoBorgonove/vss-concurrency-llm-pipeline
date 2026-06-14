@@ -86,6 +86,12 @@ Os benchmarks estao separados por categoria:
 - `deadlock`: programas com possibilidade de espera circular;
 - `random_tests`: codigos exploratorios usados para testar inferencia automatica.
 
+Alem dos casos minimos, a base tambem inclui benchmarks mais dificeis, com erro
+dependente de estado composto, ramos condicionais, aliasing, indices derivados e
+ordem de locks definida em funcoes auxiliares. Esses casos ajudam a avaliar se a
+ferramenta encontra problemas menos obvios do que exemplos didaticos muito
+diretos.
+
 O arquivo `benchmarks/metadata.csv` e uma parte importante do experimento. Ele
 registra, para cada benchmark controlado:
 

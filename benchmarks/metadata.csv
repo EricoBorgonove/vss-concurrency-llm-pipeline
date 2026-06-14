@@ -11,6 +11,8 @@ assertion_violation_009,benchmarks/assertion_violation/assert_state_transition.c
 assertion_violation_010,benchmarks/assertion_violation/assert_sum_limit.c,assertion_violation,vulneravel,detectar,nao_aplicavel,nao_aplicavel,nao_aplicavel,nao_aplicavel,true,soma excede limite verificado por assert
 assertion_violation_011,benchmarks/assertion_violation/simple_assert_fail.c,assertion_violation,vulneravel,detectar,nao_aplicavel,nao_aplicavel,nao_aplicavel,nao_aplicavel,true,caso minimo de assert violado
 assertion_violation_012,benchmarks/assertion_violation/simple_assert_pass.c,assertion_violation,correto,nao_detectar,nao_aplicavel,nao_aplicavel,nao_aplicavel,nao_aplicavel,false,controle positivo para validacao de reparo ESBMC
+assertion_violation_013,benchmarks/assertion_violation/assert_inventory_rebalance_error.c,assertion_violation,vulneravel,detectar,nao_aplicavel,nao_aplicavel,nao_aplicavel,nao_aplicavel,true,rebalanceamento condicional deixa estoque reserva negativo
+assertion_violation_014,benchmarks/assertion_violation/assert_quota_rollover_error.c,assertion_violation,vulneravel,detectar,nao_aplicavel,nao_aplicavel,nao_aplicavel,nao_aplicavel,true,rollover de cota ultrapassa limite maximo permitido
 data_race_001,benchmarks/data_race/race_array_cell.c,data_race,vulneravel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,true,duas threads escrevem na mesma celula sem sincronizacao
 data_race_002,benchmarks/data_race/race_config_reload_error.c,data_race,vulneravel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,true,leitura e escrita de configuracao ocorrem sem mutex
 data_race_003,benchmarks/data_race/race_config_reload_safe.c,data_race,correto,nao_aplicavel,nao_aplicavel,nao_detectar,nao_aplicavel,nao_aplicavel,true,acesso a configuracao protegido por mutex
@@ -23,6 +25,8 @@ data_race_009,benchmarks/data_race/race_shared_flag.c,data_race,vulneravel,nao_a
 data_race_010,benchmarks/data_race/race_struct_field.c,data_race,vulneravel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,true,operacoes alteram campo de struct sem mutex
 data_race_011,benchmarks/data_race/simple_data_race.c,data_race,vulneravel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,true,contador compartilhado e incrementado sem mutex
 data_race_012,benchmarks/data_race/simple_data_race_fixed.c,data_race,correto,nao_aplicavel,nao_aplicavel,nao_detectar,nao_aplicavel,nao_aplicavel,false,controle positivo para validacao de reparo TSAN
+data_race_013,benchmarks/data_race/race_metrics_snapshot_error.c,data_race,vulneravel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,true,snapshot le metricas enquanto outra thread atualiza contador e total
+data_race_014,benchmarks/data_race/race_reference_count_error.c,data_race,vulneravel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,true,contador de referencias global e alterado por caminhos concorrentes
 deadlock_001,benchmarks/deadlock/deadlock_cache_refresh_error.c,deadlock,vulneravel,nao_aplicavel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,true,threads adquirem cache e banco em ordens opostas
 deadlock_002,benchmarks/deadlock/deadlock_cache_refresh_safe.c,deadlock,correto,nao_aplicavel,nao_aplicavel,nao_aplicavel,nao_detectar,nao_aplicavel,true,threads usam ordem consistente para cache e banco
 deadlock_003,benchmarks/deadlock/deadlock_conditional_order.c,deadlock,vulneravel,nao_aplicavel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,true,funcao pode adquirir locks em ordens opostas
@@ -35,6 +39,8 @@ deadlock_009,benchmarks/deadlock/deadlock_trylock_safe.c,deadlock,correto,nao_ap
 deadlock_010,benchmarks/deadlock/deadlock_two_locks_reverse.c,deadlock,vulneravel,nao_aplicavel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,true,duas threads adquirem dois locks em ordem inversa
 deadlock_011,benchmarks/deadlock/simple_deadlock.c,deadlock,vulneravel,nao_aplicavel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,true,caso minimo de deadlock com dois mutexes
 deadlock_012,benchmarks/deadlock/simple_deadlock_fixed.c,deadlock,correto,nao_aplicavel,nao_aplicavel,nao_aplicavel,nao_detectar,nao_aplicavel,false,controle positivo para validacao de reparo de deadlock
+deadlock_013,benchmarks/deadlock/deadlock_feature_toggle_error.c,deadlock,vulneravel,nao_aplicavel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,true,flag de funcionalidade leva locks de configuracao e auditoria a ordem invertida
+deadlock_014,benchmarks/deadlock/deadlock_partition_transfer_error.c,deadlock,vulneravel,nao_aplicavel,nao_aplicavel,nao_aplicavel,detectar,nao_aplicavel,true,transferencias entre particoes adquirem locks em ordem derivada oposta
 memory_corruption_001,benchmarks/memory_corruption/heap_write_overflow.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,escrita fora de area alocada no heap
 memory_corruption_002,benchmarks/memory_corruption/matrix_index_error.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,acesso fora das linhas validas da matriz
 memory_corruption_003,benchmarks/memory_corruption/out_of_bounds_read.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,leitura fora dos limites do vetor
@@ -47,3 +53,5 @@ memory_corruption_009,benchmarks/memory_corruption/simple_buffer_overflow_fixed.
 memory_corruption_010,benchmarks/memory_corruption/stack_write_overflow.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,escrita fora dos limites de vetor local
 memory_corruption_011,benchmarks/memory_corruption/string_copy_overflow.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,strcpy copia texto maior que o destino
 memory_corruption_012,benchmarks/memory_corruption/use_after_free.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,ponteiro e usado depois de free
+memory_corruption_013,benchmarks/memory_corruption/allocator_alias_overflow_error.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,alias interno escreve alem do payload alocado em struct
+memory_corruption_014,benchmarks/memory_corruption/decoder_window_overflow_error.c,memory_corruption,vulneravel,nao_aplicavel,detectar,nao_aplicavel,nao_aplicavel,inconclusivo,true,janela de decoder usa deslocamento que ultrapassa buffer

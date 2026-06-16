@@ -6,6 +6,7 @@ import json
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from socketserver import TCPServer
 from urllib.parse import urlparse
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -86,9 +87,17 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         self.send_json(201, {"link": row})
 
 
+class LocalThreadingHTTPServer(ThreadingHTTPServer):
+    def server_bind(self):
+        TCPServer.server_bind(self)
+        host, port = self.server_address[:2]
+        self.server_name = host
+        self.server_port = port
+
+
 def main():
     args = build_parser().parse_args()
-    server = ThreadingHTTPServer((args.host, args.port), GitHubLinkHandler)
+    server = LocalThreadingHTTPServer((args.host, args.port), GitHubLinkHandler)
     print(f"Servidor iniciado em http://{args.host}:{args.port}")
     print("Pressione Ctrl+C para encerrar.")
     try:

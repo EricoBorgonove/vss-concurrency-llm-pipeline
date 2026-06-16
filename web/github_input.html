@@ -165,6 +165,7 @@
       const rows = links.map((link) => {
         const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
         const canDiscover = Boolean(link.local_path) && link.status !== 'baixando';
+        const canTriage = Number(link.file_count || 0) > 0;
         return `
         <tr>
           <td>${escapeHtml(link.id)}</td>
@@ -174,6 +175,7 @@
           <td>${escapeHtml(link.url_type)}</td>
           <td>${escapeHtml(link.local_path)}</td>
           <td>${escapeHtml(link.file_count || 0)}</td>
+          <td>${escapeHtml(link.finding_count || 0)}</td>
           <td>${escapeHtml(link.started_at)}</td>
           <td>${escapeHtml(link.finished_at)}</td>
           <td>${escapeHtml(link.error)}</td>
@@ -183,6 +185,9 @@
             </button>
             <button type="button" data-discover-id="${escapeHtml(link.id)}" ${canDiscover ? '' : 'disabled'}>
               Descobrir
+            </button>
+            <button type="button" data-triage-id="${escapeHtml(link.id)}" ${canTriage ? '' : 'disabled'}>
+              Triar
             </button>
           </td>
         </tr>
@@ -200,6 +205,7 @@
               <th>Tipo</th>
               <th>Caminho local</th>
               <th>Arquivos</th>
+              <th>Achados</th>
               <th>Inicio</th>
               <th>Fim</th>
               <th>Erro</th>
@@ -252,14 +258,21 @@
     container.addEventListener('click', async (event) => {
       const fetchId = event.target.dataset.fetchId;
       const discoverId = event.target.dataset.discoverId;
-      if (!fetchId && !discoverId) return;
+      const triageId = event.target.dataset.triageId;
+      if (!fetchId && !discoverId && !triageId) return;
 
       event.target.disabled = true;
-      const actionId = fetchId || discoverId;
-      const actionName = fetchId ? 'Baixando' : 'Descobrindo arquivos de';
+      const actionId = fetchId || discoverId || triageId;
+      const actionName = fetchId
+        ? 'Baixando'
+        : discoverId
+          ? 'Descobrindo arquivos de'
+          : 'Executando triagem de';
       const endpoint = fetchId
         ? `/api/github-links/${fetchId}/fetch`
-        : `/api/github-links/${discoverId}/discover`;
+        : discoverId
+          ? `/api/github-links/${discoverId}/discover`
+          : `/api/github-links/${triageId}/triage`;
       setMessage(`${actionName} ${actionId}...`);
 
       try {
@@ -274,8 +287,10 @@
 
         if (fetchId) {
           setMessage(`Repositorio baixado: ${data.link.local_path}`, 'success');
-        } else {
+        } else if (discoverId) {
           setMessage(`Arquivos encontrados: ${data.link.file_count}`, 'success');
+        } else {
+          setMessage(`Achados registrados: ${data.link.finding_count}`, 'success');
         }
         await loadLinks();
       } catch (error) {

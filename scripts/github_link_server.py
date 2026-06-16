@@ -21,6 +21,11 @@ from pipeline_runner.github_files import (  # noqa: E402
     replace_files_for_link,
     resolve_local_path,
 )
+from pipeline_runner.github_findings import (  # noqa: E402
+    finding_counts_by_link,
+    read_findings,
+    replace_findings_for_link,
+)
 from pipeline_runner.github_links import append_link, get_link, read_links, update_link  # noqa: E402
 
 WEB_DIR = PROJECT_ROOT / "web"
@@ -41,11 +46,14 @@ def json_bytes(payload):
 
 
 def links_with_file_counts():
-    counts = file_counts_by_link()
+    file_counts = file_counts_by_link()
+    finding_counts = finding_counts_by_link()
     links = []
     for link in read_links():
         enriched = dict(link)
-        enriched["file_count"] = counts.get(link.get("id", ""), 0)
+        link_id = link.get("id", "")
+        enriched["file_count"] = file_counts.get(link_id, 0)
+        enriched["finding_count"] = finding_counts.get(link_id, 0)
         links.append(enriched)
     return links
 
@@ -86,6 +94,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.send_json(200, {"files": read_files()})
             return
 
+        if path == "/api/github-findings":
+            self.send_json(200, {"findings": read_findings()})
+            return
+
         self.send_json(404, {"error": "rota nao encontrada"})
 
     def do_POST(self):
@@ -102,6 +114,11 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         if path.startswith("/api/github-links/") and path.endswith("/discover"):
             link_id = path.removeprefix("/api/github-links/").removesuffix("/discover").strip("/")
             self.handle_discover_files(link_id)
+            return
+
+        if path.startswith("/api/github-links/") and path.endswith("/triage"):
+            link_id = path.removeprefix("/api/github-links/").removesuffix("/triage").strip("/")
+            self.handle_triage_link(link_id)
             return
 
         self.send_json(404, {"error": "rota nao encontrada"})
@@ -198,6 +215,40 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         enriched = dict(row)
         enriched["file_count"] = len(rows)
         self.send_json(200, {"link": enriched, "files": rows})
+
+    def handle_triage_link(self, link_id):
+        try:
+            files = [row for row in read_files() if row.get("link_id") == link_id]
+            if not files:
+                raise ValueError("nenhum arquivo C/C++ descoberto para este link")
+            findings = replace_findings_for_link(link_id, files)
+            row = update_link(
+                link_id,
+                {
+                    "status": "triagem_concluida",
+                    "error": "" if findings else "nenhum padrao suspeito encontrado",
+                    "finished_at": dt.datetime.now().isoformat(timespec="seconds"),
+                },
+            )
+        except ValueError as exc:
+            self.send_json(400, {"error": str(exc)})
+            return
+        except Exception as exc:
+            row = update_link(
+                link_id,
+                {
+                    "status": "falhou",
+                    "error": str(exc),
+                    "finished_at": dt.datetime.now().isoformat(timespec="seconds"),
+                },
+            )
+            self.send_json(500, {"link": row, "error": str(exc)})
+            return
+
+        enriched = dict(row)
+        enriched["file_count"] = len(files)
+        enriched["finding_count"] = len(findings)
+        self.send_json(200, {"link": enriched, "findings": findings})
 
 
 class LocalThreadingHTTPServer(ThreadingHTTPServer):

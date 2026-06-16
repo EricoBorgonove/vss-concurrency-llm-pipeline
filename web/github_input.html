@@ -164,6 +164,7 @@
 
       const rows = links.map((link) => {
         const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
+        const canDiscover = Boolean(link.local_path) && link.status !== 'baixando';
         return `
         <tr>
           <td>${escapeHtml(link.id)}</td>
@@ -172,12 +173,16 @@
           <td>${escapeHtml(link.status)}</td>
           <td>${escapeHtml(link.url_type)}</td>
           <td>${escapeHtml(link.local_path)}</td>
+          <td>${escapeHtml(link.file_count || 0)}</td>
           <td>${escapeHtml(link.started_at)}</td>
           <td>${escapeHtml(link.finished_at)}</td>
           <td>${escapeHtml(link.error)}</td>
           <td>
             <button type="button" data-fetch-id="${escapeHtml(link.id)}" ${canFetch ? '' : 'disabled'}>
               Baixar
+            </button>
+            <button type="button" data-discover-id="${escapeHtml(link.id)}" ${canDiscover ? '' : 'disabled'}>
+              Descobrir
             </button>
           </td>
         </tr>
@@ -194,6 +199,7 @@
               <th>Status</th>
               <th>Tipo</th>
               <th>Caminho local</th>
+              <th>Arquivos</th>
               <th>Inicio</th>
               <th>Fim</th>
               <th>Erro</th>
@@ -245,22 +251,32 @@
 
     container.addEventListener('click', async (event) => {
       const fetchId = event.target.dataset.fetchId;
-      if (!fetchId) return;
+      const discoverId = event.target.dataset.discoverId;
+      if (!fetchId && !discoverId) return;
 
       event.target.disabled = true;
-      setMessage(`Baixando ${fetchId}...`);
+      const actionId = fetchId || discoverId;
+      const actionName = fetchId ? 'Baixando' : 'Descobrindo arquivos de';
+      const endpoint = fetchId
+        ? `/api/github-links/${fetchId}/fetch`
+        : `/api/github-links/${discoverId}/discover`;
+      setMessage(`${actionName} ${actionId}...`);
 
       try {
-        const response = await fetch(`/api/github-links/${fetchId}/fetch`, {
+        const response = await fetch(endpoint, {
           method: 'POST'
         });
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'falha ao baixar repositorio');
+          throw new Error(data.error || 'falha ao executar acao');
         }
 
-        setMessage(`Repositorio baixado: ${data.link.local_path}`, 'success');
+        if (fetchId) {
+          setMessage(`Repositorio baixado: ${data.link.local_path}`, 'success');
+        } else {
+          setMessage(`Arquivos encontrados: ${data.link.file_count}`, 'success');
+        }
         await loadLinks();
       } catch (error) {
         setMessage(error.message, 'error');

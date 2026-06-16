@@ -14,6 +14,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from pipeline_runner.github_fetcher import fetch_repository  # noqa: E402
+from pipeline_runner.github_files import (  # noqa: E402
+    discover_code_files,
+    file_counts_by_link,
+    read_files,
+    replace_files_for_link,
+    resolve_local_path,
+)
 from pipeline_runner.github_links import append_link, get_link, read_links, update_link  # noqa: E402
 
 WEB_DIR = PROJECT_ROOT / "web"
@@ -31,6 +38,16 @@ def build_parser():
 
 def json_bytes(payload):
     return json.dumps(payload, ensure_ascii=True).encode("utf-8")
+
+
+def links_with_file_counts():
+    counts = file_counts_by_link()
+    links = []
+    for link in read_links():
+        enriched = dict(link)
+        enriched["file_count"] = counts.get(link.get("id", ""), 0)
+        links.append(enriched)
+    return links
 
 
 class GitHubLinkHandler(BaseHTTPRequestHandler):
@@ -62,7 +79,11 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/github-links":
-            self.send_json(200, {"links": read_links()})
+            self.send_json(200, {"links": links_with_file_counts()})
+            return
+
+        if path == "/api/github-files":
+            self.send_json(200, {"files": read_files()})
             return
 
         self.send_json(404, {"error": "rota nao encontrada"})
@@ -76,6 +97,11 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         if path.startswith("/api/github-links/") and path.endswith("/fetch"):
             link_id = path.removeprefix("/api/github-links/").removesuffix("/fetch").strip("/")
             self.handle_fetch_link(link_id)
+            return
+
+        if path.startswith("/api/github-links/") and path.endswith("/discover"):
+            link_id = path.removeprefix("/api/github-links/").removesuffix("/discover").strip("/")
+            self.handle_discover_files(link_id)
             return
 
         self.send_json(404, {"error": "rota nao encontrada"})
@@ -137,6 +163,41 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             return
 
         self.send_json(200, {"link": row})
+
+    def handle_discover_files(self, link_id):
+        try:
+            link = get_link(link_id)
+            local_path = link.get("local_path", "")
+            if not local_path:
+                raise ValueError("repositorio ainda nao foi baixado")
+            files = discover_code_files(resolve_local_path(local_path))
+            rows = replace_files_for_link(link_id, files)
+            row = update_link(
+                link_id,
+                {
+                    "status": "arquivos_descobertos",
+                    "error": "" if rows else "nenhum arquivo C/C++ encontrado",
+                    "finished_at": dt.datetime.now().isoformat(timespec="seconds"),
+                },
+            )
+        except ValueError as exc:
+            self.send_json(400, {"error": str(exc)})
+            return
+        except Exception as exc:
+            row = update_link(
+                link_id,
+                {
+                    "status": "falhou",
+                    "error": str(exc),
+                    "finished_at": dt.datetime.now().isoformat(timespec="seconds"),
+                },
+            )
+            self.send_json(500, {"link": row, "error": str(exc)})
+            return
+
+        enriched = dict(row)
+        enriched["file_count"] = len(rows)
+        self.send_json(200, {"link": enriched, "files": rows})
 
 
 class LocalThreadingHTTPServer(ThreadingHTTPServer):

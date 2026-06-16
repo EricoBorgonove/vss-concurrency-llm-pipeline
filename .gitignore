@@ -32,7 +32,6 @@ var/
 outputs/**
 !outputs/**/
 inputs/**
-!inputs/**/
 reports/github_*.csv
 antigos/**
 !antigos/

@@ -31,6 +31,7 @@ var/
 # Generated execution artifacts
 outputs/**
 !outputs/**/
+reports/github_*.csv
 antigos/**
 !antigos/
 !antigos/README.md

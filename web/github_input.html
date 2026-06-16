@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Links GitHub - Pipeline VSS-LLM</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f6f8;
+      --surface: #ffffff;
+      --line: #d9e2ec;
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #2563eb;
+      --header: #e4edf7;
+      --danger: #b42318;
+      --success: #157f3b;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+      margin: 0;
+    }
+    main {
+      margin: 0 auto;
+      padding: 28px 16px 40px;
+      width: min(1180px, 100%);
+    }
+    h1 {
+      font-size: 28px;
+      margin: 0 0 18px;
+    }
+    form {
+      align-items: end;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(240px, 1fr) auto;
+      margin-bottom: 20px;
+      padding: 14px;
+    }
+    label {
+      color: var(--muted);
+      display: grid;
+      font-size: 13px;
+      gap: 6px;
+    }
+    input, button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      font: inherit;
+      min-height: 38px;
+      padding: 8px 10px;
+    }
+    button {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      min-width: 110px;
+    }
+    button:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+    .message {
+      color: var(--muted);
+      min-height: 22px;
+      margin: 0 0 10px;
+    }
+    .message.error {
+      color: var(--danger);
+    }
+    .message.success {
+      color: var(--success);
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      background: var(--surface);
+      border-collapse: collapse;
+      font-size: 14px;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--header);
+      color: #102a43;
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) {
+      background: #f9fbfd;
+    }
+    .empty {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      padding: 16px;
+    }
+    @media (max-width: 720px) {
+      form {
+        grid-template-columns: 1fr;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Links do GitHub</h1>
+    <form id="github-form">
+      <label>URL
+        <input id="github-url" name="url" type="url" required placeholder="https://github.com/user/repo">
+      </label>
+      <button id="submit-button" type="submit">Analisar</button>
+    </form>
+    <p id="message" class="message"></p>
+    <div id="links-container" class="table-wrap"></div>
+  </main>
+  <script>
+    const form = document.getElementById('github-form');
+    const urlInput = document.getElementById('github-url');
+    const button = document.getElementById('submit-button');
+    const message = document.getElementById('message');
+    const container = document.getElementById('links-container');
+
+    function setMessage(text, type = '') {
+      message.textContent = text;
+      message.className = `message ${type}`.trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function renderLinks(links) {
+      if (!links.length) {
+        container.innerHTML = '<section class="empty">Nenhum link registrado.</section>';
+        return;
+      }
+
+      const rows = links.map((link) => `
+        <tr>
+          <td>${escapeHtml(link.id)}</td>
+          <td>${escapeHtml(link.submitted_at)}</td>
+          <td>${escapeHtml(link.url)}</td>
+          <td>${escapeHtml(link.status)}</td>
+          <td>${escapeHtml(link.url_type)}</td>
+          <td>${escapeHtml(link.error)}</td>
+        </tr>
+      `).join('');
+
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Enviado em</th>
+              <th>URL</th>
+              <th>Status</th>
+              <th>Tipo</th>
+              <th>Erro</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    async function loadLinks() {
+      const response = await fetch('/api/github-links');
+      const data = await response.json();
+      renderLinks(data.links || []);
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      setMessage('');
+
+      try {
+        const response = await fetch('/api/github-links', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({url: urlInput.value})
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'falha ao registrar link');
+        }
+
+        urlInput.value = '';
+        setMessage(`Link registrado: ${data.link.id}`, 'success');
+        await loadLinks();
+      } catch (error) {
+        setMessage(error.message, 'error');
+      } finally {
+        button.disabled = false;
+        urlInput.focus();
+      }
+    });
+
+    loadLinks().catch((error) => setMessage(error.message, 'error'));
+  </script>
+</body>
+</html>

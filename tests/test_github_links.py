@@ -35,7 +35,7 @@ class GitHubLinksTest(unittest.TestCase):
                     "id": "gh_000001",
                     "submitted_at": "2026-06-16T08:00:00",
                     "url": "https://github.com/user/repo",
-                    "url_type": "",
+                    "url_type": "repo",
                     "status": "pendente",
                     "local_path": "",
                     "error": "",
@@ -54,6 +54,64 @@ class GitHubLinksTest(unittest.TestCase):
             row = github_links.append_link("https://github.com/user/two", csv_file)
 
             self.assertEqual(row["id"], "gh_000002")
+
+    # Verifica se os tipos de URL do GitHub sao identificados.
+    def test_classify_github_url_detects_supported_types(self):
+        self.assertEqual(
+            github_links.classify_github_url("https://github.com/user/repo"),
+            ("repo", ""),
+        )
+        self.assertEqual(
+            github_links.classify_github_url(
+                "https://github.com/user/repo/blob/main/src/sample.c"
+            ),
+            ("file", ""),
+        )
+        self.assertEqual(
+            github_links.classify_github_url(
+                "https://github.com/user/repo/tree/main/src"
+            ),
+            ("directory", ""),
+        )
+
+    # Verifica se URLs fora do GitHub sao registradas como falha auditavel.
+    def test_append_link_records_invalid_github_url_as_failed(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_file = Path(temp_dir) / "github_links.csv"
+
+            row = github_links.append_link(
+                "https://example.com/user/repo",
+                csv_file,
+                submitted_at="2026-06-16T08:00:00",
+            )
+
+            self.assertEqual(row["status"], "falhou")
+            self.assertEqual(row["url_type"], "")
+            self.assertEqual(row["error"], "url deve ser do github.com")
+            self.assertEqual(github_links.read_links(csv_file), [row])
+
+    # Verifica se registros antigos sem tipo sao enriquecidos na leitura.
+    def test_read_links_enriches_legacy_rows_without_url_type(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_file = Path(temp_dir) / "github_links.csv"
+            csv_file.write_text(
+                "\n".join(
+                    [
+                        ",".join(github_links.LINK_FIELDS),
+                        (
+                            "gh_000001,2026-06-16T08:00:00,"
+                            "https://github.com/user/repo,,pendente,,,,"
+                        ),
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            rows = github_links.read_links(csv_file)
+
+            self.assertEqual(rows[0]["url_type"], "repo")
+            self.assertEqual(rows[0]["status"], "pendente")
+            self.assertEqual(rows[0]["error"], "")
 
     # Verifica se URL vazia nao e aceita.
     def test_append_link_rejects_empty_url(self):

@@ -214,7 +214,11 @@
         }
 
         urlInput.value = '';
-        setMessage(`Link registrado: ${data.link.id}`, 'success');
+        if (data.link.status === 'falhou') {
+          setMessage(`Link registrado com falha: ${data.link.error}`, 'error');
+        } else {
+          setMessage(`Link registrado: ${data.link.id}`, 'success');
+        }
         await loadLinks();
       } catch (error) {
         setMessage(error.message, 'error');

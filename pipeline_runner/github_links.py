@@ -3,6 +3,7 @@
 import csv
 import datetime as dt
 from pathlib import Path
+from urllib.parse import urlparse
 
 from pipeline_runner.paths import REPORTS_DIR
 
@@ -24,6 +25,34 @@ def normalize_url(url):
     return str(url or "").strip()
 
 
+def classify_github_url(url):
+    parsed = urlparse(normalize_url(url))
+    host = parsed.netloc.lower()
+    path_parts = [part for part in parsed.path.split("/") if part]
+
+    if parsed.scheme != "https":
+        return "", "url deve usar https"
+    if host not in ("github.com", "www.github.com"):
+        return "", "url deve ser do github.com"
+    if len(path_parts) < 2:
+        return "", "url deve informar usuario e repositorio"
+
+    user, repo = path_parts[:2]
+    if not user or not repo:
+        return "", "url deve informar usuario e repositorio"
+
+    if len(path_parts) == 2:
+        return "repo", ""
+
+    marker = path_parts[2]
+    if marker == "blob" and len(path_parts) >= 5:
+        return "file", ""
+    if marker == "tree" and len(path_parts) >= 4:
+        return "directory", ""
+
+    return "", "url do github deve apontar para repositorio, arquivo ou diretorio"
+
+
 def ensure_links_file(csv_file=GITHUB_LINKS_FILE):
     csv_file = Path(csv_file)
     csv_file.parent.mkdir(parents=True, exist_ok=True)
@@ -35,13 +64,24 @@ def ensure_links_file(csv_file=GITHUB_LINKS_FILE):
         writer.writeheader()
 
 
+def enrich_link_row(row):
+    enriched = {field: row.get(field, "") for field in LINK_FIELDS}
+    if enriched["url"] and not enriched["url_type"] and not enriched["error"]:
+        url_type, error = classify_github_url(enriched["url"])
+        enriched["url_type"] = url_type
+        enriched["error"] = error
+        if error:
+            enriched["status"] = "falhou"
+    return enriched
+
+
 def read_links(csv_file=GITHUB_LINKS_FILE):
     csv_file = Path(csv_file)
     if not csv_file.exists():
         return []
 
     with csv_file.open(encoding="utf-8", newline="") as input_file:
-        return list(csv.DictReader(input_file))
+        return [enrich_link_row(row) for row in csv.DictReader(input_file)]
 
 
 def next_link_id(rows):
@@ -62,6 +102,7 @@ def append_link(url, csv_file=GITHUB_LINKS_FILE, submitted_at=None):
     if not normalized_url:
         raise ValueError("url nao informada")
 
+    url_type, error = classify_github_url(normalized_url)
     csv_file = Path(csv_file)
     ensure_links_file(csv_file)
     rows = read_links(csv_file)
@@ -69,10 +110,10 @@ def append_link(url, csv_file=GITHUB_LINKS_FILE, submitted_at=None):
         "id": next_link_id(rows),
         "submitted_at": submitted_at or dt.datetime.now().isoformat(timespec="seconds"),
         "url": normalized_url,
-        "url_type": "",
-        "status": "pendente",
+        "url_type": url_type,
+        "status": "falhou" if error else "pendente",
         "local_path": "",
-        "error": "",
+        "error": error,
         "started_at": "",
         "finished_at": "",
     }

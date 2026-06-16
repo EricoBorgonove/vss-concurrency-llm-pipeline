@@ -121,6 +121,27 @@ class GitHubLinksTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 github_links.append_link("   ", csv_file)
 
+    # Verifica se um registro pode ser atualizado por ID.
+    def test_update_link_changes_status_and_path(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_file = Path(temp_dir) / "github_links.csv"
+            github_links.append_link("https://github.com/user/repo", csv_file)
+
+            row = github_links.update_link(
+                "gh_000001",
+                {
+                    "status": "concluido",
+                    "local_path": "inputs/github_repos/gh_000001",
+                    "ignored": "value",
+                },
+                csv_file,
+            )
+
+            self.assertEqual(row["status"], "concluido")
+            self.assertEqual(row["local_path"], "inputs/github_repos/gh_000001")
+            self.assertNotIn("ignored", row)
+            self.assertEqual(github_links.get_link("gh_000001", csv_file), row)
+
 
 if __name__ == "__main__":
     unittest.main()

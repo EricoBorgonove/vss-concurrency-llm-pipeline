@@ -162,16 +162,27 @@
         return;
       }
 
-      const rows = links.map((link) => `
+      const rows = links.map((link) => {
+        const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
+        return `
         <tr>
           <td>${escapeHtml(link.id)}</td>
           <td>${escapeHtml(link.submitted_at)}</td>
           <td>${escapeHtml(link.url)}</td>
           <td>${escapeHtml(link.status)}</td>
           <td>${escapeHtml(link.url_type)}</td>
+          <td>${escapeHtml(link.local_path)}</td>
+          <td>${escapeHtml(link.started_at)}</td>
+          <td>${escapeHtml(link.finished_at)}</td>
           <td>${escapeHtml(link.error)}</td>
+          <td>
+            <button type="button" data-fetch-id="${escapeHtml(link.id)}" ${canFetch ? '' : 'disabled'}>
+              Baixar
+            </button>
+          </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
 
       container.innerHTML = `
         <table>
@@ -182,7 +193,11 @@
               <th>URL</th>
               <th>Status</th>
               <th>Tipo</th>
+              <th>Caminho local</th>
+              <th>Inicio</th>
+              <th>Fim</th>
               <th>Erro</th>
+              <th>Acao</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -225,6 +240,31 @@
       } finally {
         button.disabled = false;
         urlInput.focus();
+      }
+    });
+
+    container.addEventListener('click', async (event) => {
+      const fetchId = event.target.dataset.fetchId;
+      if (!fetchId) return;
+
+      event.target.disabled = true;
+      setMessage(`Baixando ${fetchId}...`);
+
+      try {
+        const response = await fetch(`/api/github-links/${fetchId}/fetch`, {
+          method: 'POST'
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'falha ao baixar repositorio');
+        }
+
+        setMessage(`Repositorio baixado: ${data.link.local_path}`, 'success');
+        await loadLinks();
+      } catch (error) {
+        setMessage(error.message, 'error');
+        await loadLinks();
       }
     });
 

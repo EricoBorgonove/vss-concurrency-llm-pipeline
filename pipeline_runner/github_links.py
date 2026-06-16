@@ -84,6 +84,15 @@ def read_links(csv_file=GITHUB_LINKS_FILE):
         return [enrich_link_row(row) for row in csv.DictReader(input_file)]
 
 
+def write_links(rows, csv_file=GITHUB_LINKS_FILE):
+    csv_file = Path(csv_file)
+    csv_file.parent.mkdir(parents=True, exist_ok=True)
+    with csv_file.open("w", newline="", encoding="utf-8") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=LINK_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def next_link_id(rows):
     numbers = []
     for row in rows:
@@ -123,3 +132,28 @@ def append_link(url, csv_file=GITHUB_LINKS_FILE, submitted_at=None):
         writer.writerow(row)
 
     return row
+
+
+def update_link(link_id, updates, csv_file=GITHUB_LINKS_FILE):
+    rows = read_links(csv_file)
+    updated_row = None
+    for row in rows:
+        if row.get("id") == link_id:
+            for field, value in updates.items():
+                if field in LINK_FIELDS:
+                    row[field] = value
+            updated_row = row
+            break
+
+    if updated_row is None:
+        raise ValueError(f"link nao encontrado: {link_id}")
+
+    write_links(rows, csv_file)
+    return updated_row
+
+
+def get_link(link_id, csv_file=GITHUB_LINKS_FILE):
+    for row in read_links(csv_file):
+        if row.get("id") == link_id:
+            return row
+    raise ValueError(f"link nao encontrado: {link_id}")

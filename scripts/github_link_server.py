@@ -2,6 +2,7 @@
 """Servidor local para entrada de links do GitHub."""
 
 import argparse
+import datetime as dt
 import json
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -12,7 +13,8 @@ from urllib.parse import urlparse
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from pipeline_runner.github_links import append_link, read_links  # noqa: E402
+from pipeline_runner.github_fetcher import fetch_repository  # noqa: E402
+from pipeline_runner.github_links import append_link, get_link, read_links, update_link  # noqa: E402
 
 WEB_DIR = PROJECT_ROOT / "web"
 INDEX_FILE = WEB_DIR / "github_input.html"
@@ -67,10 +69,18 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urlparse(self.path).path
-        if path != "/api/github-links":
-            self.send_json(404, {"error": "rota nao encontrada"})
+        if path == "/api/github-links":
+            self.handle_create_link()
             return
 
+        if path.startswith("/api/github-links/") and path.endswith("/fetch"):
+            link_id = path.removeprefix("/api/github-links/").removesuffix("/fetch").strip("/")
+            self.handle_fetch_link(link_id)
+            return
+
+        self.send_json(404, {"error": "rota nao encontrada"})
+
+    def handle_create_link(self):
         length = int(self.headers.get("Content-Length", "0") or "0")
         raw_body = self.rfile.read(length).decode("utf-8")
 
@@ -85,6 +95,48 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             return
 
         self.send_json(201, {"link": row})
+
+    def handle_fetch_link(self, link_id):
+        started_at = dt.datetime.now().isoformat(timespec="seconds")
+        try:
+            link = get_link(link_id)
+            if link.get("status") == "falhou":
+                raise ValueError(link.get("error") or "link marcado como falha")
+            link = update_link(
+                link_id,
+                {
+                    "status": "baixando",
+                    "error": "",
+                    "started_at": started_at,
+                    "finished_at": "",
+                },
+            )
+            result = fetch_repository(link)
+            row = update_link(
+                link_id,
+                {
+                    "status": "concluido",
+                    "local_path": result["local_path"],
+                    "error": "",
+                    "finished_at": dt.datetime.now().isoformat(timespec="seconds"),
+                },
+            )
+        except ValueError as exc:
+            self.send_json(400, {"error": str(exc)})
+            return
+        except Exception as exc:
+            row = update_link(
+                link_id,
+                {
+                    "status": "falhou",
+                    "error": str(exc),
+                    "finished_at": dt.datetime.now().isoformat(timespec="seconds"),
+                },
+            )
+            self.send_json(500, {"link": row, "error": str(exc)})
+            return
+
+        self.send_json(200, {"link": row})
 
 
 class LocalThreadingHTTPServer(ThreadingHTTPServer):

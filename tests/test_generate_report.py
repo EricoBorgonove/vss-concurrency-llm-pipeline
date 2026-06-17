@@ -493,7 +493,87 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertIn("memory_corruption", content)
         self.assertIn("nao informado", content)
-        self.assertNotIn("Nenhum registro encontrado.", content)
+        self.assertIn("Metricas por Categoria", content)
+        self.assertIn("Metricas por Benchmark", content)
+
+    # Verifica se o HTML inclui links e achados vindos da analise de GitHub.
+    def test_write_html_report_includes_github_links_and_findings(self):
+        rows = [
+            {
+                "tool": "asan",
+                "benchmark": "benchmarks/memory_corruption/sample_error.c",
+                "log_file": "outputs/asan/sample_error_20260609-120000.log",
+                "execution_date": "2026-06-09T12:00:00",
+                "expected_behavior": "vulneravel",
+                "expectation_match": "conforme esperado",
+                "expected_tool_behavior": "detectar",
+                "tool_expectation_match": "conforme esperado",
+                "returncode": "",
+                "compile_returncode": "0",
+                "run_returncode": "1",
+                "classification": "detectado",
+                "error": "",
+            }
+        ]
+
+        with TemporaryDirectory() as temp_dir:
+            html_path = Path(temp_dir) / "report.html"
+            generate_report.write_html_report(
+                rows,
+                html_path,
+                github_link_rows=[
+                    {
+                        "id": "gh_000001",
+                        "submitted_at": "2026-06-16T10:00:00",
+                        "url": "https://github.com/nginx/nginx",
+                        "url_type": "repo",
+                        "status": "triagem_concluida",
+                        "local_path": "inputs/github_repos/gh_000001",
+                        "error": "",
+                    }
+                ],
+                github_file_rows=[
+                    {
+                        "id": "gh_000001_file_000001",
+                        "link_id": "gh_000001",
+                        "file_path": "inputs/github_repos/gh_000001/src/core/sample.c",
+                    }
+                ],
+                github_finding_rows=[
+                    {
+                        "id": "gh_000001_finding_000001",
+                        "link_id": "gh_000001",
+                        "tool": "static-patterns",
+                        "file_path": "inputs/github_repos/gh_000001/src/core/sample.c",
+                        "line": "10",
+                        "category": "memory_corruption",
+                        "severity": "media",
+                        "status": "suspeito",
+                        "message": "uso de memcpy exige validacao explicita de tamanho",
+                        "evidence": "memcpy(dst, src, n);",
+                    }
+                ],
+            )
+            content = html_path.read_text(encoding="utf-8")
+
+        self.assertIn("Analises de Links do GitHub", content)
+        self.assertIn("Achados dos Links do GitHub", content)
+        self.assertIn("https://github.com/nginx/nginx", content)
+        self.assertIn("gh_000001", content)
+        self.assertIn("file_count", content)
+        self.assertIn("finding_count", content)
+        self.assertIn("memcpy(dst, src, n);", content)
+
+    # Verifica se tabelas muito grandes sao limitadas no HTML.
+    def test_render_limited_html_table_shows_limit_note(self):
+        rows = [{"id": str(index)} for index in range(3)]
+
+        table = generate_report.render_limited_html_table(rows, ["id"], limit=2)
+
+        self.assertIn("Exibindo 2 de 3 registros", table)
+        self.assertIn("<td>0</td>", table)
+        self.assertIn("<td>1</td>", table)
+        self.assertNotIn("<td>2</td>", table)
 
     # Verifica se a leitura opcional de CSV retorna vazio quando o arquivo nao existe.
     def test_read_csv_if_exists_returns_empty_list_for_missing_file(self):

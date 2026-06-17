@@ -25,6 +25,9 @@ SUMMARY_FILE = REPORTS_DIR / "summary.csv"
 HTML_FILE = REPORTS_DIR / "report.html"
 BENCHMARK_METRICS_FILE = REPORTS_DIR / "benchmark_metrics.csv"
 CATEGORY_METRICS_FILE = REPORTS_DIR / "category_metrics.csv"
+GITHUB_LINKS_FILE = REPORTS_DIR / "github_links.csv"
+GITHUB_FILES_FILE = REPORTS_DIR / "github_files.csv"
+GITHUB_FINDINGS_FILE = REPORTS_DIR / "github_findings.csv"
 TOOLS = ("esbmc", "asan", "tsan", "deadlock", "afl")
 DETECTED_MARKERS = (
     "AddressSanitizer:",
@@ -514,6 +517,52 @@ def build_benchmark_metrics_from_rows(rows):
     ]
 
 
+def count_rows_by_field(rows, field):
+    counts = {}
+    for row in rows:
+        value = row.get(field, "")
+        if value:
+            counts[value] = counts.get(value, 0) + 1
+    return counts
+
+
+def github_dashboard_rows(link_rows, file_rows, finding_rows):
+    file_counts = count_rows_by_field(file_rows, "link_id")
+    finding_counts = count_rows_by_field(finding_rows, "link_id")
+    dashboard = []
+    for row in link_rows:
+        enriched = dict(row)
+        link_id = row.get("id", "")
+        enriched["file_count"] = file_counts.get(link_id, 0)
+        enriched["finding_count"] = finding_counts.get(link_id, 0)
+        dashboard.append(enriched)
+    return dashboard
+
+
+def render_github_cards(link_rows, file_rows, finding_rows):
+    failed = sum(1 for row in link_rows if row.get("status") == "falhou")
+    completed = sum(
+        1
+        for row in link_rows
+        if row.get("status") in ("concluido", "arquivos_descobertos", "triagem_concluida")
+    )
+    cards = [
+        ("Links", len(link_rows), "URLs registradas pela interface"),
+        ("Repositorios prontos", completed, "Links baixados ou analisados"),
+        ("Arquivos C/C++", len(file_rows), "Arquivos descobertos nos repositorios"),
+        ("Achados", len(finding_rows), "Suspeitas registradas pela triagem"),
+        ("Falhas", failed, "Links com erro operacional"),
+    ]
+    return "".join(
+        "<section class=\"metric-card\">"
+        f"<span>{escape(label)}</span>"
+        f"<strong>{escape(value)}</strong>"
+        f"<small>{escape(description)}</small>"
+        "</section>"
+        for label, value, description in cards
+    )
+
+
 def unique_values(rows, field):
     return sorted({row.get(field, "") for row in rows if row.get(field, "")})
 
@@ -606,6 +655,44 @@ def render_html_table(rows, fieldnames):
     )
 
 
+def render_limited_html_table(rows, fieldnames, limit=500):
+    if not rows:
+        return "<p>Nenhum registro encontrado.</p>"
+
+    visible_rows = rows[:limit]
+    note = ""
+    if len(rows) > limit:
+        note = (
+            f"<p class=\"meta\">Exibindo {escape(limit)} de {escape(len(rows))} registros. "
+            "O conjunto completo esta no CSV correspondente.</p>"
+        )
+    return note + render_html_table(visible_rows, fieldnames)
+
+
+def render_github_link_table(rows, fieldnames):
+    if not rows:
+        return "<p>Nenhum link do GitHub registrado.</p>"
+
+    header_cells = "".join(f"<th>{escape(field)}</th>" for field in fieldnames)
+    body_rows = []
+    for row in rows:
+        cells = []
+        for field in fieldnames:
+            value = row.get(field, "")
+            if field == "url" and value:
+                cells.append(f"<td><a href=\"{escape(value)}\">{escape(value)}</a></td>")
+            else:
+                cells.append(f"<td>{escape(value)}</td>")
+        body_rows.append(f"<tr>{''.join(cells)}</tr>")
+
+    return (
+        "<table>\n"
+        f"<thead><tr>{header_cells}</tr></thead>\n"
+        f"<tbody>{''.join(body_rows)}</tbody>\n"
+        "</table>"
+    )
+
+
 def render_dashboard_detail_table(rows, fieldnames):
     if not rows:
         return "<p>Nenhum registro encontrado.</p>"
@@ -645,12 +732,23 @@ def write_html_report(
     html_output_file,
     category_metrics_rows=None,
     benchmark_metrics_rows=None,
+    github_link_rows=None,
+    github_file_rows=None,
+    github_finding_rows=None,
 ):
     html_output_file.parent.mkdir(parents=True, exist_ok=True)
     summary_rows = build_summary(rows)
     rows = dashboard_rows(rows)
     category_metrics_rows = category_metrics_rows or build_category_metrics_from_rows(rows)
     benchmark_metrics_rows = benchmark_metrics_rows or build_benchmark_metrics_from_rows(rows)
+    github_link_rows = github_link_rows or []
+    github_file_rows = github_file_rows or []
+    github_finding_rows = github_finding_rows or []
+    github_link_rows = github_dashboard_rows(
+        github_link_rows,
+        github_file_rows,
+        github_finding_rows,
+    )
     generated_at = dt.datetime.now().isoformat(timespec="seconds")
     summary_fields = [
         "tool",
@@ -692,6 +790,29 @@ def write_html_report(
         "benchmark",
         "duration_seconds",
         "returncode",
+    ]
+    github_link_fields = [
+        "id",
+        "submitted_at",
+        "url",
+        "url_type",
+        "status",
+        "file_count",
+        "finding_count",
+        "local_path",
+        "error",
+    ]
+    github_finding_fields = [
+        "id",
+        "link_id",
+        "tool",
+        "file_path",
+        "line",
+        "category",
+        "severity",
+        "status",
+        "message",
+        "evidence",
     ]
     content = f"""<!doctype html>
 <html lang="pt-BR">
@@ -844,6 +965,13 @@ def write_html_report(
     </div>
     <h2>Resumo</h2>
     <div class="table-wrap">{render_html_table(summary_rows, summary_fields)}</div>
+    <h2>Analises de Links do GitHub</h2>
+    <section class="cards" aria-label="Indicadores dos links do GitHub">
+      {render_github_cards(github_link_rows, github_file_rows, github_finding_rows)}
+    </section>
+    <div class="table-wrap">{render_github_link_table(github_link_rows, github_link_fields)}</div>
+    <h2>Achados dos Links do GitHub</h2>
+    <div class="table-wrap">{render_limited_html_table(github_finding_rows, github_finding_fields)}</div>
     <h2>Metricas por Categoria</h2>
     <div class="table-wrap">{render_html_table(category_metrics_rows, category_metric_fields)}</div>
     <h2>Metricas por Benchmark</h2>
@@ -916,6 +1044,9 @@ def main():
             rows = filter_latest_rows(rows)
         category_metrics_rows = read_csv_if_exists(CATEGORY_METRICS_FILE)
         benchmark_metrics_rows = read_csv_if_exists(BENCHMARK_METRICS_FILE)
+        github_link_rows = read_csv_if_exists(GITHUB_LINKS_FILE)
+        github_file_rows = read_csv_if_exists(GITHUB_FILES_FILE)
+        github_finding_rows = read_csv_if_exists(GITHUB_FINDINGS_FILE)
         write_csv(rows, results_file)
         write_summary_csv(rows, summary_file)
         write_html_report(
@@ -923,6 +1054,9 @@ def main():
             html_file,
             category_metrics_rows=category_metrics_rows,
             benchmark_metrics_rows=benchmark_metrics_rows,
+            github_link_rows=github_link_rows,
+            github_file_rows=github_file_rows,
+            github_finding_rows=github_finding_rows,
         )
         print(f"Relatorio salvo em: {display_path(results_file)}")
         print(f"Resumo salvo em: {display_path(summary_file)}")

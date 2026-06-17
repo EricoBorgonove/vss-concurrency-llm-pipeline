@@ -539,8 +539,29 @@ def github_dashboard_rows(link_rows, file_rows, finding_rows):
     return dashboard
 
 
+def priority_for_github_finding(row):
+    message = row.get("message", "").lower()
+    if any(marker in message for marker in ("gets", "strcpy", "sprintf")):
+        return "alta"
+    severity = row.get("severity", "")
+    if severity in ("alta", "media", "baixa"):
+        return severity
+    return "baixa"
+
+
+def github_finding_rows_with_priority(rows):
+    enriched_rows = []
+    for row in rows:
+        enriched = dict(row)
+        if not enriched.get("priority"):
+            enriched["priority"] = priority_for_github_finding(enriched)
+        enriched_rows.append(enriched)
+    return enriched_rows
+
+
 def render_github_cards(link_rows, file_rows, finding_rows):
     failed = sum(1 for row in link_rows if row.get("status") == "falhou")
+    high_priority = sum(1 for row in finding_rows if row.get("priority") == "alta")
     completed = sum(
         1
         for row in link_rows
@@ -551,6 +572,7 @@ def render_github_cards(link_rows, file_rows, finding_rows):
         ("Repositorios prontos", completed, "Links baixados ou analisados"),
         ("Arquivos C/C++", len(file_rows), "Arquivos descobertos nos repositorios"),
         ("Achados", len(finding_rows), "Suspeitas registradas pela triagem"),
+        ("Prioridade alta", high_priority, "Achados que devem ser revisados primeiro"),
         ("Falhas", failed, "Links com erro operacional"),
     ]
     return "".join(
@@ -658,6 +680,12 @@ def render_github_finding_filter_controls(rows):
           {render_options(unique_values(rows, "severity"))}
         </select>
       </label>
+      <label>Prioridade
+        <select id="github-filter-priority">
+          <option value="">Todas</option>
+          {render_options(unique_values(rows, "priority"))}
+        </select>
+      </label>
       <label>Status
         <select id="github-filter-status">
           <option value="">Todos</option>
@@ -727,6 +755,7 @@ def render_github_finding_table(rows, fieldnames, limit=500):
             f"data-link=\"{escape(row.get('link_id', ''))}\" "
             f"data-category=\"{escape(row.get('category', ''))}\" "
             f"data-severity=\"{escape(row.get('severity', ''))}\" "
+            f"data-priority=\"{escape(row.get('priority', ''))}\" "
             f"data-status=\"{escape(row.get('status', ''))}\" "
             f"data-search=\"{escape(search_text.lower())}\">"
             f"{cells}</tr>"
@@ -815,7 +844,7 @@ def write_html_report(
     benchmark_metrics_rows = benchmark_metrics_rows or build_benchmark_metrics_from_rows(rows)
     github_link_rows = github_link_rows or []
     github_file_rows = github_file_rows or []
-    github_finding_rows = github_finding_rows or []
+    github_finding_rows = github_finding_rows_with_priority(github_finding_rows or [])
     github_link_rows = github_dashboard_rows(
         github_link_rows,
         github_file_rows,
@@ -882,6 +911,7 @@ def write_html_report(
         "line",
         "category",
         "severity",
+        "priority",
         "status",
         "message",
         "evidence",
@@ -1101,6 +1131,7 @@ def write_html_report(
       link: document.getElementById('github-filter-link'),
       category: document.getElementById('github-filter-category'),
       severity: document.getElementById('github-filter-severity'),
+      priority: document.getElementById('github-filter-priority'),
       status: document.getElementById('github-filter-status'),
       search: document.getElementById('github-filter-search')
     }};
@@ -1113,6 +1144,7 @@ def write_html_report(
         link: githubFilters.link ? githubFilters.link.value : '',
         category: githubFilters.category ? githubFilters.category.value : '',
         severity: githubFilters.severity ? githubFilters.severity.value : '',
+        priority: githubFilters.priority ? githubFilters.priority.value : '',
         status: githubFilters.status ? githubFilters.status.value : '',
         search: normalize(githubFilters.search ? githubFilters.search.value : '')
       }};
@@ -1122,6 +1154,7 @@ def write_html_report(
           (!selected.link || row.dataset.link === selected.link) &&
           (!selected.category || row.dataset.category === selected.category) &&
           (!selected.severity || row.dataset.severity === selected.severity) &&
+          (!selected.priority || row.dataset.priority === selected.priority) &&
           (!selected.status || row.dataset.status === selected.status) &&
           (!selected.search || normalize(row.dataset.search).includes(selected.search));
         row.style.display = matches ? '' : 'none';

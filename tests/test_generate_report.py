@@ -548,6 +548,7 @@ class GenerateReportTest(unittest.TestCase):
                         "line": "10",
                         "category": "memory_corruption",
                         "severity": "media",
+                        "priority": "media",
                         "status": "suspeito",
                         "message": "uso de memcpy exige validacao explicita de tamanho",
                         "evidence": "memcpy(dst, src, n);",
@@ -565,6 +566,7 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("github-filter-link", content)
         self.assertIn("github-filter-category", content)
         self.assertIn("github-filter-severity", content)
+        self.assertIn("github-filter-priority", content)
         self.assertIn("github-filter-status", content)
         self.assertIn("github-finding-table", content)
         self.assertIn("memcpy(dst, src, n);", content)
@@ -589,17 +591,19 @@ class GenerateReportTest(unittest.TestCase):
                     "link_id": "gh_000001",
                     "category": "memory_corruption",
                     "severity": "alta",
+                    "priority": "alta",
                     "status": "suspeito",
                     "message": "uso de strcpy",
                 }
             ],
-            ["id", "link_id", "category", "severity", "status", "message"],
+            ["id", "link_id", "category", "severity", "priority", "status", "message"],
         )
 
         self.assertIn('id="github-finding-table"', table)
         self.assertIn('data-link="gh_000001"', table)
         self.assertIn('data-category="memory_corruption"', table)
         self.assertIn('data-severity="alta"', table)
+        self.assertIn('data-priority="alta"', table)
         self.assertIn('data-status="suspeito"', table)
 
     # Verifica se a leitura opcional de CSV retorna vazio quando o arquivo nao existe.

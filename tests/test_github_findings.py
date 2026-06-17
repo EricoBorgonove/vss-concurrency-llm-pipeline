@@ -76,9 +76,29 @@ class GitHubFindingsTest(unittest.TestCase):
             self.assertEqual(rows[0]["id"], "gh_000001_finding_000001")
             self.assertEqual(rows[0]["tool"], "static-patterns")
             self.assertEqual(rows[0]["category"], "memory_corruption")
+            self.assertEqual(rows[0]["priority"], "alta")
             self.assertEqual(rows[0]["status"], "suspeito")
             self.assertEqual(github_findings.finding_counts_by_link(rows), {"gh_000001": 1})
             self.assertEqual(github_findings.read_findings(csv_file), rows)
+
+    # Verifica se achados antigos sem prioridade sao enriquecidos na leitura.
+    def test_read_findings_enriches_priority_for_legacy_rows(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_file = Path(temp_dir) / "github_findings.csv"
+            csv_file.write_text(
+                (
+                    "id,link_id,file_id,tool,file_path,line,category,severity,status,message,"
+                    "evidence,created_at\n"
+                    "f1,gh_000001,file1,static-patterns,sample.c,1,memory_corruption,"
+                    "alta,suspeito,uso de strcpy pode copiar dados alem do destino,"
+                    "strcpy,2026-06-16T10:00:00\n"
+                ),
+                encoding="utf-8",
+            )
+
+            rows = github_findings.read_findings(csv_file)
+
+            self.assertEqual(rows[0]["priority"], "alta")
 
     # Verifica se nova triagem substitui achados anteriores do mesmo link.
     def test_replace_findings_for_link_replaces_previous_rows(self):

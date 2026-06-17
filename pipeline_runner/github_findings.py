@@ -18,11 +18,22 @@ FINDING_FIELDS = [
     "line",
     "category",
     "severity",
+    "priority",
     "status",
     "message",
     "evidence",
     "created_at",
 ]
+PRIORITY_BY_SEVERITY = {
+    "alta": "alta",
+    "media": "media",
+    "baixa": "baixa",
+}
+HIGH_PRIORITY_MESSAGES = (
+    "gets",
+    "strcpy",
+    "sprintf",
+)
 PATTERNS = [
     {
         "regex": re.compile(r"\bgets\s*\("),
@@ -115,13 +126,27 @@ def ensure_findings_file(csv_file=GITHUB_FINDINGS_FILE):
         writer.writeheader()
 
 
+def priority_for_finding(finding):
+    message = finding.get("message", "").lower()
+    if any(marker in message for marker in HIGH_PRIORITY_MESSAGES):
+        return "alta"
+    return PRIORITY_BY_SEVERITY.get(finding.get("severity", ""), "baixa")
+
+
+def enrich_finding_row(row):
+    enriched = {field: row.get(field, "") for field in FINDING_FIELDS}
+    if not enriched["priority"]:
+        enriched["priority"] = priority_for_finding(enriched)
+    return enriched
+
+
 def read_findings(csv_file=GITHUB_FINDINGS_FILE):
     csv_file = Path(csv_file)
     if not csv_file.exists():
         return []
 
     with csv_file.open(encoding="utf-8", newline="") as input_file:
-        return list(csv.DictReader(input_file))
+        return [enrich_finding_row(row) for row in csv.DictReader(input_file)]
 
 
 def write_findings(rows, csv_file=GITHUB_FINDINGS_FILE):
@@ -198,6 +223,7 @@ def replace_findings_for_link(link_id, file_rows, csv_file=GITHUB_FINDINGS_FILE,
 
     for file_row in file_rows:
         for finding in analyze_file_row(file_row):
+            priority = priority_for_finding(finding)
             new_rows.append(
                 {
                     "id": next_finding_id(link_id, len(new_rows) + 1),
@@ -208,6 +234,7 @@ def replace_findings_for_link(link_id, file_rows, csv_file=GITHUB_FINDINGS_FILE,
                     "line": finding["line"],
                     "category": finding["category"],
                     "severity": finding["severity"],
+                    "priority": priority,
                     "status": "suspeito",
                     "message": finding["message"],
                     "evidence": finding["evidence"],

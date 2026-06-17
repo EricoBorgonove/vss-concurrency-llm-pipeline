@@ -637,6 +637,42 @@ def render_filter_controls(rows):
     """
 
 
+def render_github_finding_filter_controls(rows):
+    return f"""
+    <section class="filters" aria-label="Filtros dos achados do GitHub">
+      <label>Link
+        <select id="github-filter-link">
+          <option value="">Todos</option>
+          {render_options(unique_values(rows, "link_id"))}
+        </select>
+      </label>
+      <label>Categoria
+        <select id="github-filter-category">
+          <option value="">Todas</option>
+          {render_options(unique_values(rows, "category"))}
+        </select>
+      </label>
+      <label>Severidade
+        <select id="github-filter-severity">
+          <option value="">Todas</option>
+          {render_options(unique_values(rows, "severity"))}
+        </select>
+      </label>
+      <label>Status
+        <select id="github-filter-status">
+          <option value="">Todos</option>
+          {render_options(unique_values(rows, "status"))}
+        </select>
+      </label>
+      <label>Busca
+        <input id="github-filter-search" type="search" placeholder="arquivo, mensagem ou evidencia">
+      </label>
+      <button id="github-clear-filters" type="button">Limpar</button>
+      <output id="github-visible-count">{min(len(rows), 500)} achados visiveis</output>
+    </section>
+    """
+
+
 def render_html_table(rows, fieldnames):
     if not rows:
         return "<p>Nenhum registro encontrado.</p>"
@@ -667,6 +703,42 @@ def render_limited_html_table(rows, fieldnames, limit=500):
             "O conjunto completo esta no CSV correspondente.</p>"
         )
     return note + render_html_table(visible_rows, fieldnames)
+
+
+def render_github_finding_table(rows, fieldnames, limit=500):
+    if not rows:
+        return "<p>Nenhum registro encontrado.</p>"
+
+    visible_rows = rows[:limit]
+    note = ""
+    if len(rows) > limit:
+        note = (
+            f"<p class=\"meta\">Exibindo {escape(limit)} de {escape(len(rows))} registros. "
+            "O conjunto completo esta no CSV correspondente.</p>"
+        )
+
+    header_cells = "".join(f"<th>{escape(field)}</th>" for field in fieldnames)
+    body_rows = []
+    for row in visible_rows:
+        search_text = " ".join(str(row.get(field, "")) for field in fieldnames)
+        cells = "".join(f"<td>{escape(row.get(field, ''))}</td>" for field in fieldnames)
+        body_rows.append(
+            "<tr "
+            f"data-link=\"{escape(row.get('link_id', ''))}\" "
+            f"data-category=\"{escape(row.get('category', ''))}\" "
+            f"data-severity=\"{escape(row.get('severity', ''))}\" "
+            f"data-status=\"{escape(row.get('status', ''))}\" "
+            f"data-search=\"{escape(search_text.lower())}\">"
+            f"{cells}</tr>"
+        )
+
+    return (
+        note
+        + "<table id=\"github-finding-table\">\n"
+        + f"<thead><tr>{header_cells}</tr></thead>\n"
+        + f"<tbody>{''.join(body_rows)}</tbody>\n"
+        + "</table>"
+    )
 
 
 def render_github_link_table(rows, fieldnames):
@@ -971,7 +1043,8 @@ def write_html_report(
     </section>
     <div class="table-wrap">{render_github_link_table(github_link_rows, github_link_fields)}</div>
     <h2>Achados dos Links do GitHub</h2>
-    <div class="table-wrap">{render_limited_html_table(github_finding_rows, github_finding_fields)}</div>
+    {render_github_finding_filter_controls(github_finding_rows)}
+    <div class="table-wrap">{render_github_finding_table(github_finding_rows, github_finding_fields)}</div>
     <h2>Metricas por Categoria</h2>
     <div class="table-wrap">{render_html_table(category_metrics_rows, category_metric_fields)}</div>
     <h2>Metricas por Benchmark</h2>
@@ -1023,6 +1096,55 @@ def write_html_report(
       applyFilters();
     }});
     applyFilters();
+
+    const githubFilters = {{
+      link: document.getElementById('github-filter-link'),
+      category: document.getElementById('github-filter-category'),
+      severity: document.getElementById('github-filter-severity'),
+      status: document.getElementById('github-filter-status'),
+      search: document.getElementById('github-filter-search')
+    }};
+    const githubRows = Array.from(document.querySelectorAll('#github-finding-table tbody tr'));
+    const githubVisibleCount = document.getElementById('github-visible-count');
+
+    function applyGithubFilters() {{
+      if (!githubVisibleCount) return;
+      const selected = {{
+        link: githubFilters.link ? githubFilters.link.value : '',
+        category: githubFilters.category ? githubFilters.category.value : '',
+        severity: githubFilters.severity ? githubFilters.severity.value : '',
+        status: githubFilters.status ? githubFilters.status.value : '',
+        search: normalize(githubFilters.search ? githubFilters.search.value : '')
+      }};
+      let visible = 0;
+      githubRows.forEach((row) => {{
+        const matches =
+          (!selected.link || row.dataset.link === selected.link) &&
+          (!selected.category || row.dataset.category === selected.category) &&
+          (!selected.severity || row.dataset.severity === selected.severity) &&
+          (!selected.status || row.dataset.status === selected.status) &&
+          (!selected.search || normalize(row.dataset.search).includes(selected.search));
+        row.style.display = matches ? '' : 'none';
+        if (matches) visible += 1;
+      }});
+      githubVisibleCount.value = `${{visible}} achados visiveis`;
+    }}
+
+    Object.values(githubFilters).forEach((field) => {{
+      if (!field) return;
+      field.addEventListener('input', applyGithubFilters);
+      field.addEventListener('change', applyGithubFilters);
+    }});
+    const githubClearFilters = document.getElementById('github-clear-filters');
+    if (githubClearFilters) {{
+      githubClearFilters.addEventListener('click', () => {{
+        Object.values(githubFilters).forEach((field) => {{
+          if (field) field.value = '';
+        }});
+        applyGithubFilters();
+      }});
+    }}
+    applyGithubFilters();
   </script>
 </body>
 </html>

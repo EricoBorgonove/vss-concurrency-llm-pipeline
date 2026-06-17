@@ -562,6 +562,11 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("gh_000001", content)
         self.assertIn("file_count", content)
         self.assertIn("finding_count", content)
+        self.assertIn("github-filter-link", content)
+        self.assertIn("github-filter-category", content)
+        self.assertIn("github-filter-severity", content)
+        self.assertIn("github-filter-status", content)
+        self.assertIn("github-finding-table", content)
         self.assertIn("memcpy(dst, src, n);", content)
 
     # Verifica se tabelas muito grandes sao limitadas no HTML.
@@ -574,6 +579,28 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("<td>0</td>", table)
         self.assertIn("<td>1</td>", table)
         self.assertNotIn("<td>2</td>", table)
+
+    # Verifica se a tabela de achados contem atributos usados pelos filtros.
+    def test_render_github_finding_table_adds_filter_attributes(self):
+        table = generate_report.render_github_finding_table(
+            [
+                {
+                    "id": "finding-1",
+                    "link_id": "gh_000001",
+                    "category": "memory_corruption",
+                    "severity": "alta",
+                    "status": "suspeito",
+                    "message": "uso de strcpy",
+                }
+            ],
+            ["id", "link_id", "category", "severity", "status", "message"],
+        )
+
+        self.assertIn('id="github-finding-table"', table)
+        self.assertIn('data-link="gh_000001"', table)
+        self.assertIn('data-category="memory_corruption"', table)
+        self.assertIn('data-severity="alta"', table)
+        self.assertIn('data-status="suspeito"', table)
 
     # Verifica se a leitura opcional de CSV retorna vazio quando o arquivo nao existe.
     def test_read_csv_if_exists_returns_empty_list_for_missing_file(self):

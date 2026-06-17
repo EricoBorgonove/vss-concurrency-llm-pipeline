@@ -27,6 +27,7 @@ from pipeline_runner.github_findings import (  # noqa: E402
     read_findings,
     remove_findings_for_link,
     replace_findings_for_link,
+    update_finding_status,
 )
 from pipeline_runner.github_links import (  # noqa: E402
     append_link,
@@ -127,6 +128,15 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         if path.startswith("/api/github-links/") and path.endswith("/triage"):
             link_id = path.removeprefix("/api/github-links/").removesuffix("/triage").strip("/")
             self.handle_triage_link(link_id)
+            return
+
+        self.send_json(404, {"error": "rota nao encontrada"})
+
+    def do_PATCH(self):
+        path = urlparse(self.path).path
+        if path.startswith("/api/github-findings/"):
+            finding_id = path.removeprefix("/api/github-findings/").strip("/")
+            self.handle_update_finding_status(finding_id)
             return
 
         self.send_json(404, {"error": "rota nao encontrada"})
@@ -277,6 +287,22 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             return
 
         self.send_json(200, {"removed_id": removed_id})
+
+    def handle_update_finding_status(self, finding_id):
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        raw_body = self.rfile.read(length).decode("utf-8")
+
+        try:
+            payload = json.loads(raw_body or "{}")
+            row = update_finding_status(finding_id, payload.get("status", ""))
+        except json.JSONDecodeError:
+            self.send_json(400, {"error": "json invalido"})
+            return
+        except ValueError as exc:
+            self.send_json(400, {"error": str(exc)})
+            return
+
+        self.send_json(200, {"finding": row})
 
 
 class LocalThreadingHTTPServer(ThreadingHTTPServer):

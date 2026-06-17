@@ -82,6 +82,11 @@
       border-color: #f1b3ad;
       color: var(--danger);
     }
+    .button-plain {
+      background: #ffffff;
+      border-color: var(--line);
+      color: var(--muted);
+    }
     .message {
       color: var(--muted);
       min-height: 22px;
@@ -173,6 +178,65 @@
     .actions button {
       min-width: 96px;
     }
+    .findings-panel {
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      padding-top: 12px;
+    }
+    .findings-title {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    .findings-title h2 {
+      font-size: 16px;
+      margin: 0;
+    }
+    .finding-list {
+      display: grid;
+      gap: 8px;
+    }
+    .finding-item {
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+    .finding-topline {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .finding-message {
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    .finding-evidence {
+      background: #f4f7fb;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: #334e68;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      margin: 0;
+      overflow-x: auto;
+      padding: 8px;
+      white-space: pre-wrap;
+    }
+    .finding-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .finding-actions button {
+      min-width: 112px;
+    }
     table {
       background: var(--surface);
       border-collapse: collapse;
@@ -250,17 +314,95 @@
         .replaceAll("'", '&#039;');
     }
 
-    function renderLinks(links) {
+    function groupFindingsByLink(findings) {
+      return findings.reduce((grouped, finding) => {
+        const linkId = finding.link_id || '';
+        if (!grouped[linkId]) grouped[linkId] = [];
+        grouped[linkId].push(finding);
+        return grouped;
+      }, {});
+    }
+
+    function badgeClassForStatus(status) {
+      if (status === 'falhou' || status === 'falso_positivo') return 'badge-error';
+      if (['concluido', 'arquivos_descobertos', 'triagem_concluida', 'confirmado'].includes(status)) return 'badge-success';
+      return '';
+    }
+
+    function renderFindingActions(finding) {
+      const statuses = [
+        ['confirmado', 'Confirmar'],
+        ['falso_positivo', 'Falso positivo'],
+        ['ignorado', 'Ignorar'],
+        ['suspeito', 'Reabrir']
+      ];
+      return statuses.map(([status, label]) => `
+        <button
+          type="button"
+          class="${status === 'falso_positivo' ? 'button-danger' : 'button-plain'}"
+          data-finding-id="${escapeHtml(finding.id)}"
+          data-finding-status="${status}"
+          ${finding.status === status ? 'disabled' : ''}
+        >
+          ${label}
+        </button>
+      `).join('');
+    }
+
+    function renderFindings(linkFindings) {
+      if (!linkFindings.length) return '';
+
+      const visibleFindings = linkFindings.slice(0, 12);
+      const hiddenCount = Math.max(linkFindings.length - visibleFindings.length, 0);
+      const items = visibleFindings.map((finding) => `
+        <article class="finding-item">
+          <div class="finding-topline">
+            <div>
+              <div class="finding-message">${escapeHtml(finding.message)}</div>
+              <div class="link-meta">
+                <span class="badge">${escapeHtml(finding.id)}</span>
+                <span class="badge">${escapeHtml(finding.category)}</span>
+                <span class="badge">severidade: ${escapeHtml(finding.severity)}</span>
+                <span class="badge">prioridade: ${escapeHtml(finding.priority)}</span>
+                <span class="badge ${badgeClassForStatus(finding.status)}">${escapeHtml(finding.status)}</span>
+              </div>
+            </div>
+            <span class="badge">linha ${escapeHtml(finding.line || '-')}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Arquivo</span>
+            <span class="detail-value">${escapeHtml(finding.file_path)}</span>
+          </div>
+          <pre class="finding-evidence">${escapeHtml(finding.evidence || '-')}</pre>
+          <div class="finding-actions">${renderFindingActions(finding)}</div>
+        </article>
+      `).join('');
+
+      return `
+        <section class="findings-panel">
+          <div class="findings-title">
+            <h2>Achados para revisão</h2>
+            <span class="badge">${linkFindings.length} achados</span>
+          </div>
+          <div class="finding-list">${items}</div>
+          ${hiddenCount ? `<p class="message">Mais ${hiddenCount} achados aparecem no dashboard completo.</p>` : ''}
+        </section>
+      `;
+    }
+
+    function renderLinks(links, findings = []) {
       if (!links.length) {
         container.innerHTML = '<section class="empty">Nenhum link registrado.</section>';
         return;
       }
 
+      const findingsByLink = groupFindingsByLink(findings);
       const cards = links.map((link) => {
         const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
         const canDiscover = Boolean(link.local_path) && link.status !== 'baixando';
         const canTriage = Number(link.file_count || 0) > 0;
-        const statusClass = link.status === 'falhou' ? 'badge-error' : ['concluido', 'arquivos_descobertos', 'triagem_concluida'].includes(link.status) ? 'badge-success' : '';
+        const statusClass = badgeClassForStatus(link.status);
+        const linkFindings = findingsByLink[link.id] || [];
         return `
         <article class="link-card">
           <div class="link-card-header">
@@ -314,6 +456,7 @@
             </div>
           </div>
           ${link.error ? `<div class="message error">${escapeHtml(link.error)}</div>` : ''}
+          ${renderFindings(linkFindings)}
         </article>
       `;
       }).join('');
@@ -324,9 +467,13 @@
     }
 
     async function loadLinks() {
-      const response = await fetch('/api/github-links');
-      const data = await response.json();
-      renderLinks(data.links || []);
+      const [linksResponse, findingsResponse] = await Promise.all([
+        fetch('/api/github-links'),
+        fetch('/api/github-findings')
+      ]);
+      const linksData = await linksResponse.json();
+      const findingsData = await findingsResponse.json();
+      renderLinks(linksData.links || [], findingsData.findings || []);
     }
 
     form.addEventListener('submit', async (event) => {
@@ -366,7 +513,33 @@
       const discoverId = event.target.dataset.discoverId;
       const triageId = event.target.dataset.triageId;
       const removeId = event.target.dataset.removeId;
-      if (!fetchId && !discoverId && !triageId && !removeId) return;
+      const findingId = event.target.dataset.findingId;
+      const findingStatus = event.target.dataset.findingStatus;
+      if (!fetchId && !discoverId && !triageId && !removeId && !findingId) return;
+
+      if (findingId) {
+        event.target.disabled = true;
+        setMessage(`Atualizando ${findingId}...`);
+        try {
+          const response = await fetch(`/api/github-findings/${findingId}`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({status: findingStatus})
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'falha ao atualizar achado');
+          }
+
+          setMessage(`Achado marcado como ${data.finding.status}: ${data.finding.id}`, 'success');
+          await loadLinks();
+        } catch (error) {
+          setMessage(error.message, 'error');
+          await loadLinks();
+        }
+        return;
+      }
 
       if (removeId) {
         if (!window.confirm(`Remover ${removeId} da lista?`)) return;

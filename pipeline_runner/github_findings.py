@@ -9,6 +9,7 @@ from pipeline_runner.github_files import resolve_local_path
 from pipeline_runner.paths import REPORTS_DIR
 
 GITHUB_FINDINGS_FILE = REPORTS_DIR / "github_findings.csv"
+REVIEW_STATUSES = {"suspeito", "confirmado", "falso_positivo", "ignorado"}
 FINDING_FIELDS = [
     "id",
     "link_id",
@@ -171,6 +172,26 @@ def remove_findings_for_link(link_id, csv_file=GITHUB_FINDINGS_FILE):
     rows = [row for row in read_findings(csv_file) if row.get("link_id") != link_id]
     write_findings(rows, csv_file)
     return rows
+
+
+def update_finding_status(finding_id, status, csv_file=GITHUB_FINDINGS_FILE):
+    if status not in REVIEW_STATUSES:
+        valid_statuses = ", ".join(sorted(REVIEW_STATUSES))
+        raise ValueError(f"status invalido para achado: use {valid_statuses}")
+
+    rows = read_findings(csv_file)
+    updated_row = None
+    for row in rows:
+        if row.get("id") == finding_id:
+            row["status"] = status
+            updated_row = row
+            break
+
+    if updated_row is None:
+        raise ValueError(f"achado nao encontrado: {finding_id}")
+
+    write_findings(rows, csv_file)
+    return updated_row
 
 
 def analyze_source_text(text):

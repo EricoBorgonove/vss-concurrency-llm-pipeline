@@ -151,6 +151,36 @@ class GitHubFindingsTest(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["link_id"], "gh_000002")
 
+    # Verifica se a revisao manual altera o status de um achado no CSV.
+    def test_update_finding_status_changes_review_state(self):
+        with TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            csv_file = root / "github_findings.csv"
+            source = root / "sample.c"
+            source.write_text("void a(char *d, char *s) { strcpy(d, s); }\n", encoding="utf-8")
+            github_findings.replace_findings_for_link(
+                "gh_000001",
+                [{"id": "f1", "link_id": "gh_000001", "file_path": display_path(source)}],
+                csv_file=csv_file,
+            )
+
+            row = github_findings.update_finding_status(
+                "gh_000001_finding_000001",
+                "confirmado",
+                csv_file,
+            )
+
+            self.assertEqual(row["status"], "confirmado")
+            self.assertEqual(github_findings.read_findings(csv_file)[0]["status"], "confirmado")
+
+    # Verifica se status de revisao invalido e recusado.
+    def test_update_finding_status_rejects_invalid_status(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_file = Path(temp_dir) / "github_findings.csv"
+
+            with self.assertRaises(ValueError):
+                github_findings.update_finding_status("f1", "resolvido", csv_file)
+
 
 if __name__ == "__main__":
     unittest.main()

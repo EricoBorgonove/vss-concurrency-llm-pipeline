@@ -18,15 +18,23 @@ from pipeline_runner.github_files import (  # noqa: E402
     discover_code_files,
     file_counts_by_link,
     read_files,
+    remove_files_for_link,
     replace_files_for_link,
     resolve_local_path,
 )
 from pipeline_runner.github_findings import (  # noqa: E402
     finding_counts_by_link,
     read_findings,
+    remove_findings_for_link,
     replace_findings_for_link,
 )
-from pipeline_runner.github_links import append_link, get_link, read_links, update_link  # noqa: E402
+from pipeline_runner.github_links import (  # noqa: E402
+    append_link,
+    get_link,
+    read_links,
+    remove_link,
+    update_link,
+)
 
 WEB_DIR = PROJECT_ROOT / "web"
 INDEX_FILE = WEB_DIR / "github_input.html"
@@ -119,6 +127,15 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         if path.startswith("/api/github-links/") and path.endswith("/triage"):
             link_id = path.removeprefix("/api/github-links/").removesuffix("/triage").strip("/")
             self.handle_triage_link(link_id)
+            return
+
+        self.send_json(404, {"error": "rota nao encontrada"})
+
+    def do_DELETE(self):
+        path = urlparse(self.path).path
+        if path.startswith("/api/github-links/"):
+            link_id = path.removeprefix("/api/github-links/").strip("/")
+            self.handle_remove_link(link_id)
             return
 
         self.send_json(404, {"error": "rota nao encontrada"})
@@ -249,6 +266,17 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         enriched["file_count"] = len(files)
         enriched["finding_count"] = len(findings)
         self.send_json(200, {"link": enriched, "findings": findings})
+
+    def handle_remove_link(self, link_id):
+        try:
+            removed_id = remove_link(link_id)
+            remove_files_for_link(link_id)
+            remove_findings_for_link(link_id)
+        except ValueError as exc:
+            self.send_json(404, {"error": str(exc)})
+            return
+
+        self.send_json(200, {"removed_id": removed_id})
 
 
 class LocalThreadingHTTPServer(ThreadingHTTPServer):

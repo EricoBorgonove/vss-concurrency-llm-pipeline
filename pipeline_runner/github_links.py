@@ -157,3 +157,13 @@ def get_link(link_id, csv_file=GITHUB_LINKS_FILE):
         if row.get("id") == link_id:
             return row
     raise ValueError(f"link nao encontrado: {link_id}")
+
+
+def remove_link(link_id, csv_file=GITHUB_LINKS_FILE):
+    rows = read_links(csv_file)
+    remaining_rows = [row for row in rows if row.get("id") != link_id]
+    if len(remaining_rows) == len(rows):
+        raise ValueError(f"link nao encontrado: {link_id}")
+
+    write_links(remaining_rows, csv_file)
+    return link_id

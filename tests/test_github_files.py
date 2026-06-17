@@ -70,6 +70,23 @@ class GitHubFilesTest(unittest.TestCase):
             self.assertEqual(github_files.read_files(csv_file), rows)
             self.assertEqual(rows[0]["extension"], ".cpp")
 
+    # Verifica se arquivos associados a um link sao removidos.
+    def test_remove_files_for_link_deletes_related_rows(self):
+        with TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            csv_file = root / "github_files.csv"
+            first = root / "first.c"
+            second = root / "second.c"
+            first.write_text("int first(void) { return 0; }\n", encoding="utf-8")
+            second.write_text("int second(void) { return 0; }\n", encoding="utf-8")
+
+            github_files.replace_files_for_link("gh_000001", [first], csv_file=csv_file)
+            github_files.replace_files_for_link("gh_000002", [second], csv_file=csv_file)
+            rows = github_files.remove_files_for_link("gh_000001", csv_file)
+
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["link_id"], "gh_000002")
+
 
 if __name__ == "__main__":
     unittest.main()

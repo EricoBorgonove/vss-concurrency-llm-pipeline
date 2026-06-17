@@ -70,6 +70,12 @@ def file_counts_by_link(rows=None):
     return counts
 
 
+def remove_files_for_link(link_id, csv_file=GITHUB_FILES_FILE):
+    rows = [row for row in read_files(csv_file) if row.get("link_id") != link_id]
+    write_files(rows, csv_file)
+    return rows
+
+
 def is_ignored_dir(path):
     return any(part in IGNORED_DIRS for part in path.parts)
 

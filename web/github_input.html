@@ -15,6 +15,8 @@
       --accent: #2563eb;
       --header: #e4edf7;
       --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --soft: #eef4ff;
       --success: #157f3b;
     }
     * {
@@ -65,11 +67,20 @@
       border-color: var(--accent);
       color: #ffffff;
       cursor: pointer;
-      min-width: 110px;
     }
     button:disabled {
-      cursor: wait;
+      cursor: not-allowed;
       opacity: 0.7;
+    }
+    .button-secondary {
+      background: var(--soft);
+      border-color: #b7cdfb;
+      color: #1e3a8a;
+    }
+    .button-danger {
+      background: var(--danger-bg);
+      border-color: #f1b3ad;
+      color: var(--danger);
     }
     .message {
       color: var(--muted);
@@ -84,6 +95,83 @@
     }
     .table-wrap {
       overflow-x: auto;
+    }
+    .links-list {
+      display: grid;
+      gap: 12px;
+    }
+    .link-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+    .link-card-header {
+      align-items: start;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .link-url {
+      color: var(--accent);
+      overflow-wrap: anywhere;
+      text-decoration: none;
+    }
+    .link-meta {
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .badge {
+      background: #edf2f7;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      display: inline-flex;
+      line-height: 1;
+      padding: 5px 8px;
+      white-space: nowrap;
+    }
+    .badge-success {
+      background: #ecfdf3;
+      border-color: #b7e4c7;
+      color: var(--success);
+    }
+    .badge-error {
+      background: var(--danger-bg);
+      border-color: #f1b3ad;
+      color: var(--danger);
+    }
+    .link-details {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    .detail-item {
+      min-width: 0;
+    }
+    .detail-label {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+    .detail-value {
+      overflow-wrap: anywhere;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .actions button {
+      min-width: 96px;
     }
     table {
       background: var(--surface);
@@ -116,6 +204,12 @@
     @media (max-width: 720px) {
       form {
         grid-template-columns: 1fr;
+      }
+      .link-card-header {
+        grid-template-columns: 1fr;
+      }
+      .actions {
+        justify-content: stretch;
       }
       button {
         width: 100%;
@@ -162,58 +256,70 @@
         return;
       }
 
-      const rows = links.map((link) => {
+      const cards = links.map((link) => {
         const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
         const canDiscover = Boolean(link.local_path) && link.status !== 'baixando';
         const canTriage = Number(link.file_count || 0) > 0;
+        const statusClass = link.status === 'falhou' ? 'badge-error' : ['concluido', 'arquivos_descobertos', 'triagem_concluida'].includes(link.status) ? 'badge-success' : '';
         return `
-        <tr>
-          <td>${escapeHtml(link.id)}</td>
-          <td>${escapeHtml(link.submitted_at)}</td>
-          <td>${escapeHtml(link.url)}</td>
-          <td>${escapeHtml(link.status)}</td>
-          <td>${escapeHtml(link.url_type)}</td>
-          <td>${escapeHtml(link.local_path)}</td>
-          <td>${escapeHtml(link.file_count || 0)}</td>
-          <td>${escapeHtml(link.finding_count || 0)}</td>
-          <td>${escapeHtml(link.started_at)}</td>
-          <td>${escapeHtml(link.finished_at)}</td>
-          <td>${escapeHtml(link.error)}</td>
-          <td>
-            <button type="button" data-fetch-id="${escapeHtml(link.id)}" ${canFetch ? '' : 'disabled'}>
+        <article class="link-card">
+          <div class="link-card-header">
+            <div>
+              <a class="link-url" href="${escapeHtml(link.url)}">${escapeHtml(link.url)}</a>
+              <div class="link-meta">
+                <span class="badge">${escapeHtml(link.id)}</span>
+                <span class="badge ${statusClass}">${escapeHtml(link.status)}</span>
+                <span class="badge">${escapeHtml(link.url_type || 'tipo pendente')}</span>
+              </div>
+            </div>
+            <div class="actions">
+              <button type="button" class="button-secondary" data-fetch-id="${escapeHtml(link.id)}" ${canFetch ? '' : 'disabled'}>
               Baixar
-            </button>
-            <button type="button" data-discover-id="${escapeHtml(link.id)}" ${canDiscover ? '' : 'disabled'}>
+              </button>
+              <button type="button" class="button-secondary" data-discover-id="${escapeHtml(link.id)}" ${canDiscover ? '' : 'disabled'}>
               Descobrir
-            </button>
-            <button type="button" data-triage-id="${escapeHtml(link.id)}" ${canTriage ? '' : 'disabled'}>
+              </button>
+              <button type="button" class="button-secondary" data-triage-id="${escapeHtml(link.id)}" ${canTriage ? '' : 'disabled'}>
               Triar
-            </button>
-          </td>
-        </tr>
+              </button>
+              <button type="button" class="button-danger" data-remove-id="${escapeHtml(link.id)}">
+              Remover
+              </button>
+            </div>
+          </div>
+          <div class="link-details">
+            <div class="detail-item">
+              <span class="detail-label">Arquivos</span>
+              <span class="detail-value">${escapeHtml(link.file_count || 0)}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Achados</span>
+              <span class="detail-value">${escapeHtml(link.finding_count || 0)}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Enviado em</span>
+              <span class="detail-value">${escapeHtml(link.submitted_at)}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Inicio</span>
+              <span class="detail-value">${escapeHtml(link.started_at || '-')}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Fim</span>
+              <span class="detail-value">${escapeHtml(link.finished_at || '-')}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Caminho local</span>
+              <span class="detail-value">${escapeHtml(link.local_path || '-')}</span>
+            </div>
+          </div>
+          ${link.error ? `<div class="message error">${escapeHtml(link.error)}</div>` : ''}
+        </article>
       `;
       }).join('');
 
       container.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Enviado em</th>
-              <th>URL</th>
-              <th>Status</th>
-              <th>Tipo</th>
-              <th>Caminho local</th>
-              <th>Arquivos</th>
-              <th>Achados</th>
-              <th>Inicio</th>
-              <th>Fim</th>
-              <th>Erro</th>
-              <th>Acao</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
+        <section class="links-list">${cards}</section>
       `;
     }
 
@@ -259,7 +365,31 @@
       const fetchId = event.target.dataset.fetchId;
       const discoverId = event.target.dataset.discoverId;
       const triageId = event.target.dataset.triageId;
-      if (!fetchId && !discoverId && !triageId) return;
+      const removeId = event.target.dataset.removeId;
+      if (!fetchId && !discoverId && !triageId && !removeId) return;
+
+      if (removeId) {
+        if (!window.confirm(`Remover ${removeId} da lista?`)) return;
+        event.target.disabled = true;
+        setMessage(`Removendo ${removeId}...`);
+        try {
+          const response = await fetch(`/api/github-links/${removeId}`, {
+            method: 'DELETE'
+          });
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'falha ao remover link');
+          }
+
+          setMessage(`Link removido: ${data.removed_id}`, 'success');
+          await loadLinks();
+        } catch (error) {
+          setMessage(error.message, 'error');
+          await loadLinks();
+        }
+        return;
+      }
 
       event.target.disabled = true;
       const actionId = fetchId || discoverId || triageId;

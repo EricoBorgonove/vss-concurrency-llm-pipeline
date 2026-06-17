@@ -142,6 +142,12 @@ def finding_counts_by_link(rows=None):
     return counts
 
 
+def remove_findings_for_link(link_id, csv_file=GITHUB_FINDINGS_FILE):
+    rows = [row for row in read_findings(csv_file) if row.get("link_id") != link_id]
+    write_findings(rows, csv_file)
+    return rows
+
+
 def analyze_source_text(text):
     findings = []
     in_block_comment = False

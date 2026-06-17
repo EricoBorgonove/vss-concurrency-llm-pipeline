@@ -105,6 +105,32 @@ class GitHubFindingsTest(unittest.TestCase):
             self.assertEqual(github_findings.read_findings(csv_file), rows)
             self.assertIn("strcat", rows[0]["evidence"])
 
+    # Verifica se achados associados a um link sao removidos.
+    def test_remove_findings_for_link_deletes_related_rows(self):
+        with TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            csv_file = root / "github_findings.csv"
+            first = root / "first.c"
+            second = root / "second.c"
+            first.write_text("void a(char *d, char *s) { strcpy(d, s); }\n", encoding="utf-8")
+            second.write_text("void b(char *d, char *s) { strcat(d, s); }\n", encoding="utf-8")
+
+            github_findings.replace_findings_for_link(
+                "gh_000001",
+                [{"id": "f1", "link_id": "gh_000001", "file_path": display_path(first)}],
+                csv_file=csv_file,
+            )
+            github_findings.replace_findings_for_link(
+                "gh_000002",
+                [{"id": "f2", "link_id": "gh_000002", "file_path": display_path(second)}],
+                csv_file=csv_file,
+            )
+
+            rows = github_findings.remove_findings_for_link("gh_000001", csv_file)
+
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["link_id"], "gh_000002")
+
 
 if __name__ == "__main__":
     unittest.main()

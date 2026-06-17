@@ -142,6 +142,20 @@ class GitHubLinksTest(unittest.TestCase):
             self.assertNotIn("ignored", row)
             self.assertEqual(github_links.get_link("gh_000001", csv_file), row)
 
+    # Verifica se um link pode ser removido do CSV.
+    def test_remove_link_deletes_matching_row(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_file = Path(temp_dir) / "github_links.csv"
+            github_links.append_link("https://github.com/user/one", csv_file)
+            github_links.append_link("https://github.com/user/two", csv_file)
+
+            removed_id = github_links.remove_link("gh_000001", csv_file)
+
+            self.assertEqual(removed_id, "gh_000001")
+            rows = github_links.read_links(csv_file)
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["id"], "gh_000002")
+
 
 if __name__ == "__main__":
     unittest.main()

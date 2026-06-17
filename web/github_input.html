@@ -28,6 +28,9 @@
       font-family: Inter, Arial, sans-serif;
       margin: 0;
     }
+    body.modal-open {
+      overflow: hidden;
+    }
     main {
       margin: 0 auto;
       padding: 28px 16px 40px;
@@ -178,22 +181,65 @@
     .actions button {
       min-width: 96px;
     }
-    .findings-panel {
+    .review-summary {
+      align-items: center;
       border-top: 1px solid var(--line);
       display: grid;
       gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
       padding-top: 12px;
     }
-    .findings-title {
+    .modal-backdrop {
       align-items: center;
+      background: rgba(15, 23, 42, 0.52);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 20;
+    }
+    .modal-backdrop.is-open {
+      display: flex;
+    }
+    .modal {
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      max-height: min(88vh, 860px);
+      width: min(1120px, 100%);
+    }
+    .modal-header,
+    .modal-footer {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       justify-content: space-between;
+      padding: 14px;
     }
-    .findings-title h2 {
-      font-size: 16px;
+    .modal-footer {
+      border-bottom: 0;
+      border-top: 1px solid var(--line);
+    }
+    .modal-title {
+      min-width: 0;
+    }
+    .modal-title h2 {
+      font-size: 18px;
       margin: 0;
+    }
+    .modal-title p {
+      color: var(--muted);
+      margin: 4px 0 0;
+      overflow-wrap: anywhere;
+    }
+    .modal-body {
+      overflow: auto;
+      padding: 14px;
     }
     .finding-list {
       display: grid;
@@ -237,6 +283,12 @@
     .finding-actions button {
       min-width: 112px;
     }
+    .pager-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
     table {
       background: var(--surface);
       border-collapse: collapse;
@@ -275,6 +327,12 @@
       .actions {
         justify-content: stretch;
       }
+      .review-summary {
+        grid-template-columns: 1fr;
+      }
+      .finding-topline {
+        grid-template-columns: 1fr;
+      }
       button {
         width: 100%;
       }
@@ -293,12 +351,44 @@
     <p id="message" class="message"></p>
     <div id="links-container" class="table-wrap"></div>
   </main>
+  <div id="findings-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="findings-modal-title">
+    <section class="modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <h2 id="findings-modal-title">Achados para revisão</h2>
+          <p id="findings-modal-subtitle"></p>
+        </div>
+        <button id="close-findings-modal" class="button-plain" type="button">Fechar</button>
+      </header>
+      <div id="findings-modal-body" class="modal-body"></div>
+      <footer class="modal-footer">
+        <span id="findings-page-label" class="badge">0 achados</span>
+        <div class="pager-actions">
+          <button id="findings-prev-page" class="button-secondary" type="button">Anterior</button>
+          <button id="findings-next-page" class="button-secondary" type="button">Proxima</button>
+        </div>
+      </footer>
+    </section>
+  </div>
   <script>
     const form = document.getElementById('github-form');
     const urlInput = document.getElementById('github-url');
     const button = document.getElementById('submit-button');
     const message = document.getElementById('message');
     const container = document.getElementById('links-container');
+    const modalBackdrop = document.getElementById('findings-modal-backdrop');
+    const modalTitle = document.getElementById('findings-modal-title');
+    const modalSubtitle = document.getElementById('findings-modal-subtitle');
+    const modalBody = document.getElementById('findings-modal-body');
+    const closeModalButton = document.getElementById('close-findings-modal');
+    const pageLabel = document.getElementById('findings-page-label');
+    const prevPageButton = document.getElementById('findings-prev-page');
+    const nextPageButton = document.getElementById('findings-next-page');
+    const findingsPageSize = 50;
+    let currentLinks = [];
+    let currentFindings = [];
+    let currentModalLinkId = '';
+    let currentFindingPage = 0;
 
     function setMessage(text, type = '') {
       message.textContent = text;
@@ -349,12 +439,16 @@
       `).join('');
     }
 
-    function renderFindings(linkFindings) {
-      if (!linkFindings.length) return '';
+    function findingRowsForLink(linkId) {
+      return currentFindings.filter((finding) => finding.link_id === linkId);
+    }
 
-      const visibleFindings = linkFindings.slice(0, 12);
-      const hiddenCount = Math.max(linkFindings.length - visibleFindings.length, 0);
-      const items = visibleFindings.map((finding) => `
+    function renderFindingItems(findings) {
+      if (!findings.length) {
+        return '<section class="empty">Nenhum achado nesta pagina.</section>';
+      }
+
+      return findings.map((finding) => `
         <article class="finding-item">
           <div class="finding-topline">
             <div>
@@ -377,15 +471,61 @@
           <div class="finding-actions">${renderFindingActions(finding)}</div>
         </article>
       `).join('');
+    }
 
+    function renderFindingsModal() {
+      const link = currentLinks.find((item) => item.id === currentModalLinkId);
+      const linkFindings = findingRowsForLink(currentModalLinkId);
+      const totalPages = Math.max(Math.ceil(linkFindings.length / findingsPageSize), 1);
+      currentFindingPage = Math.min(Math.max(currentFindingPage, 0), totalPages - 1);
+      const start = currentFindingPage * findingsPageSize;
+      const pageFindings = linkFindings.slice(start, start + findingsPageSize);
+
+      modalTitle.textContent = `Achados de ${currentModalLinkId || '-'}`;
+      modalSubtitle.textContent = link ? link.url : '';
+      modalBody.innerHTML = `<div class="finding-list">${renderFindingItems(pageFindings)}</div>`;
+
+      if (!linkFindings.length) {
+        pageLabel.textContent = '0 achados';
+      } else {
+        const end = Math.min(start + pageFindings.length, linkFindings.length);
+        pageLabel.textContent = `${start + 1}-${end} de ${linkFindings.length} achados`;
+      }
+      prevPageButton.disabled = currentFindingPage === 0;
+      nextPageButton.disabled = currentFindingPage >= totalPages - 1;
+    }
+
+    function openFindingsModal(linkId) {
+      currentModalLinkId = linkId;
+      currentFindingPage = 0;
+      renderFindingsModal();
+      modalBackdrop.classList.add('is-open');
+      document.body.classList.add('modal-open');
+      closeModalButton.focus();
+    }
+
+    function closeFindingsModal() {
+      modalBackdrop.classList.remove('is-open');
+      document.body.classList.remove('modal-open');
+      currentModalLinkId = '';
+      currentFindingPage = 0;
+    }
+
+    function renderReviewSummary(link, linkFindings) {
+      if (!linkFindings.length) return '';
+
+      const confirmed = linkFindings.filter((finding) => finding.status === 'confirmado').length;
+      const highPriority = linkFindings.filter((finding) => finding.priority === 'alta').length;
       return `
-        <section class="findings-panel">
-          <div class="findings-title">
-            <h2>Achados para revisão</h2>
+        <section class="review-summary">
+          <div class="link-meta">
             <span class="badge">${linkFindings.length} achados</span>
+            <span class="badge">${highPriority} prioridade alta</span>
+            <span class="badge ${confirmed ? 'badge-success' : ''}">${confirmed} confirmados</span>
           </div>
-          <div class="finding-list">${items}</div>
-          ${hiddenCount ? `<p class="message">Mais ${hiddenCount} achados aparecem no dashboard completo.</p>` : ''}
+          <button type="button" class="button-secondary" data-review-id="${escapeHtml(link.id)}">
+            Revisar achados
+          </button>
         </section>
       `;
     }
@@ -456,7 +596,7 @@
             </div>
           </div>
           ${link.error ? `<div class="message error">${escapeHtml(link.error)}</div>` : ''}
-          ${renderFindings(linkFindings)}
+          ${renderReviewSummary(link, linkFindings)}
         </article>
       `;
       }).join('');
@@ -473,7 +613,12 @@
       ]);
       const linksData = await linksResponse.json();
       const findingsData = await findingsResponse.json();
-      renderLinks(linksData.links || [], findingsData.findings || []);
+      currentLinks = linksData.links || [];
+      currentFindings = findingsData.findings || [];
+      renderLinks(currentLinks, currentFindings);
+      if (modalBackdrop.classList.contains('is-open')) {
+        renderFindingsModal();
+      }
     }
 
     form.addEventListener('submit', async (event) => {
@@ -508,36 +653,46 @@
       }
     });
 
+    async function updateFindingStatus(findingId, findingStatus, clickedButton) {
+      clickedButton.disabled = true;
+      setMessage(`Atualizando ${findingId}...`);
+      try {
+        const response = await fetch(`/api/github-findings/${findingId}`, {
+          method: 'PATCH',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({status: findingStatus})
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'falha ao atualizar achado');
+        }
+
+        setMessage(`Achado marcado como ${data.finding.status}: ${data.finding.id}`, 'success');
+        await loadLinks();
+      } catch (error) {
+        setMessage(error.message, 'error');
+        await loadLinks();
+      }
+    }
+
     container.addEventListener('click', async (event) => {
       const fetchId = event.target.dataset.fetchId;
       const discoverId = event.target.dataset.discoverId;
       const triageId = event.target.dataset.triageId;
       const removeId = event.target.dataset.removeId;
+      const reviewId = event.target.dataset.reviewId;
       const findingId = event.target.dataset.findingId;
       const findingStatus = event.target.dataset.findingStatus;
-      if (!fetchId && !discoverId && !triageId && !removeId && !findingId) return;
+      if (!fetchId && !discoverId && !triageId && !removeId && !reviewId && !findingId) return;
 
       if (findingId) {
-        event.target.disabled = true;
-        setMessage(`Atualizando ${findingId}...`);
-        try {
-          const response = await fetch(`/api/github-findings/${findingId}`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({status: findingStatus})
-          });
-          const data = await response.json();
+        await updateFindingStatus(findingId, findingStatus, event.target);
+        return;
+      }
 
-          if (!response.ok) {
-            throw new Error(data.error || 'falha ao atualizar achado');
-          }
-
-          setMessage(`Achado marcado como ${data.finding.status}: ${data.finding.id}`, 'success');
-          await loadLinks();
-        } catch (error) {
-          setMessage(error.message, 'error');
-          await loadLinks();
-        }
+      if (reviewId) {
+        openFindingsModal(reviewId);
         return;
       }
 
@@ -599,6 +754,38 @@
       } catch (error) {
         setMessage(error.message, 'error');
         await loadLinks();
+      }
+    });
+
+    modalBody.addEventListener('click', async (event) => {
+      const findingId = event.target.dataset.findingId;
+      const findingStatus = event.target.dataset.findingStatus;
+      if (!findingId) return;
+
+      await updateFindingStatus(findingId, findingStatus, event.target);
+    });
+
+    closeModalButton.addEventListener('click', closeFindingsModal);
+
+    modalBackdrop.addEventListener('click', (event) => {
+      if (event.target === modalBackdrop) {
+        closeFindingsModal();
+      }
+    });
+
+    prevPageButton.addEventListener('click', () => {
+      currentFindingPage -= 1;
+      renderFindingsModal();
+    });
+
+    nextPageButton.addEventListener('click', () => {
+      currentFindingPage += 1;
+      renderFindingsModal();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modalBackdrop.classList.contains('is-open')) {
+        closeFindingsModal();
       }
     });
 

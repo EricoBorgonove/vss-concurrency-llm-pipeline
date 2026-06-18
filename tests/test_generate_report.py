@@ -571,6 +571,20 @@ class GenerateReportTest(unittest.TestCase):
                         "prompt": "Analise o achado de seguranca",
                     }
                 ],
+                github_tool_validation_rows=[
+                    {
+                        "id": "github_validation_000001",
+                        "finding_id": "gh_000001_finding_000001",
+                        "link_id": "gh_000001",
+                        "tool": "asan",
+                        "status": "executado",
+                        "classification": "detectado",
+                        "returncode": "1",
+                        "log_file": "outputs/asan/sample.log",
+                        "error": "",
+                        "created_at": "2026-06-17T12:00:00",
+                    }
+                ],
             )
             content = html_path.read_text(encoding="utf-8")
 
@@ -591,6 +605,8 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("&gt; 10: memcpy(dst, src, n);", content)
         self.assertIn("Fila de Candidatos para LLM", content)
         self.assertIn("llm_candidate_000001", content)
+        self.assertIn("Validacoes dos Achados por Ferramentas", content)
+        self.assertIn("github_validation_000001", content)
 
     # Verifica se tabelas muito grandes sao limitadas no HTML.
     def test_render_limited_html_table_shows_limit_note(self):

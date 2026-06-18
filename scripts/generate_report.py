@@ -29,6 +29,7 @@ GITHUB_LINKS_FILE = REPORTS_DIR / "github_links.csv"
 GITHUB_FILES_FILE = REPORTS_DIR / "github_files.csv"
 GITHUB_FINDINGS_FILE = REPORTS_DIR / "github_findings.csv"
 GITHUB_LLM_QUEUE_FILE = REPORTS_DIR / "github_llm_queue.csv"
+GITHUB_TOOL_VALIDATIONS_FILE = REPORTS_DIR / "github_tool_validations.csv"
 TOOLS = ("esbmc", "asan", "tsan", "deadlock", "afl")
 DETECTED_MARKERS = (
     "AddressSanitizer:",
@@ -838,6 +839,7 @@ def write_html_report(
     github_file_rows=None,
     github_finding_rows=None,
     github_llm_queue_rows=None,
+    github_tool_validation_rows=None,
 ):
     html_output_file.parent.mkdir(parents=True, exist_ok=True)
     summary_rows = build_summary(rows)
@@ -848,6 +850,7 @@ def write_html_report(
     github_file_rows = github_file_rows or []
     github_finding_rows = github_finding_rows_with_priority(github_finding_rows or [])
     github_llm_queue_rows = github_llm_queue_rows or []
+    github_tool_validation_rows = github_tool_validation_rows or []
     github_link_rows = github_dashboard_rows(
         github_link_rows,
         github_file_rows,
@@ -933,6 +936,18 @@ def write_html_report(
         "review_status",
         "selection_reason",
         "prompt",
+    ]
+    github_tool_validation_fields = [
+        "id",
+        "finding_id",
+        "link_id",
+        "tool",
+        "status",
+        "classification",
+        "returncode",
+        "log_file",
+        "error",
+        "created_at",
     ]
     content = f"""<!doctype html>
 <html lang="pt-BR">
@@ -1095,6 +1110,8 @@ def write_html_report(
     <div class="table-wrap">{render_github_finding_table(github_finding_rows, github_finding_fields)}</div>
     <h2>Fila de Candidatos para LLM</h2>
     <div class="table-wrap">{render_limited_html_table(github_llm_queue_rows, github_llm_queue_fields, limit=100)}</div>
+    <h2>Validacoes dos Achados por Ferramentas</h2>
+    <div class="table-wrap">{render_limited_html_table(github_tool_validation_rows, github_tool_validation_fields, limit=500)}</div>
     <h2>Metricas por Categoria</h2>
     <div class="table-wrap">{render_html_table(category_metrics_rows, category_metric_fields)}</div>
     <h2>Metricas por Benchmark</h2>
@@ -1223,6 +1240,7 @@ def main():
         github_file_rows = read_csv_if_exists(GITHUB_FILES_FILE)
         github_finding_rows = read_csv_if_exists(GITHUB_FINDINGS_FILE)
         github_llm_queue_rows = read_csv_if_exists(GITHUB_LLM_QUEUE_FILE)
+        github_tool_validation_rows = read_csv_if_exists(GITHUB_TOOL_VALIDATIONS_FILE)
         write_csv(rows, results_file)
         write_summary_csv(rows, summary_file)
         write_html_report(
@@ -1234,6 +1252,7 @@ def main():
             github_file_rows=github_file_rows,
             github_finding_rows=github_finding_rows,
             github_llm_queue_rows=github_llm_queue_rows,
+            github_tool_validation_rows=github_tool_validation_rows,
         )
         print(f"Relatorio salvo em: {display_path(results_file)}")
         print(f"Resumo salvo em: {display_path(summary_file)}")

@@ -36,6 +36,7 @@ from pipeline_runner.github_links import (  # noqa: E402
     remove_link,
     update_link,
 )
+from pipeline_runner.github_tool_validations import read_validations  # noqa: E402
 
 WEB_DIR = PROJECT_ROOT / "web"
 INDEX_FILE = WEB_DIR / "github_input.html"
@@ -105,6 +106,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
         if path == "/api/github-findings":
             self.send_json(200, {"findings": read_findings()})
+            return
+
+        if path == "/api/github-validations":
+            self.send_json(200, {"validations": read_validations()})
             return
 
         self.send_json(404, {"error": "rota nao encontrada"})

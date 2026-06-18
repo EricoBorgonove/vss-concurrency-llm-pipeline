@@ -283,6 +283,18 @@
     .finding-actions button {
       min-width: 112px;
     }
+    .validation-list {
+      display: grid;
+      gap: 6px;
+    }
+    .validation-item {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+    }
     .pager-actions {
       display: flex;
       flex-wrap: wrap;
@@ -387,6 +399,7 @@
     const findingsPageSize = 50;
     let currentLinks = [];
     let currentFindings = [];
+    let currentValidations = [];
     let currentModalLinkId = '';
     let currentFindingPage = 0;
 
@@ -413,9 +426,18 @@
       }, {});
     }
 
+    function groupValidationsByLink(validations) {
+      return validations.reduce((grouped, validation) => {
+        const linkId = validation.link_id || '';
+        if (!grouped[linkId]) grouped[linkId] = [];
+        grouped[linkId].push(validation);
+        return grouped;
+      }, {});
+    }
+
     function badgeClassForStatus(status) {
-      if (status === 'falhou' || status === 'falso_positivo') return 'badge-error';
-      if (['concluido', 'arquivos_descobertos', 'triagem_concluida', 'confirmado'].includes(status)) return 'badge-success';
+      if (['falhou', 'falso_positivo', 'erro_compilacao', 'erro_ferramenta', 'nao_validavel'].includes(status)) return 'badge-error';
+      if (['concluido', 'arquivos_descobertos', 'triagem_concluida', 'confirmado', 'detectado', 'executado'].includes(status)) return 'badge-success';
       return '';
     }
 
@@ -441,6 +463,36 @@
 
     function findingRowsForLink(linkId) {
       return currentFindings.filter((finding) => finding.link_id === linkId);
+    }
+
+    function validationRowsForFinding(findingId) {
+      return currentValidations.filter((validation) => validation.finding_id === findingId);
+    }
+
+    function renderValidations(validations) {
+      if (!validations.length) {
+        return '<p class="message">Nenhuma validacao por ferramenta registrada para este achado.</p>';
+      }
+
+      return `
+        <div class="validation-list">
+          ${validations.map((validation) => `
+            <section class="validation-item">
+              <div class="link-meta">
+                <span class="badge">${escapeHtml(validation.tool || 'ferramenta')}</span>
+                <span class="badge ${badgeClassForStatus(validation.status)}">${escapeHtml(validation.status || '-')}</span>
+                <span class="badge ${badgeClassForStatus(validation.classification)}">${escapeHtml(validation.classification || '-')}</span>
+                <span class="badge">retorno ${escapeHtml(validation.returncode || '-')}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Log</span>
+                <span class="detail-value">${escapeHtml(validation.log_file || '-')}</span>
+              </div>
+              ${validation.error ? `<div class="message error">${escapeHtml(validation.error)}</div>` : ''}
+            </section>
+          `).join('')}
+        </div>
+      `;
     }
 
     function renderFindingItems(findings) {
@@ -472,6 +524,10 @@
           </div>
           <pre class="finding-evidence">${escapeHtml(finding.evidence || '-')}</pre>
           <pre class="finding-evidence">${escapeHtml(finding.context || 'contexto nao registrado')}</pre>
+          <div class="detail-item">
+            <span class="detail-label">Validacoes por ferramenta</span>
+            ${renderValidations(validationRowsForFinding(finding.id))}
+          </div>
           <div class="finding-actions">${renderFindingActions(finding)}</div>
         </article>
       `).join('');
@@ -515,17 +571,20 @@
       currentFindingPage = 0;
     }
 
-    function renderReviewSummary(link, linkFindings) {
+    function renderReviewSummary(link, linkFindings, linkValidations) {
       if (!linkFindings.length) return '';
 
       const confirmed = linkFindings.filter((finding) => finding.status === 'confirmado').length;
       const highPriority = linkFindings.filter((finding) => finding.priority === 'alta').length;
+      const detected = linkValidations.filter((validation) => validation.classification === 'detectado').length;
       return `
         <section class="review-summary">
           <div class="link-meta">
             <span class="badge">${linkFindings.length} achados</span>
             <span class="badge">${highPriority} prioridade alta</span>
             <span class="badge ${confirmed ? 'badge-success' : ''}">${confirmed} confirmados</span>
+            <span class="badge">${linkValidations.length} validacoes</span>
+            <span class="badge ${detected ? 'badge-success' : ''}">${detected} detectados</span>
           </div>
           <button type="button" class="button-secondary" data-review-id="${escapeHtml(link.id)}">
             Revisar achados
@@ -534,19 +593,21 @@
       `;
     }
 
-    function renderLinks(links, findings = []) {
+    function renderLinks(links, findings = [], validations = []) {
       if (!links.length) {
         container.innerHTML = '<section class="empty">Nenhum link registrado.</section>';
         return;
       }
 
       const findingsByLink = groupFindingsByLink(findings);
+      const validationsByLink = groupValidationsByLink(validations);
       const cards = links.map((link) => {
         const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
         const canDiscover = Boolean(link.local_path) && link.status !== 'baixando';
         const canTriage = Number(link.file_count || 0) > 0;
         const statusClass = badgeClassForStatus(link.status);
         const linkFindings = findingsByLink[link.id] || [];
+        const linkValidations = validationsByLink[link.id] || [];
         return `
         <article class="link-card">
           <div class="link-card-header">
@@ -600,7 +661,7 @@
             </div>
           </div>
           ${link.error ? `<div class="message error">${escapeHtml(link.error)}</div>` : ''}
-          ${renderReviewSummary(link, linkFindings)}
+          ${renderReviewSummary(link, linkFindings, linkValidations)}
         </article>
       `;
       }).join('');
@@ -611,15 +672,18 @@
     }
 
     async function loadLinks() {
-      const [linksResponse, findingsResponse] = await Promise.all([
+      const [linksResponse, findingsResponse, validationsResponse] = await Promise.all([
         fetch('/api/github-links'),
-        fetch('/api/github-findings')
+        fetch('/api/github-findings'),
+        fetch('/api/github-validations')
       ]);
       const linksData = await linksResponse.json();
       const findingsData = await findingsResponse.json();
+      const validationsData = await validationsResponse.json();
       currentLinks = linksData.links || [];
       currentFindings = findingsData.findings || [];
-      renderLinks(currentLinks, currentFindings);
+      currentValidations = validationsData.validations || [];
+      renderLinks(currentLinks, currentFindings, currentValidations);
       if (modalBackdrop.classList.contains('is-open')) {
         renderFindingsModal();
       }

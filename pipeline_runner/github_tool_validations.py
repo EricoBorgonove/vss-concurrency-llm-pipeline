@@ -213,6 +213,18 @@ def write_validations(rows, csv_file=GITHUB_TOOL_VALIDATIONS_FILE):
         writer.writerows(rows)
 
 
+def read_validations(csv_file=GITHUB_TOOL_VALIDATIONS_FILE):
+    csv_file = Path(csv_file)
+    if not csv_file.exists():
+        return []
+
+    with csv_file.open(encoding="utf-8", newline="") as input_file:
+        return [
+            {field: row.get(field, "") for field in VALIDATION_FIELDS}
+            for row in csv.DictReader(input_file)
+        ]
+
+
 def validate_findings_file(
     findings_file=None,
     output_file=GITHUB_TOOL_VALIDATIONS_FILE,

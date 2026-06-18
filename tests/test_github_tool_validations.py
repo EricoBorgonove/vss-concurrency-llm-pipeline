@@ -95,6 +95,25 @@ class GitHubToolValidationsTest(unittest.TestCase):
 
         self.assertEqual(rows, [])
 
+    # Verifica se validacoes persistidas em CSV podem ser lidas pela pagina.
+    def test_read_validations_loads_existing_csv(self):
+        with TemporaryDirectory() as temp_dir:
+            csv_file = Path(temp_dir) / "github_tool_validations.csv"
+            csv_file.write_text(
+                (
+                    "id,finding_id,link_id,tool,status,classification,command,returncode,"
+                    "log_file,error,created_at\n"
+                    "v1,f1,gh_000001,asan,executado,detectado,python run_asan.py,1,"
+                    "outputs/asan/sample.log,,2026-06-18T10:00:00\n"
+                ),
+                encoding="utf-8",
+            )
+
+            rows = github_tool_validations.read_validations(csv_file)
+
+            self.assertEqual(rows[0]["id"], "v1")
+            self.assertEqual(rows[0]["classification"], "detectado")
+
     # Verifica se falha de execucao sem marcador nao vira erro de compilacao.
     def test_classify_tool_result_distinguishes_run_failure_from_compile_failure(self):
         self.assertEqual(

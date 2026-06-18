@@ -557,6 +557,20 @@ class GenerateReportTest(unittest.TestCase):
                         "context": "> 10: memcpy(dst, src, n);",
                     }
                 ],
+                github_llm_queue_rows=[
+                    {
+                        "id": "llm_candidate_000001",
+                        "finding_id": "gh_000001_finding_000001",
+                        "link_id": "gh_000001",
+                        "file_path": "inputs/github_repos/gh_000001/src/core/sample.c",
+                        "line": "10",
+                        "category": "memory_corruption",
+                        "priority": "media",
+                        "review_status": "confirmado",
+                        "selection_reason": "achado confirmado na revisao",
+                        "prompt": "Analise o achado de seguranca",
+                    }
+                ],
             )
             content = html_path.read_text(encoding="utf-8")
 
@@ -575,6 +589,8 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("memcpy(dst, src, n);", content)
         self.assertIn("context_start_line", content)
         self.assertIn("&gt; 10: memcpy(dst, src, n);", content)
+        self.assertIn("Fila de Candidatos para LLM", content)
+        self.assertIn("llm_candidate_000001", content)
 
     # Verifica se tabelas muito grandes sao limitadas no HTML.
     def test_render_limited_html_table_shows_limit_note(self):

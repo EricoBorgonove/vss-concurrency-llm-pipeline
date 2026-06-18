@@ -693,7 +693,7 @@ def render_github_finding_filter_controls(rows):
         </select>
       </label>
       <label>Busca
-        <input id="github-filter-search" type="search" placeholder="arquivo, mensagem ou evidencia">
+        <input id="github-filter-search" type="search" placeholder="arquivo, mensagem, evidencia ou contexto">
       </label>
       <button id="github-clear-filters" type="button">Limpar</button>
       <output id="github-visible-count">{min(len(rows), 500)} achados visiveis</output>
@@ -915,6 +915,9 @@ def write_html_report(
         "status",
         "message",
         "evidence",
+        "context_start_line",
+        "context_end_line",
+        "context",
     ]
     content = f"""<!doctype html>
 <html lang="pt-BR">

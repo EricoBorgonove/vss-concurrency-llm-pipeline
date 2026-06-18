@@ -23,6 +23,9 @@ FINDING_FIELDS = [
     "status",
     "message",
     "evidence",
+    "context_start_line",
+    "context_end_line",
+    "context",
     "created_at",
 ]
 PRIORITY_BY_SEVERITY = {
@@ -86,6 +89,8 @@ PATTERNS = [
     },
 ]
 STRING_PATTERN = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'')
+DEFAULT_CONTEXT_RADIUS = 5
+MAX_CONTEXT_CHARS = 4000
 
 
 def strip_comments_and_strings(line, in_block_comment=False):
@@ -174,6 +179,23 @@ def remove_findings_for_link(link_id, csv_file=GITHUB_FINDINGS_FILE):
     return rows
 
 
+def source_context(lines, line_number, radius=DEFAULT_CONTEXT_RADIUS):
+    if line_number < 1 or not lines:
+        return "", "", ""
+
+    start = max(line_number - radius, 1)
+    end = min(line_number + radius, len(lines))
+    numbered_lines = []
+    for current_number in range(start, end + 1):
+        marker = ">" if current_number == line_number else " "
+        numbered_lines.append(f"{marker} {current_number}: {lines[current_number - 1]}")
+
+    context = "\n".join(numbered_lines)
+    if len(context) > MAX_CONTEXT_CHARS:
+        context = context[:MAX_CONTEXT_CHARS] + "\n[contexto truncado]"
+    return str(start), str(end), context
+
+
 def update_finding_status(finding_id, status, csv_file=GITHUB_FINDINGS_FILE):
     if status not in REVIEW_STATUSES:
         valid_statuses = ", ".join(sorted(REVIEW_STATUSES))
@@ -194,10 +216,11 @@ def update_finding_status(finding_id, status, csv_file=GITHUB_FINDINGS_FILE):
     return updated_row
 
 
-def analyze_source_text(text):
+def analyze_source_text(text, include_context=False, context_radius=DEFAULT_CONTEXT_RADIUS):
     findings = []
+    lines = text.splitlines()
     in_block_comment = False
-    for line_number, line in enumerate(text.splitlines(), start=1):
+    for line_number, line in enumerate(lines, start=1):
         cleaned, in_block_comment = strip_comments_and_strings(line, in_block_comment)
         stripped = cleaned.strip()
         if not stripped:
@@ -213,6 +236,11 @@ def analyze_source_text(text):
                         "evidence": stripped[:240],
                     }
                 )
+                if include_context:
+                    start, end, context = source_context(lines, line_number, context_radius)
+                    findings[-1]["context_start_line"] = start
+                    findings[-1]["context_end_line"] = end
+                    findings[-1]["context"] = context
     return findings
 
 
@@ -230,7 +258,7 @@ def analyze_file_row(file_row):
                 "evidence": "",
             }
         ]
-    return analyze_source_text(text)
+    return analyze_source_text(text, include_context=True)
 
 
 def next_finding_id(link_id, index):
@@ -259,6 +287,9 @@ def replace_findings_for_link(link_id, file_rows, csv_file=GITHUB_FINDINGS_FILE,
                     "status": "suspeito",
                     "message": finding["message"],
                     "evidence": finding["evidence"],
+                    "context_start_line": finding.get("context_start_line", ""),
+                    "context_end_line": finding.get("context_end_line", ""),
+                    "context": finding.get("context", ""),
                     "created_at": created_at,
                 }
             )

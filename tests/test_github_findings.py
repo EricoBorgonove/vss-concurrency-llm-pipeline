@@ -78,6 +78,9 @@ class GitHubFindingsTest(unittest.TestCase):
             self.assertEqual(rows[0]["category"], "memory_corruption")
             self.assertEqual(rows[0]["priority"], "alta")
             self.assertEqual(rows[0]["status"], "suspeito")
+            self.assertEqual(rows[0]["context_start_line"], "1")
+            self.assertEqual(rows[0]["context_end_line"], "1")
+            self.assertIn("> 1:", rows[0]["context"])
             self.assertEqual(github_findings.finding_counts_by_link(rows), {"gh_000001": 1})
             self.assertEqual(github_findings.read_findings(csv_file), rows)
 
@@ -99,6 +102,29 @@ class GitHubFindingsTest(unittest.TestCase):
             rows = github_findings.read_findings(csv_file)
 
             self.assertEqual(rows[0]["priority"], "alta")
+            self.assertEqual(rows[0]["context"], "")
+
+    # Verifica se o contexto ao redor da linha suspeita pode ser coletado.
+    def test_analyze_source_text_can_include_context(self):
+        findings = github_findings.analyze_source_text(
+            "\n".join(
+                [
+                    "int before(void) { return 0; }",
+                    "void copy(char *dst, char *src) {",
+                    "    strcpy(dst, src);",
+                    "}",
+                    "int after(void) { return 1; }",
+                ]
+            ),
+            include_context=True,
+            context_radius=1,
+        )
+
+        self.assertEqual(findings[0]["context_start_line"], "2")
+        self.assertEqual(findings[0]["context_end_line"], "4")
+        self.assertIn("  2: void copy", findings[0]["context"])
+        self.assertIn("> 3:     strcpy", findings[0]["context"])
+        self.assertIn("  4: }", findings[0]["context"])
 
     # Verifica se nova triagem substitui achados anteriores do mesmo link.
     def test_replace_findings_for_link_replaces_previous_rows(self):

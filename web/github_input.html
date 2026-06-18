@@ -467,7 +467,11 @@
             <span class="detail-label">Arquivo</span>
             <span class="detail-value">${escapeHtml(finding.file_path)}</span>
           </div>
+          <div class="link-meta">
+            <span class="badge">contexto ${escapeHtml(finding.context_start_line || '-')}-${escapeHtml(finding.context_end_line || '-')}</span>
+          </div>
           <pre class="finding-evidence">${escapeHtml(finding.evidence || '-')}</pre>
+          <pre class="finding-evidence">${escapeHtml(finding.context || 'contexto nao registrado')}</pre>
           <div class="finding-actions">${renderFindingActions(finding)}</div>
         </article>
       `).join('');

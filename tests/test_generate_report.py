@@ -552,6 +552,9 @@ class GenerateReportTest(unittest.TestCase):
                         "status": "suspeito",
                         "message": "uso de memcpy exige validacao explicita de tamanho",
                         "evidence": "memcpy(dst, src, n);",
+                        "context_start_line": "8",
+                        "context_end_line": "12",
+                        "context": "> 10: memcpy(dst, src, n);",
                     }
                 ],
             )
@@ -570,6 +573,8 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("github-filter-status", content)
         self.assertIn("github-finding-table", content)
         self.assertIn("memcpy(dst, src, n);", content)
+        self.assertIn("context_start_line", content)
+        self.assertIn("&gt; 10: memcpy(dst, src, n);", content)
 
     # Verifica se tabelas muito grandes sao limitadas no HTML.
     def test_render_limited_html_table_shows_limit_note(self):

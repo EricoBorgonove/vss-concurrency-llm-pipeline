@@ -181,6 +181,14 @@
     .actions button {
       min-width: 96px;
     }
+    .toolbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      margin: -8px 0 14px;
+    }
     .review-summary {
       align-items: center;
       border-top: 1px solid var(--line);
@@ -339,6 +347,9 @@
       .actions {
         justify-content: stretch;
       }
+      .toolbar {
+        justify-content: stretch;
+      }
       .review-summary {
         grid-template-columns: 1fr;
       }
@@ -360,6 +371,9 @@
       </label>
       <button id="submit-button" type="submit">Analisar</button>
     </form>
+    <section class="toolbar">
+      <button id="run-tests-button" class="button-secondary" type="button">Rodar testes dos achados</button>
+    </section>
     <p id="message" class="message"></p>
     <div id="links-container" class="table-wrap"></div>
   </main>
@@ -386,6 +400,7 @@
     const form = document.getElementById('github-form');
     const urlInput = document.getElementById('github-url');
     const button = document.getElementById('submit-button');
+    const runTestsButton = document.getElementById('run-tests-button');
     const message = document.getElementById('message');
     const container = document.getElementById('links-container');
     const modalBackdrop = document.getElementById('findings-modal-backdrop');
@@ -718,6 +733,34 @@
       } finally {
         button.disabled = false;
         urlInput.focus();
+      }
+    });
+
+    runTestsButton.addEventListener('click', async () => {
+      if (!window.confirm('Rodar validacao dos achados por ferramentas agora?')) return;
+      runTestsButton.disabled = true;
+      setMessage('Rodando testes dos achados...');
+
+      try {
+        const response = await fetch('/api/github-validations/run', {
+          method: 'POST'
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'falha ao rodar testes dos achados');
+        }
+
+        setMessage(
+          `Testes finalizados: ${data.count} validacoes registradas (limite ${data.limit}, timeout ${data.timeout}s).`,
+          'success'
+        );
+        await loadLinks();
+      } catch (error) {
+        setMessage(error.message, 'error');
+        await loadLinks();
+      } finally {
+        runTestsButton.disabled = false;
       }
     });
 

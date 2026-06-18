@@ -4,6 +4,7 @@
 import argparse
 import datetime as dt
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -36,10 +37,20 @@ from pipeline_runner.github_links import (  # noqa: E402
     remove_link,
     update_link,
 )
-from pipeline_runner.github_tool_validations import read_validations  # noqa: E402
+from pipeline_runner.github_tool_validations import (  # noqa: E402
+    read_validations,
+    validate_findings_file,
+)
 
 WEB_DIR = PROJECT_ROOT / "web"
 INDEX_FILE = WEB_DIR / "github_input.html"
+
+
+def env_int(name, default):
+    try:
+        return int(os.environ.get(name, str(default)))
+    except ValueError:
+        return default
 
 
 def build_parser():
@@ -118,6 +129,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         if path == "/api/github-links":
             self.handle_create_link()
+            return
+
+        if path == "/api/github-validations/run":
+            self.handle_run_validations()
             return
 
         if path.startswith("/api/github-links/") and path.endswith("/fetch"):
@@ -308,6 +323,26 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             return
 
         self.send_json(200, {"finding": row})
+
+    def handle_run_validations(self):
+        limit = env_int("GITHUB_VALIDATION_LIMIT", 25)
+        timeout = env_int("GITHUB_VALIDATION_TIMEOUT", 10)
+
+        try:
+            rows = validate_findings_file(limit=limit, timeout=timeout)
+        except Exception as exc:
+            self.send_json(500, {"error": str(exc)})
+            return
+
+        self.send_json(
+            200,
+            {
+                "validations": rows,
+                "count": len(rows),
+                "limit": limit,
+                "timeout": timeout,
+            },
+        )
 
 
 class LocalThreadingHTTPServer(ThreadingHTTPServer):

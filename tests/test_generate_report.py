@@ -660,6 +660,32 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertEqual(rows, [{"category": "memory_corruption", "count": "2"}])
 
+    # Verifica se logs de validacao GitHub nao entram nos resultados principais.
+    def test_collect_rows_ignores_github_validation_logs(self):
+        with TemporaryDirectory(dir=generate_report.PROJECT_ROOT) as temp_dir:
+            outputs_dir = Path(temp_dir)
+            asan_dir = outputs_dir / "asan"
+            asan_dir.mkdir()
+            (asan_dir / "github_20260617-120000.log").write_text(
+                "\n".join(
+                    [
+                        "tool: asan",
+                        "benchmark: inputs/github_repos/gh_000001/src/sample.c",
+                        "compile_command: clang sample.c",
+                        "run_command: sample",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            original_outputs_dir = generate_report.OUTPUTS_DIR
+            generate_report.OUTPUTS_DIR = outputs_dir
+            try:
+                rows = generate_report.collect_rows(("asan",))
+            finally:
+                generate_report.OUTPUTS_DIR = original_outputs_dir
+
+        self.assertEqual(rows, [])
+
 
 if __name__ == "__main__":
     unittest.main()

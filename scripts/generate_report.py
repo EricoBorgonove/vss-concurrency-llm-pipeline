@@ -58,6 +58,7 @@ EXPECTED_VULNERABLE_SUFFIXES = ("_error.c",)
 EXPECTED_SAFE_SUFFIXES = ("_safe.c", "_fixed.c", "_pass.c")
 PROJECT_ROOT_TEXT = str(PROJECT_ROOT)
 TOOL_ALIASES = {"afl++": "afl", "deadlock-timeout": "deadlock"}
+GITHUB_INPUT_BENCHMARK_PREFIX = "inputs/github_repos/"
 
 
 def build_parser():
@@ -329,7 +330,10 @@ def collect_rows(tools):
         if not tool_dir.is_dir():
             continue
         for log_path in sorted(tool_dir.glob("*.log")):
-            rows.append(parse_log(log_path, metadata))
+            row = parse_log(log_path, metadata)
+            if row.get("benchmark", "").startswith(GITHUB_INPUT_BENCHMARK_PREFIX):
+                continue
+            rows.append(row)
     return rows
 
 

@@ -204,6 +204,20 @@ cd ~/vss-concurrency-llm-pipeline
 ./scripts/run_lightsail_report.sh
 ```
 
+Essa rodada tambem gera os artefatos da analise de links GitHub:
+
+- `reports/github_llm_queue.csv`: candidatos priorizados para analise por LLM;
+- `reports/github_tool_validations.csv`: validacoes dos achados por ferramentas;
+- `reports/report.html`: dashboard atualizado com essas secoes.
+
+Por padrao, a validacao de achados GitHub e limitada a 25 execucoes para
+preservar a instancia pequena. Para ajustar ou desativar:
+
+```bash
+GITHUB_VALIDATION_LIMIT=50 GITHUB_VALIDATION_TIMEOUT=15 ./scripts/run_lightsail_report.sh
+GITHUB_VALIDATE_FINDINGS=0 ./scripts/run_lightsail_report.sh
+```
+
 O script gera um pacote chamado:
 
 ```text

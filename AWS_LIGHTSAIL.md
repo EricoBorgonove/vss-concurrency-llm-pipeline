@@ -48,8 +48,25 @@ Esse comando:
 - move logs e relatorios antigos para `antigos/rodada-antiga-<data>/`;
 - constroi a imagem Docker;
 - executa o pipeline completo;
+- gera `reports/github_llm_queue.csv` com candidatos para LLM;
+- valida uma amostra dos achados GitHub por ferramentas locais;
+- gera `reports/github_tool_validations.csv`;
+- atualiza o dashboard HTML com fila LLM e validacoes;
 - mostra o resumo do TSAN;
 - empacota `reports/`, `outputs/environment/` e `outputs/pipeline/`.
+
+Por padrao, a validacao GitHub executa no maximo 25 achados, com timeout de 10
+segundos por ferramenta. Para mudar:
+
+```bash
+GITHUB_VALIDATION_LIMIT=50 GITHUB_VALIDATION_TIMEOUT=15 ./scripts/run_lightsail_report.sh
+```
+
+Para pular essa etapa:
+
+```bash
+GITHUB_VALIDATE_FINDINGS=0 ./scripts/run_lightsail_report.sh
+```
 
 Se for necessario manter os logs antigos no lugar e gerar o relatorio misturando
 historico anterior, execute com:

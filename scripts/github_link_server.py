@@ -135,6 +135,11 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.handle_run_validations()
             return
 
+        if path.startswith("/api/github-findings/") and path.endswith("/validate"):
+            finding_id = path.removeprefix("/api/github-findings/").removesuffix("/validate").strip("/")
+            self.handle_validate_finding(finding_id)
+            return
+
         if path.startswith("/api/github-links/") and path.endswith("/fetch"):
             link_id = path.removeprefix("/api/github-links/").removesuffix("/fetch").strip("/")
             self.handle_fetch_link(link_id)
@@ -148,6 +153,11 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         if path.startswith("/api/github-links/") and path.endswith("/triage"):
             link_id = path.removeprefix("/api/github-links/").removesuffix("/triage").strip("/")
             self.handle_triage_link(link_id)
+            return
+
+        if path.startswith("/api/github-links/") and path.endswith("/validate"):
+            link_id = path.removeprefix("/api/github-links/").removesuffix("/validate").strip("/")
+            self.handle_validate_link(link_id)
             return
 
         self.send_json(404, {"error": "rota nao encontrada"})
@@ -340,6 +350,46 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
                 "validations": rows,
                 "count": len(rows),
                 "limit": limit,
+                "timeout": timeout,
+            },
+        )
+
+    def handle_validate_link(self, link_id):
+        limit = env_int("GITHUB_LINK_VALIDATION_LIMIT", 10)
+        timeout = env_int("GITHUB_VALIDATION_TIMEOUT", 10)
+
+        try:
+            rows = validate_findings_file(link_id=link_id, limit=limit, timeout=timeout)
+        except Exception as exc:
+            self.send_json(500, {"error": str(exc)})
+            return
+
+        self.send_json(
+            200,
+            {
+                "validations": rows,
+                "count": len(rows),
+                "link_id": link_id,
+                "limit": limit,
+                "timeout": timeout,
+            },
+        )
+
+    def handle_validate_finding(self, finding_id):
+        timeout = env_int("GITHUB_VALIDATION_TIMEOUT", 10)
+
+        try:
+            rows = validate_findings_file(finding_id=finding_id, timeout=timeout)
+        except Exception as exc:
+            self.send_json(500, {"error": str(exc)})
+            return
+
+        self.send_json(
+            200,
+            {
+                "validations": rows,
+                "count": len(rows),
+                "finding_id": finding_id,
                 "timeout": timeout,
             },
         )

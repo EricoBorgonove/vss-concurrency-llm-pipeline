@@ -181,14 +181,6 @@
     .actions button {
       min-width: 96px;
     }
-    .toolbar {
-      align-items: center;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: flex-end;
-      margin: -8px 0 14px;
-    }
     .review-summary {
       align-items: center;
       border-top: 1px solid var(--line);
@@ -347,9 +339,6 @@
       .actions {
         justify-content: stretch;
       }
-      .toolbar {
-        justify-content: stretch;
-      }
       .review-summary {
         grid-template-columns: 1fr;
       }
@@ -371,9 +360,6 @@
       </label>
       <button id="submit-button" type="submit">Analisar</button>
     </form>
-    <section class="toolbar">
-      <button id="run-tests-button" class="button-secondary" type="button">Rodar testes dos achados</button>
-    </section>
     <p id="message" class="message"></p>
     <div id="links-container" class="table-wrap"></div>
   </main>
@@ -400,7 +386,6 @@
     const form = document.getElementById('github-form');
     const urlInput = document.getElementById('github-url');
     const button = document.getElementById('submit-button');
-    const runTestsButton = document.getElementById('run-tests-button');
     const message = document.getElementById('message');
     const container = document.getElementById('links-container');
     const modalBackdrop = document.getElementById('findings-modal-backdrop');
@@ -543,7 +528,12 @@
             <span class="detail-label">Validacoes por ferramenta</span>
             ${renderValidations(validationRowsForFinding(finding.id))}
           </div>
-          <div class="finding-actions">${renderFindingActions(finding)}</div>
+          <div class="finding-actions">
+            <button type="button" class="button-secondary" data-validate-finding-id="${escapeHtml(finding.id)}">
+              Testar achado
+            </button>
+            ${renderFindingActions(finding)}
+          </div>
         </article>
       `).join('');
     }
@@ -603,6 +593,9 @@
           </div>
           <button type="button" class="button-secondary" data-review-id="${escapeHtml(link.id)}">
             Revisar achados
+          </button>
+          <button type="button" class="button-secondary" data-validate-link-id="${escapeHtml(link.id)}">
+            Testar repositorio
           </button>
         </section>
       `;
@@ -736,34 +729,6 @@
       }
     });
 
-    runTestsButton.addEventListener('click', async () => {
-      if (!window.confirm('Rodar validacao dos achados por ferramentas agora?')) return;
-      runTestsButton.disabled = true;
-      setMessage('Rodando testes dos achados...');
-
-      try {
-        const response = await fetch('/api/github-validations/run', {
-          method: 'POST'
-        });
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'falha ao rodar testes dos achados');
-        }
-
-        setMessage(
-          `Testes finalizados: ${data.count} validacoes registradas (limite ${data.limit}, timeout ${data.timeout}s).`,
-          'success'
-        );
-        await loadLinks();
-      } catch (error) {
-        setMessage(error.message, 'error');
-        await loadLinks();
-      } finally {
-        runTestsButton.disabled = false;
-      }
-    });
-
     async function updateFindingStatus(findingId, findingStatus, clickedButton) {
       clickedButton.disabled = true;
       setMessage(`Atualizando ${findingId}...`);
@@ -787,15 +752,40 @@
       }
     }
 
+    async function runValidation(endpoint, label, clickedButton) {
+      clickedButton.disabled = true;
+      setMessage(`Rodando testes de ${label}...`);
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST'
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'falha ao rodar testes');
+        }
+
+        setMessage(`Testes finalizados para ${label}: ${data.count} validacoes registradas.`, 'success');
+        await loadLinks();
+      } catch (error) {
+        setMessage(error.message, 'error');
+        await loadLinks();
+      } finally {
+        clickedButton.disabled = false;
+      }
+    }
+
     container.addEventListener('click', async (event) => {
       const fetchId = event.target.dataset.fetchId;
       const discoverId = event.target.dataset.discoverId;
       const triageId = event.target.dataset.triageId;
       const removeId = event.target.dataset.removeId;
       const reviewId = event.target.dataset.reviewId;
+      const validateLinkId = event.target.dataset.validateLinkId;
       const findingId = event.target.dataset.findingId;
       const findingStatus = event.target.dataset.findingStatus;
-      if (!fetchId && !discoverId && !triageId && !removeId && !reviewId && !findingId) return;
+      if (!fetchId && !discoverId && !triageId && !removeId && !reviewId && !validateLinkId && !findingId) return;
 
       if (findingId) {
         await updateFindingStatus(findingId, findingStatus, event.target);
@@ -804,6 +794,15 @@
 
       if (reviewId) {
         openFindingsModal(reviewId);
+        return;
+      }
+
+      if (validateLinkId) {
+        await runValidation(
+          `/api/github-links/${validateLinkId}/validate`,
+          validateLinkId,
+          event.target
+        );
         return;
       }
 
@@ -869,8 +868,17 @@
     });
 
     modalBody.addEventListener('click', async (event) => {
+      const validateFindingId = event.target.dataset.validateFindingId;
       const findingId = event.target.dataset.findingId;
       const findingStatus = event.target.dataset.findingStatus;
+      if (validateFindingId) {
+        await runValidation(
+          `/api/github-findings/${validateFindingId}/validate`,
+          validateFindingId,
+          event.target
+        );
+        return;
+      }
       if (!findingId) return;
 
       await updateFindingStatus(findingId, findingStatus, event.target);

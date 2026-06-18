@@ -114,6 +114,45 @@ class GitHubToolValidationsTest(unittest.TestCase):
             self.assertEqual(rows[0]["id"], "v1")
             self.assertEqual(rows[0]["classification"], "detectado")
 
+    # Verifica se validar um achado preserva validacoes fora do escopo.
+    def test_validate_findings_file_scopes_by_finding_id(self):
+        with TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            findings_file = root / "github_findings.csv"
+            output_file = root / "github_tool_validations.csv"
+            findings_file.write_text(
+                (
+                    "id,link_id,file_id,tool,file_path,line,category,severity,priority,"
+                    "status,message,evidence,context_start_line,context_end_line,context,created_at\n"
+                    "f1,gh_000001,file1,static-patterns,missing-one.c,1,memory_corruption,"
+                    "alta,alta,suspeito,uso de strcpy,strcpy,1,1,strcpy,2026-06-18T10:00:00\n"
+                    "f2,gh_000002,file2,static-patterns,missing-two.c,1,memory_corruption,"
+                    "alta,alta,suspeito,uso de strcpy,strcpy,1,1,strcpy,2026-06-18T10:00:00\n"
+                ),
+                encoding="utf-8",
+            )
+            output_file.write_text(
+                (
+                    "id,finding_id,link_id,tool,status,classification,command,returncode,"
+                    "log_file,error,created_at\n"
+                    "old,f2,gh_000002,asan,executado,detectado,cmd,1,log,,2026-06-18T10:00:00\n"
+                ),
+                encoding="utf-8",
+            )
+
+            rows = github_tool_validations.validate_findings_file(
+                findings_file=findings_file,
+                output_file=output_file,
+                finding_id="f1",
+                timeout=1,
+            )
+            saved_rows = github_tool_validations.read_validations(output_file)
+
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["finding_id"], "f1")
+            self.assertEqual(saved_rows[0]["finding_id"], "f2")
+            self.assertEqual(saved_rows[1]["finding_id"], "f1")
+
     # Verifica se falha de execucao sem marcador nao vira erro de compilacao.
     def test_classify_tool_result_distinguishes_run_failure_from_compile_failure(self):
         self.assertEqual(

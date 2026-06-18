@@ -178,7 +178,7 @@ def validate_finding_with_tool(finding, tool, index, timeout=10, created_at=None
     )
 
 
-def validate_findings(findings, timeout=10, limit=None, created_at=None):
+def validate_findings(findings, timeout=10, limit=None, created_at=None, start_index=1):
     candidates = []
     for finding in findings:
         if finding.get("status") == "falso_positivo":
@@ -191,7 +191,7 @@ def validate_findings(findings, timeout=10, limit=None, created_at=None):
 
     rows = []
     created_at = created_at or dt.datetime.now().isoformat(timespec="seconds")
-    for index, (finding, tool) in enumerate(candidates, start=1):
+    for index, (finding, tool) in enumerate(candidates, start=start_index):
         rows.append(
             validate_finding_with_tool(
                 finding,
@@ -225,13 +225,49 @@ def read_validations(csv_file=GITHUB_TOOL_VALIDATIONS_FILE):
         ]
 
 
+def matches_scope(row, link_id=None, finding_id=None):
+    if finding_id is not None:
+        return row.get("finding_id") == finding_id or row.get("id") == finding_id
+    if link_id is not None:
+        return row.get("link_id") == link_id
+    return True
+
+
+def filter_findings(findings, link_id=None, finding_id=None):
+    return [
+        finding
+        for finding in findings
+        if matches_scope(finding, link_id=link_id, finding_id=finding_id)
+    ]
+
+
 def validate_findings_file(
     findings_file=None,
     output_file=GITHUB_TOOL_VALIDATIONS_FILE,
     timeout=10,
     limit=None,
+    link_id=None,
+    finding_id=None,
 ):
     findings = read_findings(findings_file) if findings_file else read_findings()
-    rows = validate_findings(findings, timeout=timeout, limit=limit)
-    write_validations(rows, output_file)
+    findings = filter_findings(findings, link_id=link_id, finding_id=finding_id)
+
+    if link_id is None and finding_id is None:
+        rows = validate_findings(findings, timeout=timeout, limit=limit)
+        write_validations(rows, output_file)
+        return rows
+
+    existing_rows = read_validations(output_file)
+    remaining_rows = [
+        row
+        for row in existing_rows
+        if not matches_scope(row, link_id=link_id, finding_id=finding_id)
+    ]
+    rows = validate_findings(
+        findings,
+        timeout=timeout,
+        limit=limit,
+        start_index=len(remaining_rows) + 1,
+    )
+    write_validations([*remaining_rows, *rows], output_file)
     return rows

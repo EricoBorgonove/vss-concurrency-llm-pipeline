@@ -938,6 +938,8 @@ def write_html_report(
         "category",
         "priority",
         "review_status",
+        "validation_classification",
+        "validation_tools",
         "selection_reason",
         "prompt",
     ]

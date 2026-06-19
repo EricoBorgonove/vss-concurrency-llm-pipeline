@@ -24,6 +24,10 @@ def build_parser():
         help="CSV de achados. Padrao: reports/github_findings.csv.",
     )
     parser.add_argument(
+        "--validations",
+        help="CSV de validacoes. Padrao: reports/github_tool_validations.csv.",
+    )
+    parser.add_argument(
         "--output",
         default=str(GITHUB_LLM_QUEUE_FILE),
         help="CSV da fila LLM. Padrao: reports/github_llm_queue.csv.",
@@ -41,6 +45,7 @@ def main():
     try:
         rows = build_queue_from_findings(
             findings_file=args.findings,
+            validations_file=args.validations,
             output_file=args.output,
             limit=args.limit,
         )

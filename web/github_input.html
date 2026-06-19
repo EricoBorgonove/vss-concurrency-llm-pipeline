@@ -179,7 +179,27 @@
       justify-content: flex-end;
     }
     .actions button {
-      min-width: 96px;
+      min-width: 126px;
+    }
+    .stage-actions {
+      align-items: flex-end;
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+    }
+    .stage-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+    .review-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .review-actions button {
+      min-width: 132px;
     }
     .review-summary {
       align-items: center;
@@ -339,8 +359,18 @@
       .actions {
         justify-content: stretch;
       }
+      .stage-actions {
+        align-items: stretch;
+        justify-items: stretch;
+      }
+      .stage-label {
+        text-align: left;
+      }
       .review-summary {
         grid-template-columns: 1fr;
+      }
+      .review-actions {
+        justify-content: stretch;
       }
       .finding-topline {
         grid-template-columns: 1fr;
@@ -358,7 +388,7 @@
       <label>URL
         <input id="github-url" name="url" type="url" required placeholder="https://github.com/user/repo">
       </label>
-      <button id="submit-button" type="submit">Analisar</button>
+      <button id="submit-button" type="submit">Adicionar link</button>
     </form>
     <p id="message" class="message"></p>
     <div id="links-container" class="table-wrap"></div>
@@ -530,7 +560,7 @@
           </div>
           <div class="finding-actions">
             <button type="button" class="button-secondary" data-validate-finding-id="${escapeHtml(finding.id)}">
-              Testar achado
+              Validar achado
             </button>
             ${renderFindingActions(finding)}
           </div>
@@ -576,6 +606,67 @@
       currentFindingPage = 0;
     }
 
+    function nextStageAction(link, linkFindings) {
+      const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
+      const canDiscover = Boolean(link.local_path) && Number(link.file_count || 0) === 0;
+      const canTriage = Number(link.file_count || 0) > 0 && !linkFindings.length;
+
+      if (canFetch) {
+        return {
+          label: 'Baixar repositorio',
+          state: 'Proxima etapa: obter codigo',
+          attr: 'data-fetch-id'
+        };
+      }
+      if (canDiscover) {
+        return {
+          label: 'Listar arquivos',
+          state: 'Proxima etapa: mapear codigo C',
+          attr: 'data-discover-id'
+        };
+      }
+      if (canTriage) {
+        return {
+          label: 'Gerar achados',
+          state: 'Proxima etapa: triagem estatica',
+          attr: 'data-triage-id'
+        };
+      }
+      if (linkFindings.length) {
+        return {
+          label: 'Abrir achados',
+          state: 'Etapa atual: revisar resultados',
+          attr: 'data-review-id'
+        };
+      }
+      return {
+        label: 'Aguardando dados',
+        state: 'Etapa atual: sem acao disponivel',
+        attr: ''
+      };
+    }
+
+    function renderStageActions(link, linkFindings) {
+      const action = nextStageAction(link, linkFindings);
+      const actionAttr = action.attr ? `${action.attr}="${escapeHtml(link.id)}"` : '';
+      const buttonClass = action.attr === 'data-review-id' ? 'button-secondary' : '';
+      const actionButton = action.attr
+        ? `<button type="button" class="${buttonClass}" ${actionAttr}>${escapeHtml(action.label)}</button>`
+        : '';
+
+      return `
+        <div class="stage-actions">
+          <span class="stage-label">${escapeHtml(action.state)}</span>
+          <div class="actions">
+            ${actionButton}
+            <button type="button" class="button-danger" data-remove-id="${escapeHtml(link.id)}">
+              Remover
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
     function renderReviewSummary(link, linkFindings, linkValidations) {
       if (!linkFindings.length) return '';
 
@@ -591,12 +682,14 @@
             <span class="badge">${linkValidations.length} validacoes</span>
             <span class="badge ${detected ? 'badge-success' : ''}">${detected} detectados</span>
           </div>
-          <button type="button" class="button-secondary" data-review-id="${escapeHtml(link.id)}">
-            Revisar achados
-          </button>
-          <button type="button" class="button-secondary" data-validate-link-id="${escapeHtml(link.id)}">
-            Testar repositorio
-          </button>
+          <div class="review-actions">
+            <button type="button" class="button-secondary" data-review-id="${escapeHtml(link.id)}">
+              Revisar achados
+            </button>
+            <button type="button" class="button-secondary" data-validate-link-id="${escapeHtml(link.id)}">
+              Validar achados
+            </button>
+          </div>
         </section>
       `;
     }
@@ -610,9 +703,6 @@
       const findingsByLink = groupFindingsByLink(findings);
       const validationsByLink = groupValidationsByLink(validations);
       const cards = links.map((link) => {
-        const canFetch = link.url_type === 'repo' && ['pendente', 'falhou'].includes(link.status);
-        const canDiscover = Boolean(link.local_path) && link.status !== 'baixando';
-        const canTriage = Number(link.file_count || 0) > 0;
         const statusClass = badgeClassForStatus(link.status);
         const linkFindings = findingsByLink[link.id] || [];
         const linkValidations = validationsByLink[link.id] || [];
@@ -627,20 +717,7 @@
                 <span class="badge">${escapeHtml(link.url_type || 'tipo pendente')}</span>
               </div>
             </div>
-            <div class="actions">
-              <button type="button" class="button-secondary" data-fetch-id="${escapeHtml(link.id)}" ${canFetch ? '' : 'disabled'}>
-              Baixar
-              </button>
-              <button type="button" class="button-secondary" data-discover-id="${escapeHtml(link.id)}" ${canDiscover ? '' : 'disabled'}>
-              Descobrir
-              </button>
-              <button type="button" class="button-secondary" data-triage-id="${escapeHtml(link.id)}" ${canTriage ? '' : 'disabled'}>
-              Triar
-              </button>
-              <button type="button" class="button-danger" data-remove-id="${escapeHtml(link.id)}">
-              Remover
-              </button>
-            </div>
+            ${renderStageActions(link, linkFindings)}
           </div>
           <div class="link-details">
             <div class="detail-item">

@@ -273,6 +273,9 @@
       max-height: min(88vh, 860px);
       width: min(1120px, 100%);
     }
+    .modal-small {
+      width: min(960px, 100%);
+    }
     .modal-header,
     .modal-footer {
       align-items: center;
@@ -375,6 +378,32 @@
       display: grid;
       gap: 6px;
       padding: 8px;
+    }
+    .log-link {
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      cursor: pointer;
+      font: inherit;
+      min-height: 0;
+      overflow-wrap: anywhere;
+      padding: 0;
+      text-align: left;
+      text-decoration: underline;
+      width: auto;
+    }
+    .log-output {
+      background: #0f172a;
+      border-radius: 6px;
+      color: #e5e7eb;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 0;
+      max-height: 62vh;
+      overflow: auto;
+      padding: 12px;
+      white-space: pre-wrap;
     }
     .pager-actions {
       display: flex;
@@ -491,6 +520,20 @@
       </footer>
     </section>
   </div>
+  <div id="log-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+    <section class="modal modal-small">
+      <header class="modal-header">
+        <div class="modal-title">
+          <h2 id="log-modal-title">Saída da ferramenta</h2>
+          <p id="log-modal-subtitle"></p>
+        </div>
+        <button id="close-log-modal" class="button-plain" type="button">Fechar</button>
+      </header>
+      <div class="modal-body">
+        <pre id="log-modal-content" class="log-output">Carregando...</pre>
+      </div>
+    </section>
+  </div>
   <script>
     const form = document.getElementById('github-form');
     const urlInput = document.getElementById('github-url');
@@ -507,6 +550,11 @@
     const pageLabel = document.getElementById('findings-page-label');
     const prevPageButton = document.getElementById('findings-prev-page');
     const nextPageButton = document.getElementById('findings-next-page');
+    const logModalBackdrop = document.getElementById('log-modal-backdrop');
+    const logModalTitle = document.getElementById('log-modal-title');
+    const logModalSubtitle = document.getElementById('log-modal-subtitle');
+    const logModalContent = document.getElementById('log-modal-content');
+    const closeLogModalButton = document.getElementById('close-log-modal');
     const findingsPageSize = 50;
     let currentLinks = [];
     let currentFindings = [];
@@ -678,6 +726,30 @@
       `;
     }
 
+    function logUrl(logFile) {
+      const value = String(logFile || '').trim();
+      if (!value) return '';
+      if (value.startsWith('outputs/') || value.startsWith('reports/')) {
+        return `/${value}`;
+      }
+      return '';
+    }
+
+    function renderLogValue(logFile) {
+      const url = logUrl(logFile);
+      if (!url) return escapeHtml(logFile || '-');
+      return `
+        <button
+          type="button"
+          class="log-link"
+          data-log-url="${escapeHtml(url)}"
+          data-log-file="${escapeHtml(logFile)}"
+        >
+          ${escapeHtml(logFile)}
+        </button>
+      `;
+    }
+
     function renderValidations(validations) {
       if (!validations.length) {
         return '<p class="message">Nenhuma validação por ferramenta registrada para este achado.</p>';
@@ -695,7 +767,7 @@
               </div>
               <div class="detail-item">
                 <span class="detail-label">Log</span>
-                <span class="detail-value">${escapeHtml(validation.log_file || '-')}</span>
+                <span class="detail-value">${renderLogValue(validation.log_file)}</span>
               </div>
               ${validation.error ? `<div class="message error">${escapeHtml(validation.error)}</div>` : ''}
             </section>
@@ -802,6 +874,35 @@
         status: '',
         validation: ''
       };
+    }
+
+    async function openLogModal(logUrlValue, logFile) {
+      logModalTitle.textContent = 'Saída da ferramenta';
+      logModalSubtitle.textContent = logFile || logUrlValue;
+      logModalContent.textContent = 'Carregando...';
+      logModalBackdrop.classList.add('is-open');
+      document.body.classList.add('modal-open');
+      closeLogModalButton.focus();
+
+      try {
+        const response = await fetch(logUrlValue);
+        const text = await response.text();
+        if (!response.ok) {
+          throw new Error(text || `falha ao abrir log (${response.status})`);
+        }
+        logModalContent.textContent = text || 'Log vazio.';
+      } catch (error) {
+        logModalContent.textContent = error.message;
+      }
+    }
+
+    function closeLogModal() {
+      logModalBackdrop.classList.remove('is-open');
+      if (!modalBackdrop.classList.contains('is-open')) {
+        document.body.classList.remove('modal-open');
+      }
+      logModalSubtitle.textContent = '';
+      logModalContent.textContent = '';
     }
 
     function nextStageAction(link, linkFindings) {
@@ -1230,6 +1331,12 @@
     });
 
     modalBody.addEventListener('click', async (event) => {
+      const logButton = event.target.closest('[data-log-url]');
+      if (logButton) {
+        await openLogModal(logButton.dataset.logUrl, logButton.dataset.logFile);
+        return;
+      }
+
       const validateFindingId = event.target.dataset.validateFindingId;
       const findingId = event.target.dataset.findingId;
       const findingStatus = event.target.dataset.findingStatus;
@@ -1247,10 +1354,17 @@
     });
 
     closeModalButton.addEventListener('click', closeFindingsModal);
+    closeLogModalButton.addEventListener('click', closeLogModal);
 
     modalBackdrop.addEventListener('click', (event) => {
       if (event.target === modalBackdrop) {
         closeFindingsModal();
+      }
+    });
+
+    logModalBackdrop.addEventListener('click', (event) => {
+      if (event.target === logModalBackdrop) {
+        closeLogModal();
       }
     });
 
@@ -1267,6 +1381,10 @@
     runGithubValidationsButton.addEventListener('click', runGithubValidations);
 
     document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && logModalBackdrop.classList.contains('is-open')) {
+        closeLogModal();
+        return;
+      }
       if (event.key === 'Escape' && modalBackdrop.classList.contains('is-open')) {
         closeFindingsModal();
       }

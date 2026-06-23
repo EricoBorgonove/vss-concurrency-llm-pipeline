@@ -468,6 +468,28 @@ def render_benchmark_cell(value):
     return f"<td>{escaped_value}</td>"
 
 
+def log_href(value):
+    if not value:
+        return ""
+    if str(value).startswith("outputs/") or str(value).startswith("reports/"):
+        return f"/{value}"
+    return str(value)
+
+
+def render_log_cell(value):
+    if not value:
+        return "<td></td>"
+
+    escaped_value = escape(value)
+    escaped_href = escape(log_href(value))
+    return (
+        "<td>"
+        f"<button class=\"log-link\" type=\"button\" data-log-url=\"{escaped_href}\" "
+        f"data-log-file=\"{escaped_value}\">{escaped_value}</button>"
+        "</td>"
+    )
+
+
 def benchmark_category(benchmark):
     parts = Path(benchmark).parts
     if "benchmarks" in parts:
@@ -835,8 +857,7 @@ def render_dashboard_detail_table(rows, fieldnames):
             if field == "benchmark":
                 cells.append(render_benchmark_cell(value))
             elif field == "log_file" and value:
-                href = f"../{value}" if str(value).startswith("outputs/") else str(value)
-                cells.append(f"<td><a href=\"{escape(href)}\">{escape(value)}</a></td>")
+                cells.append(render_log_cell(value))
             else:
                 cells.append(f"<td>{escape(value)}</td>")
         body_rows.append(
@@ -1115,6 +1136,18 @@ def write_html_report(
       text-align: left;
       text-decoration: underline;
     }}
+    .log-link {{
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      cursor: pointer;
+      font: inherit;
+      min-height: 0;
+      overflow-wrap: anywhere;
+      padding: 0;
+      text-align: left;
+      text-decoration: underline;
+    }}
     output {{
       color: var(--muted);
       min-height: 36px;
@@ -1261,6 +1294,20 @@ def write_html_report(
       </div>
     </section>
   </div>
+  <div id="log-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+    <section class="modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <h2 id="log-modal-title">Saída da ferramenta</h2>
+          <p id="log-modal-subtitle"></p>
+        </div>
+        <button id="close-log-modal" type="button">Fechar</button>
+      </header>
+      <div class="modal-body">
+        <pre id="log-modal-content" class="code-view">Carregando...</pre>
+      </div>
+    </section>
+  </div>
   <script>
     const filters = {{
       tool: document.getElementById('filter-tool'),
@@ -1349,6 +1396,10 @@ def write_html_report(
     const codeModalSubtitle = document.getElementById('code-modal-subtitle');
     const codeModalContent = document.getElementById('code-modal-content');
     const closeCodeModalButton = document.getElementById('close-code-modal');
+    const logModalBackdrop = document.getElementById('log-modal-backdrop');
+    const logModalSubtitle = document.getElementById('log-modal-subtitle');
+    const logModalContent = document.getElementById('log-modal-content');
+    const closeLogModalButton = document.getElementById('close-log-modal');
 
     async function openCodeModal(path) {{
       codeModalSubtitle.textContent = path;
@@ -1370,21 +1421,70 @@ def write_html_report(
 
     function closeCodeModal() {{
       codeModalBackdrop.classList.remove('is-open');
-      document.body.classList.remove('modal-open');
+      if (!logModalBackdrop.classList.contains('is-open')) {{
+        document.body.classList.remove('modal-open');
+      }}
       codeModalSubtitle.textContent = '';
       codeModalContent.textContent = '';
+    }}
+
+    async function openLogModal(url, logFile) {{
+      logModalSubtitle.textContent = logFile || url;
+      logModalContent.textContent = 'Carregando...';
+      logModalBackdrop.classList.add('is-open');
+      document.body.classList.add('modal-open');
+      closeLogModalButton.focus();
+
+      try {{
+        const response = await fetch(url);
+        const text = await response.text();
+        if (!response.ok) {{
+          throw new Error(text || `Não foi possível carregar o log (${{response.status}}).`);
+        }}
+        logModalContent.textContent = text || 'Log vazio.';
+      }} catch (error) {{
+        logModalContent.textContent = error.message;
+      }}
+    }}
+
+    function closeLogModal() {{
+      logModalBackdrop.classList.remove('is-open');
+      if (!codeModalBackdrop.classList.contains('is-open')) {{
+        document.body.classList.remove('modal-open');
+      }}
+      logModalSubtitle.textContent = '';
+      logModalContent.textContent = '';
     }}
 
     document.addEventListener('click', (event) => {{
       const codeButton = event.target.closest('[data-code-path]');
       if (codeButton) {{
         openCodeModal(codeButton.dataset.codePath);
+        return;
+      }}
+
+      const logButton = event.target.closest('[data-log-url]');
+      if (logButton) {{
+        openLogModal(logButton.dataset.logUrl, logButton.dataset.logFile);
       }}
     }});
 
     closeCodeModalButton.addEventListener('click', closeCodeModal);
     codeModalBackdrop.addEventListener('click', (event) => {{
       if (event.target === codeModalBackdrop) closeCodeModal();
+    }});
+    closeLogModalButton.addEventListener('click', closeLogModal);
+    logModalBackdrop.addEventListener('click', (event) => {{
+      if (event.target === logModalBackdrop) closeLogModal();
+    }});
+    document.addEventListener('keydown', (event) => {{
+      if (event.key === 'Escape' && logModalBackdrop.classList.contains('is-open')) {{
+        closeLogModal();
+        return;
+      }}
+      if (event.key === 'Escape' && codeModalBackdrop.classList.contains('is-open')) {{
+        closeCodeModal();
+      }}
     }});
 
     function applyFilters() {{

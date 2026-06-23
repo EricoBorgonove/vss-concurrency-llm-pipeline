@@ -40,6 +40,17 @@
       font-size: 28px;
       margin: 0 0 18px;
     }
+    .page-header {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .page-header h1 {
+      margin: 0;
+    }
     form {
       align-items: end;
       background: var(--surface);
@@ -57,7 +68,7 @@
       font-size: 13px;
       gap: 6px;
     }
-    input, button {
+    input, button, select, .button-link {
       border: 1px solid var(--line);
       border-radius: 6px;
       color: var(--text);
@@ -65,11 +76,17 @@
       min-height: 38px;
       padding: 8px 10px;
     }
-    button {
+    button, .button-link {
       background: var(--accent);
       border-color: var(--accent);
       color: #ffffff;
       cursor: pointer;
+    }
+    .button-link {
+      align-items: center;
+      display: inline-flex;
+      justify-content: center;
+      text-decoration: none;
     }
     button:disabled {
       cursor: not-allowed;
@@ -261,6 +278,25 @@
       overflow: auto;
       padding: 14px;
     }
+    .modal-panel {
+      background: #f8fbff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 12px;
+    }
+    .modal-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .modal-filters {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
     .finding-list {
       display: grid;
       gap: 8px;
@@ -366,6 +402,9 @@
       .stage-label {
         text-align: left;
       }
+      .page-header {
+        align-items: stretch;
+      }
       .review-summary {
         grid-template-columns: 1fr;
       }
@@ -375,7 +414,7 @@
       .finding-topline {
         grid-template-columns: 1fr;
       }
-      button {
+      button, .button-link {
         width: 100%;
       }
     }
@@ -383,7 +422,12 @@
 </head>
 <body>
   <main>
-    <h1>Links do GitHub</h1>
+    <header class="page-header">
+      <h1>Links do GitHub</h1>
+      <a class="button-link" href="/reports/report.html" target="_blank" rel="noopener">
+        Abrir relatório dos benchmarks
+      </a>
+    </header>
     <form id="github-form">
       <label>URL
         <input id="github-url" name="url" type="url" required placeholder="https://github.com/user/repo">
@@ -407,7 +451,7 @@
         <span id="findings-page-label" class="badge">0 achados</span>
         <div class="pager-actions">
           <button id="findings-prev-page" class="button-secondary" type="button">Anterior</button>
-          <button id="findings-next-page" class="button-secondary" type="button">Proxima</button>
+          <button id="findings-next-page" class="button-secondary" type="button">Próxima</button>
         </div>
       </footer>
     </section>
@@ -432,6 +476,12 @@
     let currentValidations = [];
     let currentModalLinkId = '';
     let currentFindingPage = 0;
+    let currentFindingFilters = {
+      category: '',
+      priority: '',
+      status: '',
+      validation: ''
+    };
 
     function setMessage(text, type = '') {
       message.textContent = text;
@@ -499,9 +549,95 @@
       return currentValidations.filter((validation) => validation.finding_id === findingId);
     }
 
+    function uniqueSorted(values) {
+      return [...new Set(values.filter(Boolean))].sort((left, right) => left.localeCompare(right));
+    }
+
+    function validationClassForFinding(findingId) {
+      const validations = validationRowsForFinding(findingId);
+      if (!validations.length) return 'sem_validacao';
+      if (validations.some((validation) => validation.classification === 'detectado')) return 'detectado';
+      if (validations.some((validation) => validation.classification === 'erro_compilacao')) return 'erro_compilacao';
+      if (validations.some((validation) => validation.classification === 'erro_ferramenta')) return 'erro_ferramenta';
+      if (validations.some((validation) => validation.classification === 'nao_validavel')) return 'nao_validavel';
+      return validations[0].classification || 'executado';
+    }
+
+    function filteredFindingsForModal(findings) {
+      return findings.filter((finding) => {
+        const validationClass = validationClassForFinding(finding.id);
+        return (!currentFindingFilters.category || finding.category === currentFindingFilters.category)
+          && (!currentFindingFilters.priority || finding.priority === currentFindingFilters.priority)
+          && (!currentFindingFilters.status || finding.status === currentFindingFilters.status)
+          && (!currentFindingFilters.validation || validationClass === currentFindingFilters.validation);
+      });
+    }
+
+    function renderFilterOptions(values, selectedValue) {
+      return values.map((value) => `
+        <option value="${escapeHtml(value)}" ${value === selectedValue ? 'selected' : ''}>
+          ${escapeHtml(value)}
+        </option>
+      `).join('');
+    }
+
+    function renderModalSummary(linkFindings, filteredFindings) {
+      const highPriority = linkFindings.filter((finding) => finding.priority === 'alta').length;
+      const confirmed = linkFindings.filter((finding) => finding.status === 'confirmado').length;
+      const falsePositive = linkFindings.filter((finding) => finding.status === 'falso_positivo').length;
+      const detected = linkFindings.filter((finding) => validationClassForFinding(finding.id) === 'detectado').length;
+
+      return `
+        <div class="modal-summary">
+          <span class="badge">${filteredFindings.length} visíveis</span>
+          <span class="badge">${linkFindings.length} total</span>
+          <span class="badge">${highPriority} prioridade alta</span>
+          <span class="badge ${confirmed ? 'badge-success' : ''}">${confirmed} confirmados</span>
+          <span class="badge ${falsePositive ? 'badge-error' : ''}">${falsePositive} falsos positivos</span>
+          <span class="badge ${detected ? 'badge-success' : ''}">${detected} detectados</span>
+        </div>
+      `;
+    }
+
+    function renderModalFilters(linkFindings) {
+      const categories = uniqueSorted(linkFindings.map((finding) => finding.category));
+      const priorities = uniqueSorted(linkFindings.map((finding) => finding.priority));
+      const statuses = uniqueSorted(linkFindings.map((finding) => finding.status));
+      const validationClasses = uniqueSorted(linkFindings.map((finding) => validationClassForFinding(finding.id)));
+
+      return `
+        <div class="modal-filters">
+          <label>Categoria
+            <select data-finding-filter="category">
+              <option value="">Todas</option>
+              ${renderFilterOptions(categories, currentFindingFilters.category)}
+            </select>
+          </label>
+          <label>Prioridade
+            <select data-finding-filter="priority">
+              <option value="">Todas</option>
+              ${renderFilterOptions(priorities, currentFindingFilters.priority)}
+            </select>
+          </label>
+          <label>Status
+            <select data-finding-filter="status">
+              <option value="">Todos</option>
+              ${renderFilterOptions(statuses, currentFindingFilters.status)}
+            </select>
+          </label>
+          <label>Validação
+            <select data-finding-filter="validation">
+              <option value="">Todas</option>
+              ${renderFilterOptions(validationClasses, currentFindingFilters.validation)}
+            </select>
+          </label>
+        </div>
+      `;
+    }
+
     function renderValidations(validations) {
       if (!validations.length) {
-        return '<p class="message">Nenhuma validacao por ferramenta registrada para este achado.</p>';
+        return '<p class="message">Nenhuma validação por ferramenta registrada para este achado.</p>';
       }
 
       return `
@@ -553,9 +689,9 @@
             <span class="badge">contexto ${escapeHtml(finding.context_start_line || '-')}-${escapeHtml(finding.context_end_line || '-')}</span>
           </div>
           <pre class="finding-evidence">${escapeHtml(finding.evidence || '-')}</pre>
-          <pre class="finding-evidence">${escapeHtml(finding.context || 'contexto nao registrado')}</pre>
+          <pre class="finding-evidence">${escapeHtml(finding.context || 'contexto não registrado')}</pre>
           <div class="detail-item">
-            <span class="detail-label">Validacoes por ferramenta</span>
+            <span class="detail-label">Validações por ferramenta</span>
             ${renderValidations(validationRowsForFinding(finding.id))}
           </div>
           <div class="finding-actions">
@@ -571,20 +707,27 @@
     function renderFindingsModal() {
       const link = currentLinks.find((item) => item.id === currentModalLinkId);
       const linkFindings = findingRowsForLink(currentModalLinkId);
-      const totalPages = Math.max(Math.ceil(linkFindings.length / findingsPageSize), 1);
+      const filteredFindings = filteredFindingsForModal(linkFindings);
+      const totalPages = Math.max(Math.ceil(filteredFindings.length / findingsPageSize), 1);
       currentFindingPage = Math.min(Math.max(currentFindingPage, 0), totalPages - 1);
       const start = currentFindingPage * findingsPageSize;
-      const pageFindings = linkFindings.slice(start, start + findingsPageSize);
+      const pageFindings = filteredFindings.slice(start, start + findingsPageSize);
 
       modalTitle.textContent = `Achados de ${currentModalLinkId || '-'}`;
       modalSubtitle.textContent = link ? link.url : '';
-      modalBody.innerHTML = `<div class="finding-list">${renderFindingItems(pageFindings)}</div>`;
+      modalBody.innerHTML = `
+        <section class="modal-panel">
+          ${renderModalSummary(linkFindings, filteredFindings)}
+          ${renderModalFilters(linkFindings)}
+        </section>
+        <div class="finding-list">${renderFindingItems(pageFindings)}</div>
+      `;
 
-      if (!linkFindings.length) {
+      if (!filteredFindings.length) {
         pageLabel.textContent = '0 achados';
       } else {
-        const end = Math.min(start + pageFindings.length, linkFindings.length);
-        pageLabel.textContent = `${start + 1}-${end} de ${linkFindings.length} achados`;
+        const end = Math.min(start + pageFindings.length, filteredFindings.length);
+        pageLabel.textContent = `${start + 1}-${end} de ${filteredFindings.length} achados`;
       }
       prevPageButton.disabled = currentFindingPage === 0;
       nextPageButton.disabled = currentFindingPage >= totalPages - 1;
@@ -593,6 +736,12 @@
     function openFindingsModal(linkId) {
       currentModalLinkId = linkId;
       currentFindingPage = 0;
+      currentFindingFilters = {
+        category: '',
+        priority: '',
+        status: '',
+        validation: ''
+      };
       renderFindingsModal();
       modalBackdrop.classList.add('is-open');
       document.body.classList.add('modal-open');
@@ -604,6 +753,12 @@
       document.body.classList.remove('modal-open');
       currentModalLinkId = '';
       currentFindingPage = 0;
+      currentFindingFilters = {
+        category: '',
+        priority: '',
+        status: '',
+        validation: ''
+      };
     }
 
     function nextStageAction(link, linkFindings) {
@@ -613,22 +768,22 @@
 
       if (canFetch) {
         return {
-          label: 'Baixar repositorio',
-          state: 'Proxima etapa: obter codigo',
+          label: 'Baixar repositório',
+          state: 'Próxima etapa: obter código',
           attr: 'data-fetch-id'
         };
       }
       if (canDiscover) {
         return {
           label: 'Listar arquivos',
-          state: 'Proxima etapa: mapear codigo C',
+          state: 'Próxima etapa: mapear código C',
           attr: 'data-discover-id'
         };
       }
       if (canTriage) {
         return {
           label: 'Gerar achados',
-          state: 'Proxima etapa: triagem estatica',
+          state: 'Próxima etapa: triagem estática',
           attr: 'data-triage-id'
         };
       }
@@ -641,7 +796,7 @@
       }
       return {
         label: 'Aguardando dados',
-        state: 'Etapa atual: sem acao disponivel',
+        state: 'Etapa atual: sem ação disponível',
         attr: ''
       };
     }
@@ -733,7 +888,7 @@
               <span class="detail-value">${escapeHtml(link.submitted_at)}</span>
             </div>
             <div class="detail-item">
-              <span class="detail-label">Inicio</span>
+              <span class="detail-label">Início</span>
               <span class="detail-value">${escapeHtml(link.started_at || '-')}</span>
             </div>
             <div class="detail-item">
@@ -843,7 +998,7 @@
           throw new Error(data.error || 'falha ao rodar testes');
         }
 
-        setMessage(`Testes finalizados para ${label}: ${data.count} validacoes registradas.`, 'success');
+        setMessage(`Testes finalizados para ${label}: ${data.count} validações registradas.`, 'success');
         await loadLinks();
       } catch (error) {
         setMessage(error.message, 'error');
@@ -894,7 +1049,7 @@
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.error || 'falha ao remover link');
+          throw new Error(data.error || 'falha ao remover link');
           }
 
           setMessage(`Link removido: ${data.removed_id}`, 'success');
@@ -927,11 +1082,11 @@
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'falha ao executar acao');
+          throw new Error(data.error || 'falha ao executar ação');
         }
 
         if (fetchId) {
-          setMessage(`Repositorio baixado: ${data.link.local_path}`, 'success');
+          setMessage(`Repositório baixado: ${data.link.local_path}`, 'success');
         } else if (discoverId) {
           setMessage(`Arquivos encontrados: ${data.link.file_count}`, 'success');
         } else {

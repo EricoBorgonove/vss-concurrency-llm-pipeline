@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gera um relatorio CSV simples a partir dos logs em outputs/."""
+"""Gera um relatório CSV simples a partir dos logs em outputs/."""
 
 import argparse
 import csv
@@ -83,7 +83,7 @@ def build_parser():
     parser.add_argument(
         "--html-output",
         default=str(HTML_FILE),
-        help="Caminho do relatorio HTML. Padrao: reports/report.html.",
+        help="Caminho do relatório HTML. Padrão: reports/report.html.",
     )
     parser.add_argument(
         "--latest-only",
@@ -452,6 +452,22 @@ def escape(value):
     return html.escape(str(value), quote=True)
 
 
+def render_benchmark_cell(value):
+    if not value:
+        return "<td></td>"
+
+    escaped_value = escape(value)
+    if str(value).startswith("benchmarks/"):
+        return (
+            "<td>"
+            f"<button class=\"code-link\" type=\"button\" data-code-path=\"{escaped_value}\">"
+            f"{escaped_value}"
+            "</button>"
+            "</td>"
+        )
+    return f"<td>{escaped_value}</td>"
+
+
 def benchmark_category(benchmark):
     parts = Path(benchmark).parts
     if "benchmarks" in parts:
@@ -576,7 +592,7 @@ def render_github_cards(link_rows, file_rows, finding_rows):
     cards = [
         ("Links", len(link_rows), "URLs registradas pela interface"),
         ("Repositorios prontos", completed, "Links baixados ou analisados"),
-        ("Arquivos C/C++", len(file_rows), "Arquivos descobertos nos repositorios"),
+        ("Arquivos C/C++", len(file_rows), "Arquivos descobertos nos repositórios"),
         ("Achados", len(finding_rows), "Suspeitas registradas pela triagem"),
         ("Prioridade alta", high_priority, "Achados que devem ser revisados primeiro"),
         ("Falhas", failed, "Links com erro operacional"),
@@ -612,12 +628,12 @@ def render_dashboard_cards(rows):
     )
     execution_errors = sum(1 for row in rows if row.get("classification") == "erro de execucao")
     cards = [
-        ("Execucoes", total, "Total de resultados consolidados"),
+        ("Execuções", total, "Total de resultados consolidados"),
         ("Detectados", detected, "Problemas observados pelas ferramentas"),
-        ("Nao detectados", not_detected, "Casos sem evidencia de falha"),
-        ("Inconclusivos", inconclusive, "Resultados sem conclusao suficiente"),
+        ("Não detectados", not_detected, "Casos sem evidência de falha"),
+        ("Inconclusivos", inconclusive, "Resultados sem conclusão suficiente"),
         ("Divergentes", divergent, "Resultados contra a expectativa"),
-        ("Erros", execution_errors, "Falhas operacionais de execucao"),
+        ("Erros", execution_errors, "Falhas operacionais de execução"),
     ]
     return "".join(
         "<section class=\"metric-card\">"
@@ -644,13 +660,13 @@ def render_filter_controls(rows):
           {render_options(unique_values(rows, "category"))}
         </select>
       </label>
-      <label>Classificacao
+      <label>Classificação
         <select id="filter-classification">
           <option value="">Todas</option>
           {render_options(unique_values(rows, "classification"))}
         </select>
       </label>
-      <label>Comparacao
+      <label>Comparação
         <select id="filter-match">
           <option value="">Todas</option>
           {render_options(unique_values(rows, "expectation_match"))}
@@ -660,7 +676,7 @@ def render_filter_controls(rows):
         <input id="filter-search" type="search" placeholder="benchmark, log ou erro">
       </label>
       <button id="clear-filters" type="button">Limpar</button>
-      <output id="visible-count">{len(rows)} registros visiveis</output>
+      <output id="visible-count">{len(rows)} registros visíveis</output>
     </section>
     """
 
@@ -699,10 +715,10 @@ def render_github_finding_filter_controls(rows):
         </select>
       </label>
       <label>Busca
-        <input id="github-filter-search" type="search" placeholder="arquivo, mensagem, evidencia ou contexto">
+        <input id="github-filter-search" type="search" placeholder="arquivo, mensagem, evidência ou contexto">
       </label>
       <button id="github-clear-filters" type="button">Limpar</button>
-      <output id="github-visible-count">{min(len(rows), 500)} achados visiveis</output>
+      <output id="github-visible-count">{min(len(rows), 500)} achados visíveis</output>
     </section>
     """
 
@@ -714,7 +730,12 @@ def render_html_table(rows, fieldnames):
     header_cells = "".join(f"<th>{escape(field)}</th>" for field in fieldnames)
     body_rows = []
     for row in rows:
-        cells = "".join(f"<td>{escape(row.get(field, ''))}</td>" for field in fieldnames)
+        cells = "".join(
+            render_benchmark_cell(row.get(field, ""))
+            if field == "benchmark"
+            else f"<td>{escape(row.get(field, ''))}</td>"
+            for field in fieldnames
+        )
         body_rows.append(f"<tr>{cells}</tr>")
 
     return (
@@ -811,7 +832,9 @@ def render_dashboard_detail_table(rows, fieldnames):
         cells = []
         for field in fieldnames:
             value = row.get(field, "")
-            if field == "log_file" and value:
+            if field == "benchmark":
+                cells.append(render_benchmark_cell(value))
+            elif field == "log_file" and value:
                 href = f"../{value}" if str(value).startswith("outputs/") else str(value)
                 cells.append(f"<td><a href=\"{escape(href)}\">{escape(value)}</a></td>")
             else:
@@ -978,6 +1001,9 @@ def write_html_report(
       color: var(--text);
       background: var(--bg);
     }}
+    body.modal-open {{
+      overflow: hidden;
+    }}
     main {{
       width: min(1440px, calc(100% - 32px));
       margin: 0 auto;
@@ -1045,6 +1071,17 @@ def write_html_report(
       color: #ffffff;
       cursor: pointer;
     }}
+    .code-link {{
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      cursor: pointer;
+      font: inherit;
+      min-height: 0;
+      padding: 0;
+      text-align: left;
+      text-decoration: underline;
+    }}
     output {{
       color: var(--muted);
       min-height: 36px;
@@ -1084,6 +1121,65 @@ def write_html_report(
     a {{
       color: var(--accent);
     }}
+    .modal-backdrop {{
+      align-items: center;
+      background: rgba(15, 23, 42, 0.52);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 20;
+    }}
+    .modal-backdrop.is-open {{
+      display: flex;
+    }}
+    .modal {{
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      max-height: min(88vh, 860px);
+      width: min(1120px, 100%);
+    }}
+    .modal-header {{
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      padding: 14px;
+    }}
+    .modal-title {{
+      min-width: 0;
+    }}
+    .modal-title h2 {{
+      font-size: 18px;
+      margin: 0;
+    }}
+    .modal-title p {{
+      color: var(--muted);
+      margin: 4px 0 0;
+      overflow-wrap: anywhere;
+    }}
+    .modal-body {{
+      overflow: auto;
+      padding: 14px;
+    }}
+    .code-view {{
+      background: #0f172a;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0;
+      overflow: auto;
+      padding: 14px;
+      white-space: pre;
+    }}
   </style>
 </head>
 <body>
@@ -1092,37 +1188,39 @@ def write_html_report(
     <p class="meta">Gerado em: {escape(generated_at)} | Logs processados: {len(rows)}</p>
     <div class="note">
       <strong>Leitura:</strong> <code>expected_behavior</code> indica se o benchmark era esperado
-      como vulneravel, correto ou nao informado. <code>expectation_match</code> indica se o
-      resultado observado ficou conforme, divergente, inconclusivo ou nao avaliado.
-      <code>expected_tool_behavior</code> registra a expectativa especifica para a ferramenta.
+      como vulnerável, correto ou não informado. <code>expectation_match</code> indica se o
+      resultado observado ficou conforme, divergente, inconclusivo ou não avaliado.
+      <code>expected_tool_behavior</code> registra a expectativa específica para a ferramenta.
     </div>
     <section class="cards" aria-label="Indicadores principais">
       {render_dashboard_cards(rows)}
     </section>
+    <h2>Métricas por Categoria</h2>
+    <div class="table-wrap">{render_html_table(category_metrics_rows, category_metric_fields)}</div>
+    <h2>Resumo</h2>
+    <div class="table-wrap">{render_html_table(summary_rows, summary_fields)}</div>
     <h2>Resultados Detalhados</h2>
     {render_filter_controls(rows)}
     <div class="table-wrap">
       {render_dashboard_detail_table(rows, detail_fields)}
     </div>
-    <h2>Resumo</h2>
-    <div class="table-wrap">{render_html_table(summary_rows, summary_fields)}</div>
-    <h2>Analises de Links do GitHub</h2>
-    <section class="cards" aria-label="Indicadores dos links do GitHub">
-      {render_github_cards(github_link_rows, github_file_rows, github_finding_rows)}
-    </section>
-    <div class="table-wrap">{render_github_link_table(github_link_rows, github_link_fields)}</div>
-    <h2>Achados dos Links do GitHub</h2>
-    {render_github_finding_filter_controls(github_finding_rows)}
-    <div class="table-wrap">{render_github_finding_table(github_finding_rows, github_finding_fields)}</div>
-    <h2>Fila de Candidatos para LLM</h2>
-    <div class="table-wrap">{render_limited_html_table(github_llm_queue_rows, github_llm_queue_fields, limit=100)}</div>
-    <h2>Validacoes dos Achados por Ferramentas</h2>
-    <div class="table-wrap">{render_limited_html_table(github_tool_validation_rows, github_tool_validation_fields, limit=500)}</div>
-    <h2>Metricas por Categoria</h2>
-    <div class="table-wrap">{render_html_table(category_metrics_rows, category_metric_fields)}</div>
-    <h2>Metricas por Benchmark</h2>
+    <h2>Métricas por Benchmark</h2>
     <div class="table-wrap">{render_html_table(benchmark_metrics_rows, benchmark_metric_fields)}</div>
   </main>
+  <div id="code-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="code-modal-title">
+    <section class="modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <h2 id="code-modal-title">Código do benchmark</h2>
+          <p id="code-modal-subtitle"></p>
+        </div>
+        <button id="close-code-modal" type="button">Fechar</button>
+      </header>
+      <div class="modal-body">
+        <pre id="code-modal-content" class="code-view">Carregando...</pre>
+      </div>
+    </section>
+  </div>
   <script>
     const filters = {{
       tool: document.getElementById('filter-tool'),
@@ -1137,6 +1235,48 @@ def write_html_report(
     function normalize(value) {{
       return (value || '').toString().toLowerCase();
     }}
+
+    const codeModalBackdrop = document.getElementById('code-modal-backdrop');
+    const codeModalSubtitle = document.getElementById('code-modal-subtitle');
+    const codeModalContent = document.getElementById('code-modal-content');
+    const closeCodeModalButton = document.getElementById('close-code-modal');
+
+    async function openCodeModal(path) {{
+      codeModalSubtitle.textContent = path;
+      codeModalContent.textContent = 'Carregando...';
+      codeModalBackdrop.classList.add('is-open');
+      document.body.classList.add('modal-open');
+      closeCodeModalButton.focus();
+
+      try {{
+        const response = await fetch(`/${{path}}`);
+        if (!response.ok) {{
+          throw new Error(`Não foi possível carregar o código (${{response.status}}).`);
+        }}
+        codeModalContent.textContent = await response.text();
+      }} catch (error) {{
+        codeModalContent.textContent = error.message;
+      }}
+    }}
+
+    function closeCodeModal() {{
+      codeModalBackdrop.classList.remove('is-open');
+      document.body.classList.remove('modal-open');
+      codeModalSubtitle.textContent = '';
+      codeModalContent.textContent = '';
+    }}
+
+    document.addEventListener('click', (event) => {{
+      const codeButton = event.target.closest('[data-code-path]');
+      if (codeButton) {{
+        openCodeModal(codeButton.dataset.codePath);
+      }}
+    }});
+
+    closeCodeModalButton.addEventListener('click', closeCodeModal);
+    codeModalBackdrop.addEventListener('click', (event) => {{
+      if (event.target === codeModalBackdrop) closeCodeModal();
+    }});
 
     function applyFilters() {{
       const selected = {{
@@ -1157,7 +1297,7 @@ def write_html_report(
         row.style.display = matches ? '' : 'none';
         if (matches) visible += 1;
       }});
-      visibleCount.value = `${{visible}} registros visiveis`;
+      visibleCount.value = `${{visible}} registros visíveis`;
     }}
 
     Object.values(filters).forEach((field) => {{
@@ -1203,7 +1343,7 @@ def write_html_report(
         row.style.display = matches ? '' : 'none';
         if (matches) visible += 1;
       }});
-      githubVisibleCount.value = `${{visible}} achados visiveis`;
+      githubVisibleCount.value = `${{visible}} achados visíveis`;
     }}
 
     Object.values(githubFilters).forEach((field) => {{
@@ -1260,13 +1400,13 @@ def main():
             github_llm_queue_rows=github_llm_queue_rows,
             github_tool_validation_rows=github_tool_validation_rows,
         )
-        print(f"Relatorio salvo em: {display_path(results_file)}")
+        print(f"Relatório salvo em: {display_path(results_file)}")
         print(f"Resumo salvo em: {display_path(summary_file)}")
-        print(f"Relatorio HTML salvo em: {display_path(html_file)}")
+        print(f"Relatório HTML salvo em: {display_path(html_file)}")
         print(f"Total de logs processados: {len(rows)}")
         return 0
     except Exception as exc:
-        print(f"Erro ao gerar relatorio: {exc}", file=sys.stderr)
+        print(f"Erro ao gerar relatório: {exc}", file=sys.stderr)
         return 2
 
 

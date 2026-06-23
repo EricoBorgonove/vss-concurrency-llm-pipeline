@@ -1015,9 +1015,36 @@ def write_html_report(
     h1 {{
       font-size: 28px;
     }}
+    .page-header {{
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }}
+    .page-header h1 {{
+      margin: 0;
+    }}
+    .header-actions {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }}
     .meta {{
       color: var(--muted);
       margin-bottom: 24px;
+    }}
+    .run-status {{
+      color: var(--muted);
+      margin: -12px 0 24px;
+      min-height: 22px;
+    }}
+    .run-status.error {{
+      color: #b42318;
+    }}
+    .run-status.success {{
+      color: #157f3b;
     }}
     .cards {{
       display: grid;
@@ -1057,7 +1084,7 @@ def write_html_report(
       font-size: 13px;
       gap: 6px;
     }}
-    select, input, button {{
+    select, input, button, .button-link {{
       border: 1px solid var(--line);
       border-radius: 6px;
       color: var(--text);
@@ -1065,11 +1092,17 @@ def write_html_report(
       min-height: 36px;
       padding: 7px 9px;
     }}
-    button {{
+    button, .button-link {{
       background: var(--accent);
       border-color: var(--accent);
       color: #ffffff;
       cursor: pointer;
+    }}
+    .button-link {{
+      align-items: center;
+      display: inline-flex;
+      justify-content: center;
+      text-decoration: none;
     }}
     .code-link {{
       background: transparent;
@@ -1184,8 +1217,15 @@ def write_html_report(
 </head>
 <body>
   <main>
-    <h1>Dashboard Pipeline VSS-LLM</h1>
+    <header class="page-header">
+      <h1>Dashboard Pipeline VSS-LLM</h1>
+      <div class="header-actions">
+        <button id="run-benchmarks-button" type="button">Rodar testes dos benchmarks</button>
+        <a class="button-link" href="/github">Voltar para links</a>
+      </div>
+    </header>
     <p class="meta">Gerado em: {escape(generated_at)} | Logs processados: {len(rows)}</p>
+    <p id="benchmark-run-status" class="run-status"></p>
     <div class="note">
       <strong>Leitura:</strong> <code>expected_behavior</code> indica se o benchmark era esperado
       como vulnerável, correto ou não informado. <code>expectation_match</code> indica se o
@@ -1234,6 +1274,75 @@ def write_html_report(
 
     function normalize(value) {{
       return (value || '').toString().toLowerCase();
+    }}
+
+    const runBenchmarksButton = document.getElementById('run-benchmarks-button');
+    const benchmarkRunStatus = document.getElementById('benchmark-run-status');
+    let benchmarkRunTimer = null;
+
+    function renderBenchmarkRunStatus(run, message = '') {{
+      if (!benchmarkRunStatus || !runBenchmarksButton) return;
+      const status = run && run.status ? run.status : 'idle';
+      runBenchmarksButton.disabled = status === 'running';
+      benchmarkRunStatus.className = 'run-status';
+
+      if (message) {{
+        benchmarkRunStatus.textContent = message;
+        return;
+      }}
+      if (status === 'running') {{
+        benchmarkRunStatus.textContent = `Rodando benchmarks desde ${{run.started_at || 'agora'}}...`;
+        return;
+      }}
+      if (status === 'succeeded') {{
+        benchmarkRunStatus.classList.add('success');
+        benchmarkRunStatus.textContent = `Benchmarks concluídos em ${{run.finished_at || '-'}}. Atualize a página para ver o relatório mais recente.`;
+        return;
+      }}
+      if (status === 'failed') {{
+        benchmarkRunStatus.classList.add('error');
+        benchmarkRunStatus.textContent = `Execução dos benchmarks falhou. Veja o log em ${{run.log_file || 'reports/benchmark_run_latest.log'}}.`;
+        return;
+      }}
+      benchmarkRunStatus.textContent = '';
+    }}
+
+    async function loadBenchmarkRunStatus() {{
+      const response = await fetch('/api/benchmark-run');
+      if (!response.ok) return;
+      const data = await response.json();
+      renderBenchmarkRunStatus(data.run || {{}});
+      if ((data.run || {{}}).status === 'running' && !benchmarkRunTimer) {{
+        benchmarkRunTimer = window.setInterval(loadBenchmarkRunStatus, 3000);
+      }}
+      if ((data.run || {{}}).status !== 'running' && benchmarkRunTimer) {{
+        window.clearInterval(benchmarkRunTimer);
+        benchmarkRunTimer = null;
+      }}
+    }}
+
+    if (runBenchmarksButton) {{
+      runBenchmarksButton.addEventListener('click', async () => {{
+        if (!window.confirm('Rodar todos os testes dos benchmarks agora? A execução pode demorar alguns minutos.')) return;
+        runBenchmarksButton.disabled = true;
+        renderBenchmarkRunStatus({{status: 'running', started_at: 'agora'}});
+        try {{
+          const response = await fetch('/api/benchmark-run', {{method: 'POST'}});
+          const data = await response.json();
+          if (!response.ok) {{
+            throw new Error(data.error || 'falha ao iniciar os testes dos benchmarks');
+          }}
+          renderBenchmarkRunStatus(data.run || {{}});
+          if (!benchmarkRunTimer) {{
+            benchmarkRunTimer = window.setInterval(loadBenchmarkRunStatus, 3000);
+          }}
+        }} catch (error) {{
+          runBenchmarksButton.disabled = false;
+          benchmarkRunStatus.className = 'run-status error';
+          benchmarkRunStatus.textContent = error.message;
+        }}
+      }});
+      loadBenchmarkRunStatus().catch(() => {{}});
     }}
 
     const codeModalBackdrop = document.getElementById('code-modal-backdrop');

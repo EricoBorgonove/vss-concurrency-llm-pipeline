@@ -118,6 +118,31 @@
     .message.success {
       color: var(--success);
     }
+    .run-panel {
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      margin-bottom: 12px;
+      padding: 12px 14px;
+    }
+    .run-panel h2 {
+      font-size: 16px;
+      margin: 0 0 4px;
+    }
+    .run-status {
+      color: var(--muted);
+      margin: 0;
+    }
+    .run-status.error {
+      color: var(--danger);
+    }
+    .run-status.success {
+      color: var(--success);
+    }
     .table-wrap {
       overflow-x: auto;
     }
@@ -408,6 +433,9 @@
       .review-summary {
         grid-template-columns: 1fr;
       }
+      .run-panel {
+        grid-template-columns: 1fr;
+      }
       .review-actions {
         justify-content: stretch;
       }
@@ -434,6 +462,13 @@
       </label>
       <button id="submit-button" type="submit">Adicionar link</button>
     </form>
+    <section class="run-panel">
+      <div>
+        <h2>Validações dos links do GitHub</h2>
+        <p id="github-validation-run-status" class="run-status">Pronto para rodar todos os achados.</p>
+      </div>
+      <button id="run-github-validations-button" type="button">Rodar testes dos links</button>
+    </section>
     <p id="message" class="message"></p>
     <div id="links-container" class="table-wrap"></div>
   </main>
@@ -462,6 +497,8 @@
     const button = document.getElementById('submit-button');
     const message = document.getElementById('message');
     const container = document.getElementById('links-container');
+    const runGithubValidationsButton = document.getElementById('run-github-validations-button');
+    const githubValidationRunStatus = document.getElementById('github-validation-run-status');
     const modalBackdrop = document.getElementById('findings-modal-backdrop');
     const modalTitle = document.getElementById('findings-modal-title');
     const modalSubtitle = document.getElementById('findings-modal-subtitle');
@@ -482,10 +519,16 @@
       status: '',
       validation: ''
     };
+    let githubValidationPollTimer = null;
 
     function setMessage(text, type = '') {
       message.textContent = text;
       message.className = `message ${type}`.trim();
+    }
+
+    function setGithubValidationStatus(text, type = '') {
+      githubValidationRunStatus.innerHTML = text;
+      githubValidationRunStatus.className = `run-status ${type}`.trim();
     }
 
     function escapeHtml(value) {
@@ -911,6 +954,93 @@
       `;
     }
 
+    function describeGithubValidationRun(run) {
+      const status = run.status || 'idle';
+      const count = Number(run.count || 0);
+      const limit = run.limit ? `limite ${run.limit}` : 'todos os candidatos';
+      const timeout = run.timeout ? `timeout ${run.timeout}s` : 'timeout padrão';
+      const logLink = run.log_file
+        ? ` <a href="/${escapeHtml(run.log_file)}" target="_blank" rel="noopener">Ver log</a>`
+        : '';
+
+      if (status === 'running') {
+        return {
+          text: `Rodando validações GitHub (${limit}, ${timeout}) desde ${escapeHtml(run.started_at || '-')}.${logLink}`,
+          type: ''
+        };
+      }
+      if (status === 'succeeded') {
+        return {
+          text: `Validações concluídas: ${count} registros. Fim: ${escapeHtml(run.finished_at || '-')}.${logLink}`,
+          type: 'success'
+        };
+      }
+      if (status === 'failed') {
+        return {
+          text: `Falha nas validações: ${escapeHtml(run.error || 'erro não informado')}.${logLink}`,
+          type: 'error'
+        };
+      }
+      return {
+        text: 'Pronto para rodar todos os achados.',
+        type: ''
+      };
+    }
+
+    function scheduleGithubValidationPoll() {
+      if (githubValidationPollTimer) return;
+      githubValidationPollTimer = window.setInterval(refreshGithubValidationRun, 3000);
+    }
+
+    function stopGithubValidationPoll() {
+      if (!githubValidationPollTimer) return;
+      window.clearInterval(githubValidationPollTimer);
+      githubValidationPollTimer = null;
+    }
+
+    async function refreshGithubValidationRun() {
+      const response = await fetch('/api/github-validations/run');
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'falha ao consultar validações GitHub');
+      }
+
+      const run = data.run || {};
+      const description = describeGithubValidationRun(run);
+      setGithubValidationStatus(description.text, description.type);
+      runGithubValidationsButton.disabled = run.status === 'running';
+
+      if (run.status === 'running') {
+        scheduleGithubValidationPoll();
+        return run;
+      }
+
+      stopGithubValidationPoll();
+      if (run.status === 'succeeded' || run.status === 'failed') {
+        await loadLinks();
+      }
+      return run;
+    }
+
+    async function runGithubValidations() {
+      if (!window.confirm('Rodar os testes de todos os achados dos links GitHub agora? A execução pode demorar alguns minutos.')) return;
+      runGithubValidationsButton.disabled = true;
+      setGithubValidationStatus('Iniciando validações GitHub...');
+      try {
+        const response = await fetch('/api/github-validations/run', {method: 'POST'});
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'falha ao iniciar validações GitHub');
+        }
+        const description = describeGithubValidationRun(data.run || {});
+        setGithubValidationStatus(description.text, description.type);
+        scheduleGithubValidationPoll();
+      } catch (error) {
+        setGithubValidationStatus(error.message, 'error');
+        runGithubValidationsButton.disabled = false;
+      }
+    }
+
     async function loadLinks() {
       const [linksResponse, findingsResponse, validationsResponse] = await Promise.all([
         fetch('/api/github-links'),
@@ -1134,6 +1264,8 @@
       renderFindingsModal();
     });
 
+    runGithubValidationsButton.addEventListener('click', runGithubValidations);
+
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && modalBackdrop.classList.contains('is-open')) {
         closeFindingsModal();
@@ -1141,6 +1273,7 @@
     });
 
     loadLinks().catch((error) => setMessage(error.message, 'error'));
+    refreshGithubValidationRun().catch((error) => setGithubValidationStatus(error.message, 'error'));
   </script>
 </body>
 </html>

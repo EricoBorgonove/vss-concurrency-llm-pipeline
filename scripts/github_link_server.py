@@ -4,6 +4,7 @@
 import argparse
 import datetime as dt
 import json
+import mimetypes
 import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -44,6 +45,9 @@ from pipeline_runner.github_tool_validations import (  # noqa: E402
 
 WEB_DIR = PROJECT_ROOT / "web"
 INDEX_FILE = WEB_DIR / "github_input.html"
+REPORTS_DIR = PROJECT_ROOT / "reports"
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
+BENCHMARKS_DIR = PROJECT_ROOT / "benchmarks"
 
 
 def env_int(name, default):
@@ -101,10 +105,46 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def send_file(self, path):
+        content_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+        body = path.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def send_project_file(self, route_prefix, base_dir, path):
+        relative_path = path.removeprefix(route_prefix).strip("/")
+        file_path = (base_dir / relative_path).resolve()
+        try:
+            file_path.relative_to(base_dir.resolve())
+        except ValueError:
+            self.send_json(404, {"error": "rota não encontrada"})
+            return
+
+        if not file_path.is_file():
+            self.send_json(404, {"error": "arquivo não encontrado"})
+            return
+
+        self.send_file(file_path)
+
     def do_GET(self):
         path = urlparse(self.path).path
         if path in ("/", "/github"):
             self.send_html(200, INDEX_FILE.read_text(encoding="utf-8"))
+            return
+
+        if path.startswith("/reports/"):
+            self.send_project_file("/reports/", REPORTS_DIR, path)
+            return
+
+        if path.startswith("/outputs/"):
+            self.send_project_file("/outputs/", OUTPUTS_DIR, path)
+            return
+
+        if path.startswith("/benchmarks/"):
+            self.send_project_file("/benchmarks/", BENCHMARKS_DIR, path)
             return
 
         if path == "/api/github-links":
@@ -123,7 +163,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.send_json(200, {"validations": read_validations()})
             return
 
-        self.send_json(404, {"error": "rota nao encontrada"})
+        self.send_json(404, {"error": "rota não encontrada"})
 
     def do_POST(self):
         path = urlparse(self.path).path
@@ -160,7 +200,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.handle_validate_link(link_id)
             return
 
-        self.send_json(404, {"error": "rota nao encontrada"})
+        self.send_json(404, {"error": "rota não encontrada"})
 
     def do_PATCH(self):
         path = urlparse(self.path).path
@@ -169,7 +209,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.handle_update_finding_status(finding_id)
             return
 
-        self.send_json(404, {"error": "rota nao encontrada"})
+        self.send_json(404, {"error": "rota não encontrada"})
 
     def do_DELETE(self):
         path = urlparse(self.path).path
@@ -178,7 +218,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.handle_remove_link(link_id)
             return
 
-        self.send_json(404, {"error": "rota nao encontrada"})
+        self.send_json(404, {"error": "rota não encontrada"})
 
     def handle_create_link(self):
         length = int(self.headers.get("Content-Length", "0") or "0")
@@ -188,7 +228,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             payload = json.loads(raw_body or "{}")
             row = append_link(payload.get("url", ""))
         except json.JSONDecodeError:
-            self.send_json(400, {"error": "json invalido"})
+            self.send_json(400, {"error": "JSON inválido"})
             return
         except ValueError as exc:
             self.send_json(400, {"error": str(exc)})
@@ -243,7 +283,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             link = get_link(link_id)
             local_path = link.get("local_path", "")
             if not local_path:
-                raise ValueError("repositorio ainda nao foi baixado")
+                raise ValueError("repositório ainda não foi baixado")
             files = discover_code_files(resolve_local_path(local_path))
             rows = replace_files_for_link(link_id, files)
             row = update_link(
@@ -326,7 +366,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             payload = json.loads(raw_body or "{}")
             row = update_finding_status(finding_id, payload.get("status", ""))
         except json.JSONDecodeError:
-            self.send_json(400, {"error": "json invalido"})
+            self.send_json(400, {"error": "JSON inválido"})
             return
         except ValueError as exc:
             self.send_json(400, {"error": str(exc)})

@@ -1,6 +1,6 @@
 category,benchmark_count,execution_count,total_duration_seconds,avg_duration_seconds,min_duration_seconds,max_duration_seconds
-assertion_violation,11,11,14.558,1.323,1.186,1.493
-data_race,11,11,18.057,1.642,1.520,1.792
-deadlock,11,11,40.192,3.654,1.431,4.612
-memory_corruption,11,22,67.350,3.061,1.807,7.006
-random_tests,4,6,12.211,2.035,1.659,2.415
+assertion_violation,11,11,16.036,1.458,1.227,2.148
+data_race,11,11,29.866,2.715,2.040,4.765
+deadlock,11,11,42.242,3.840,1.569,4.977
+memory_corruption,11,22,77.567,3.526,1.908,8.649
+random_tests,4,6,16.630,2.772,1.770,4.900

@@ -452,20 +452,40 @@ def escape(value):
     return html.escape(str(value), quote=True)
 
 
-def render_benchmark_cell(value):
+DETAIL_COLUMN_WIDTHS = {
+    "tool": "5%",
+    "category": "8%",
+    "benchmark": "20%",
+    "execution_date": "9%",
+    "expected_behavior": "7%",
+    "expectation_match": "8%",
+    "expected_tool_behavior": "8%",
+    "tool_expectation_match": "8%",
+    "classification": "7%",
+    "log_file": "17%",
+    "error": "3%",
+}
+
+
+def detail_cell_class(field):
+    return f"detail-col detail-col-{field.replace('_', '-')}"
+
+
+def render_benchmark_cell(value, css_class=""):
     if not value:
-        return "<td></td>"
+        return f"<td class=\"{escape(css_class)}\"></td>" if css_class else "<td></td>"
 
     escaped_value = escape(value)
+    class_attr = f" class=\"{escape(css_class)}\"" if css_class else ""
     if str(value).startswith("benchmarks/"):
         return (
-            "<td>"
+            f"<td{class_attr}>"
             f"<button class=\"code-link\" type=\"button\" data-code-path=\"{escaped_value}\">"
             f"{escaped_value}"
             "</button>"
             "</td>"
         )
-    return f"<td>{escaped_value}</td>"
+    return f"<td{class_attr}>{escaped_value}</td>"
 
 
 def log_href(value):
@@ -476,14 +496,15 @@ def log_href(value):
     return str(value)
 
 
-def render_log_cell(value):
+def render_log_cell(value, css_class=""):
     if not value:
-        return "<td></td>"
+        return f"<td class=\"{escape(css_class)}\"></td>" if css_class else "<td></td>"
 
     escaped_value = escape(value)
     escaped_href = escape(log_href(value))
+    class_attr = f" class=\"{escape(css_class)}\"" if css_class else ""
     return (
-        "<td>"
+        f"<td{class_attr}>"
         f"<button class=\"log-link\" type=\"button\" data-log-url=\"{escaped_href}\" "
         f"data-log-file=\"{escaped_value}\">{escaped_value}</button>"
         "</td>"
@@ -847,19 +868,28 @@ def render_dashboard_detail_table(rows, fieldnames):
     if not rows:
         return "<p>Nenhum registro encontrado.</p>"
 
-    header_cells = "".join(f"<th>{escape(field)}</th>" for field in fieldnames)
+    colgroup = "".join(
+        f"<col class=\"{escape(detail_cell_class(field))}\" "
+        f"style=\"width: {escape(DETAIL_COLUMN_WIDTHS.get(field, 'auto'))}\">"
+        for field in fieldnames
+    )
+    header_cells = "".join(
+        f"<th class=\"{escape(detail_cell_class(field))}\">{escape(field)}</th>"
+        for field in fieldnames
+    )
     body_rows = []
     for row in rows:
         search_text = " ".join(str(row.get(field, "")) for field in fieldnames)
         cells = []
         for field in fieldnames:
             value = row.get(field, "")
+            css_class = detail_cell_class(field)
             if field == "benchmark":
-                cells.append(render_benchmark_cell(value))
+                cells.append(render_benchmark_cell(value, css_class))
             elif field == "log_file" and value:
-                cells.append(render_log_cell(value))
+                cells.append(render_log_cell(value, css_class))
             else:
-                cells.append(f"<td>{escape(value)}</td>")
+                cells.append(f"<td class=\"{escape(css_class)}\">{escape(value)}</td>")
         body_rows.append(
             "<tr "
             f"data-tool=\"{escape(row.get('tool', ''))}\" "
@@ -872,6 +902,7 @@ def render_dashboard_detail_table(rows, fieldnames):
 
     return (
         "<table id=\"detail-table\">\n"
+        f"<colgroup>{colgroup}</colgroup>\n"
         f"<thead><tr>{header_cells}</tr></thead>\n"
         f"<tbody>{''.join(body_rows)}</tbody>\n"
         "</table>"
@@ -1177,6 +1208,32 @@ def write_html_report(
     }}
     tr:nth-child(even) {{
       background: #f9fbfd;
+    }}
+    #detail-table {{
+      table-layout: fixed;
+      min-width: 1280px;
+    }}
+    #detail-table th,
+    #detail-table td {{
+      overflow-wrap: anywhere;
+    }}
+    #detail-table .detail-col-tool,
+    #detail-table .detail-col-execution-date,
+    #detail-table .detail-col-expected-behavior,
+    #detail-table .detail-col-expectation-match,
+    #detail-table .detail-col-expected-tool-behavior,
+    #detail-table .detail-col-tool-expectation-match,
+    #detail-table .detail-col-classification {{
+      word-break: normal;
+    }}
+    #detail-table .detail-col-error:empty::after {{
+      content: "-";
+      color: var(--muted);
+    }}
+    #detail-table .code-link,
+    #detail-table .log-link {{
+      max-width: 100%;
+      overflow-wrap: anywhere;
     }}
     .note {{
       background: #ffffff;

@@ -1,0 +1,38 @@
+// Caso vulneravel: duas threads adquirem queue_lock e template_lock em ordem oposta.
+#include <pthread.h>
+#include <unistd.h>
+
+static pthread_mutex_t queue_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t template_lock = PTHREAD_MUTEX_INITIALIZER;
+
+static void *first_path(void *arg)
+{
+    (void)arg;
+    pthread_mutex_lock(&queue_lock);
+    usleep(1000);
+    pthread_mutex_lock(&template_lock);
+    pthread_mutex_unlock(&template_lock);
+    pthread_mutex_unlock(&queue_lock);
+    return 0;
+}
+
+static void *second_path(void *arg)
+{
+    (void)arg;
+    pthread_mutex_lock(&template_lock);
+    usleep(1000);
+    pthread_mutex_lock(&queue_lock);
+    pthread_mutex_unlock(&queue_lock);
+    pthread_mutex_unlock(&template_lock);
+    return 0;
+}
+
+int main(void)
+{
+    pthread_t a, b;
+    pthread_create(&a, 0, first_path, 0);
+    pthread_create(&b, 0, second_path, 0);
+    pthread_join(a, 0);
+    pthread_join(b, 0);
+    return 0;
+}

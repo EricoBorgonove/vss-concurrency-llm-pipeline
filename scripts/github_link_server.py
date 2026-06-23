@@ -60,6 +60,18 @@ BENCHMARK_RUN_STATE = {
     "log_file": "",
     "error": "",
 }
+GITHUB_VALIDATION_RUN_LOG = REPORTS_DIR / "github_validation_run_latest.log"
+GITHUB_VALIDATION_RUN_LOCK = threading.Lock()
+GITHUB_VALIDATION_RUN_STATE = {
+    "status": "idle",
+    "started_at": "",
+    "finished_at": "",
+    "count": 0,
+    "limit": "",
+    "timeout": "",
+    "log_file": "",
+    "error": "",
+}
 
 
 def env_int(name, default):
@@ -67,6 +79,16 @@ def env_int(name, default):
         return int(os.environ.get(name, str(default)))
     except ValueError:
         return default
+
+
+def env_optional_int(name):
+    value = os.environ.get(name, "").strip()
+    if not value or value.lower() in ("0", "all", "todos", "none"):
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
 def build_parser():
@@ -106,6 +128,17 @@ def update_benchmark_run_state(**updates):
         return dict(BENCHMARK_RUN_STATE)
 
 
+def github_validation_run_status():
+    with GITHUB_VALIDATION_RUN_LOCK:
+        return dict(GITHUB_VALIDATION_RUN_STATE)
+
+
+def update_github_validation_run_state(**updates):
+    with GITHUB_VALIDATION_RUN_LOCK:
+        GITHUB_VALIDATION_RUN_STATE.update(updates)
+        return dict(GITHUB_VALIDATION_RUN_STATE)
+
+
 def run_benchmark_pipeline():
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     command = [sys.executable, "run_pipeline.py"]
@@ -141,6 +174,52 @@ def run_benchmark_pipeline():
         returncode=result.returncode,
         error="" if result.returncode == 0 else "A execução dos benchmarks falhou.",
     )
+
+
+def run_github_validations():
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    limit = env_optional_int("GITHUB_VALIDATION_LIMIT")
+    timeout = env_int("GITHUB_VALIDATION_TIMEOUT", 10)
+    started_at = dt.datetime.now().isoformat(timespec="seconds")
+    update_github_validation_run_state(
+        status="running",
+        started_at=started_at,
+        finished_at="",
+        count=0,
+        limit="" if limit is None else limit,
+        timeout=timeout,
+        log_file=str(GITHUB_VALIDATION_RUN_LOG.relative_to(PROJECT_ROOT)),
+        error="",
+    )
+
+    try:
+        with GITHUB_VALIDATION_RUN_LOG.open("w", encoding="utf-8") as log_file:
+            log_file.write("Validação global dos achados GitHub\n")
+            log_file.write(f"Início: {started_at}\n")
+            log_file.write(f"Limite: {'todos' if limit is None else limit}\n")
+            log_file.write(f"Timeout por ferramenta: {timeout}s\n\n")
+            log_file.flush()
+            rows = validate_findings_file(limit=limit, timeout=timeout)
+            finished_at = dt.datetime.now().isoformat(timespec="seconds")
+            log_file.write(f"Validações registradas: {len(rows)}\n")
+            log_file.write(f"Fim: {finished_at}\n")
+
+        update_github_validation_run_state(
+            status="succeeded",
+            finished_at=finished_at,
+            count=len(rows),
+            error="",
+        )
+    except Exception as exc:
+        finished_at = dt.datetime.now().isoformat(timespec="seconds")
+        with GITHUB_VALIDATION_RUN_LOG.open("a", encoding="utf-8") as log_file:
+            log_file.write(f"\nErro: {exc}\n")
+            log_file.write(f"Fim: {finished_at}\n")
+        update_github_validation_run_state(
+            status="failed",
+            finished_at=finished_at,
+            error=str(exc),
+        )
 
 
 class GitHubLinkHandler(BaseHTTPRequestHandler):
@@ -221,6 +300,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
         if path == "/api/github-validations":
             self.send_json(200, {"validations": read_validations()})
+            return
+
+        if path == "/api/github-validations/run":
+            self.send_json(200, {"run": github_validation_run_status()})
             return
 
         if path == "/api/benchmark-run":
@@ -443,24 +526,24 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         self.send_json(200, {"finding": row})
 
     def handle_run_validations(self):
-        limit = env_int("GITHUB_VALIDATION_LIMIT", 25)
-        timeout = env_int("GITHUB_VALIDATION_TIMEOUT", 10)
-
-        try:
-            rows = validate_findings_file(limit=limit, timeout=timeout)
-        except Exception as exc:
-            self.send_json(500, {"error": str(exc)})
+        state = github_validation_run_status()
+        if state.get("status") == "running":
+            self.send_json(409, {"run": state, "error": "já existe uma validação em andamento"})
             return
 
-        self.send_json(
-            200,
-            {
-                "validations": rows,
-                "count": len(rows),
-                "limit": limit,
-                "timeout": timeout,
-            },
+        update_github_validation_run_state(
+            status="running",
+            started_at=dt.datetime.now().isoformat(timespec="seconds"),
+            finished_at="",
+            count=0,
+            limit="",
+            timeout="",
+            log_file=str(GITHUB_VALIDATION_RUN_LOG.relative_to(PROJECT_ROOT)),
+            error="",
         )
+        thread = threading.Thread(target=run_github_validations, daemon=True)
+        thread.start()
+        self.send_json(202, {"run": github_validation_run_status()})
 
     def handle_run_benchmarks(self):
         state = benchmark_run_status()

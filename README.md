@@ -210,6 +210,13 @@ Essa rodada tambem gera os artefatos da analise de links GitHub:
 - `reports/github_tool_validations.csv`: validacoes dos achados por ferramentas;
 - `reports/report.html`: dashboard atualizado com essas secoes.
 
+Na tela local de links GitHub (`/github`), o botao **Rodar testes dos links**
+executa a validacao global em background e grava o status em
+`reports/github_validation_run_latest.log`. Por padrao, ele tenta validar todos
+os candidatos; defina `GITHUB_VALIDATION_LIMIT` para limitar a rodada, ou use
+`GITHUB_VALIDATION_LIMIT=all` para deixar explicito que todos devem ser
+processados. O timeout por ferramenta usa `GITHUB_VALIDATION_TIMEOUT`.
+
 Por padrao, a validacao de achados GitHub e limitada a 25 execucoes para
 preservar a instancia pequena. Para ajustar ou desativar:
 

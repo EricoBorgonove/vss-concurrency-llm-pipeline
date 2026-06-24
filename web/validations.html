@@ -165,6 +165,10 @@
       min-width: 1180px;
       width: 100%;
     }
+    #validation-table {
+      min-width: 1280px;
+      table-layout: fixed;
+    }
     th, td {
       border: 1px solid var(--line);
       padding: 8px 10px;
@@ -176,6 +180,30 @@
       color: #102a43;
       position: sticky;
       top: 0;
+    }
+    #validation-table th,
+    #validation-table td {
+      overflow-wrap: anywhere;
+    }
+    .validation-id,
+    .validation-path,
+    .validation-code,
+    .log-link {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+    .validation-path {
+      color: #334e68;
+      line-height: 1.35;
+    }
+    .validation-return {
+      text-align: center;
+    }
+    .table-action {
+      font-size: 12px;
+      min-height: 0;
+      padding: 6px 8px;
+      width: 100%;
     }
     tr:nth-child(even) { background: #f9fbfd; }
     .badge {
@@ -203,7 +231,7 @@
       border: 0;
       color: var(--accent);
       cursor: pointer;
-      font: inherit;
+      max-width: 100%;
       min-height: 0;
       overflow-wrap: anywhere;
       padding: 0;
@@ -319,7 +347,19 @@
 
     <p id="message" class="message"></p>
     <section class="table-card table-wrap">
-      <table>
+      <table id="validation-table">
+        <colgroup>
+          <col style="width: 10%">
+          <col style="width: 6%">
+          <col style="width: 24%">
+          <col style="width: 10%">
+          <col style="width: 7%">
+          <col style="width: 8%">
+          <col style="width: 10%">
+          <col style="width: 5%">
+          <col style="width: 14%">
+          <col style="width: 6%">
+        </colgroup>
         <thead>
           <tr>
             <th>Achado</th>
@@ -513,18 +553,18 @@
       const rows = filteredRows();
       tableBody.innerHTML = rows.map((row) => `
         <tr>
-          <td>${escapeHtml(row.finding.id)}</td>
-          <td>${escapeHtml(row.finding.link_id)}</td>
-          <td>${escapeHtml(row.finding.file_path)}</td>
+          <td class="validation-id">${escapeHtml(row.finding.id)}</td>
+          <td class="validation-code">${escapeHtml(row.finding.link_id)}</td>
+          <td class="validation-path">${escapeHtml(row.finding.file_path)}</td>
           <td>${escapeHtml(row.finding.category)}</td>
-          <td>${escapeHtml(row.tool)}</td>
+          <td class="validation-code">${escapeHtml(row.tool)}</td>
           <td><span class="badge ${badgeClass(row.status)}">${escapeHtml(row.status)}</span></td>
           <td><span class="badge ${badgeClass(row.classification)}">${escapeHtml(row.classification)}</span></td>
-          <td>${escapeHtml(row.returncode)}</td>
+          <td class="validation-return">${escapeHtml(row.returncode)}</td>
           <td>${renderLog(row.log_file)}</td>
           <td>
-            <button type="button" class="button-secondary" data-retest-finding-id="${escapeHtml(row.finding.id)}">
-              Testar novamente
+            <button type="button" class="button-secondary table-action" data-retest-finding-id="${escapeHtml(row.finding.id)}">
+              Retestar
             </button>
           </td>
         </tr>

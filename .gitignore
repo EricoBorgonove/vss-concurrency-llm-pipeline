@@ -36,6 +36,8 @@ var/
 outputs/**
 !outputs/**/
 inputs/**
+reports/**
+!reports/
 reports/github_*.csv
 reports/*.log
 antigos/**

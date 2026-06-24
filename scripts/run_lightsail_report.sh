@@ -3,6 +3,7 @@ set -eu
 
 REPORT_ARCHIVE="${REPORT_ARCHIVE:-reports-lightsail.tar.gz}"
 ARCHIVE_OLD_RESULTS="${ARCHIVE_OLD_RESULTS:-1}"
+CLEAN_BENCHMARK_HISTORY="${CLEAN_BENCHMARK_HISTORY:-0}"
 OLD_RESULTS_DIR="${OLD_RESULTS_DIR:-antigos}"
 GITHUB_LLM_QUEUE_LIMIT="${GITHUB_LLM_QUEUE_LIMIT:-}"
 GITHUB_VALIDATE_FINDINGS="${GITHUB_VALIDATE_FINDINGS:-1}"
@@ -25,7 +26,9 @@ free -h
 docker version --format 'Docker {{.Server.Version}}'
 docker compose version
 
-if [ "$ARCHIVE_OLD_RESULTS" = "1" ]; then
+if [ "$CLEAN_BENCHMARK_HISTORY" = "1" ]; then
+  CLEAN_OLD_ARCHIVES="${CLEAN_OLD_ARCHIVES:-1}" ./scripts/clean_benchmark_history.sh
+elif [ "$ARCHIVE_OLD_RESULTS" = "1" ]; then
   archive_dir="$OLD_RESULTS_DIR/rodada-antiga-$(date +%Y%m%d-%H%M%S)"
   has_old_results=0
 

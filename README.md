@@ -206,6 +206,20 @@ cd ~/vss-concurrency-llm-pipeline
 ./scripts/run_lightsail_report.sh
 ```
 
+Para zerar o historico local de benchmarks antes de uma nova rodada, sem apagar
+os repositorios GitHub clonados em `inputs/github_repos/`, use:
+
+```bash
+./scripts/clean_benchmark_history.sh
+./scripts/run_lightsail_report.sh
+```
+
+Tambem e possivel pedir essa limpeza junto com a rodada:
+
+```bash
+CLEAN_BENCHMARK_HISTORY=1 ./scripts/run_lightsail_report.sh
+```
+
 Essa rodada tambem gera os artefatos da analise de links GitHub:
 
 - `reports/github_llm_queue.csv`: candidatos priorizados para analise por LLM;
@@ -279,6 +293,11 @@ logs locais. Regere os relatorios e logs juntos:
 ./scripts/run_lightsail_report.sh
 sudo systemctl restart vss-pipeline-web
 ```
+
+Os relatorios em `reports/` e logs em `outputs/` sao artefatos locais. Eles nao
+sao versionados para evitar conflitos durante `git pull` na AWS. Os clones de
+repositorios analisados ficam em `inputs/github_repos/` e nao sao apagados pelos
+scripts de limpeza do historico de benchmarks.
 
 ## Execucao local sem Docker
 

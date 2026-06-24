@@ -1,6 +1,0 @@
-category,benchmark_count,execution_count,total_duration_seconds,avg_duration_seconds,min_duration_seconds,max_duration_seconds
-assertion_violation,23,23,7.943,0.345,0.180,0.623
-data_race,23,23,43.777,1.903,1.169,4.362
-deadlock,23,23,73.484,3.195,0.624,3.960
-memory_corruption,23,46,60.853,1.323,0.446,2.763
-random_tests,4,6,9.237,1.540,0.565,2.985

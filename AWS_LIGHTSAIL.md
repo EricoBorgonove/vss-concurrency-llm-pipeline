@@ -120,3 +120,21 @@ cd ~/vss-concurrency-llm-pipeline
 git pull
 ./scripts/run_lightsail_report.sh
 ```
+
+## 8. Servir o painel web com login
+
+Antes de expor o painel, configure credenciais diferentes do padrao de
+desenvolvimento:
+
+```bash
+export VSS_AUTH_USERNAME="usuario"
+export VSS_AUTH_PASSWORD="senha-forte"
+python3 scripts/github_link_server.py --host 0.0.0.0 --port 8080
+```
+
+As telas principais ficam protegidas por login:
+
+- `/login`: entrada do usuario;
+- `/github`: cadastro, triagem e revisao de links;
+- `/validacoes`: acompanhamento e auditoria das validacoes;
+- `/reports/report.html`: relatorio consolidado.

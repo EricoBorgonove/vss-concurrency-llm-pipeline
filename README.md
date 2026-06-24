@@ -295,6 +295,20 @@ O servidor local de links GitHub expoe uma tela em `/github`. Ela permite:
 - acompanhar progresso com texto e barra visual;
 - abrir logs das ferramentas em modal.
 
+Antes de acessar o painel, o servidor mostra a tela `/login`. As credenciais
+padrao de desenvolvimento sao `admin` / `vss`. Em hospedagem na AWS, defina
+variaveis de ambiente antes de iniciar o servico:
+
+```bash
+export VSS_AUTH_USERNAME="usuario"
+export VSS_AUTH_PASSWORD="senha-forte"
+```
+
+A tela `/validacoes` concentra a auditoria dos testes dos achados GitHub. Ela
+mostra resumo, filtros, tabela de achados, status da ultima validacao, botao
+para testar novamente um achado, botao para rodar testes globais e modal para
+abrir o log da ferramenta.
+
 O relatorio HTML em `reports/report.html` tambem e interativo:
 
 - possui filtros por ferramenta, categoria, classificacao e expectativa;

@@ -127,8 +127,7 @@ Antes de expor o painel, configure credenciais diferentes do padrao de
 desenvolvimento:
 
 ```bash
-export VSS_AUTH_USERNAME="usuario"
-export VSS_AUTH_PASSWORD="senha-forte"
+export VSS_AUTH_USERS="erico:senha-forte,brenda:senha-forte,alberjan:senha-forte,lucas:senha-forte"
 python3 scripts/github_link_server.py --host 0.0.0.0 --port 8080
 ```
 

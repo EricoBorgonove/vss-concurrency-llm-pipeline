@@ -296,12 +296,18 @@ O servidor local de links GitHub expoe uma tela em `/github`. Ela permite:
 - abrir logs das ferramentas em modal.
 
 Antes de acessar o painel, o servidor mostra a tela `/login`. As credenciais
-padrao de desenvolvimento sao `admin` / `vss`. Em hospedagem na AWS, defina
-variaveis de ambiente antes de iniciar o servico:
+padrao de desenvolvimento sao:
+
+- `erico` / `vss123`;
+- `brenda` / `vss123`;
+- `alberjan` / `vss123`;
+- `lucas` / `vss123`.
+
+Em hospedagem na AWS, sobrescreva os usuarios com senhas fortes antes de iniciar
+o servico:
 
 ```bash
-export VSS_AUTH_USERNAME="usuario"
-export VSS_AUTH_PASSWORD="senha-forte"
+export VSS_AUTH_USERS="erico:senha-forte,brenda:senha-forte,alberjan:senha-forte,lucas:senha-forte"
 ```
 
 A tela `/validacoes` concentra a auditoria dos testes dos achados GitHub. Ela

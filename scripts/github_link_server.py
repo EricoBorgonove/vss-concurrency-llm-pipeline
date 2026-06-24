@@ -56,8 +56,12 @@ REPORTS_DIR = PROJECT_ROOT / "reports"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 BENCHMARKS_DIR = PROJECT_ROOT / "benchmarks"
 SESSION_COOKIE_NAME = "vss_session"
-AUTH_USERNAME = os.environ.get("VSS_AUTH_USERNAME", "admin")
-AUTH_PASSWORD = os.environ.get("VSS_AUTH_PASSWORD", "vss")
+DEFAULT_AUTH_USERS = {
+    "erico": "vss123",
+    "brenda": "vss123",
+    "alberjan": "vss123",
+    "lucas": "vss123",
+}
 AUTH_SESSIONS = {}
 AUTH_SESSIONS_LOCK = threading.Lock()
 BENCHMARK_RUN_LOG = REPORTS_DIR / "benchmark_run_latest.log"
@@ -121,8 +125,30 @@ def json_bytes(payload):
     return json.dumps(payload, ensure_ascii=True).encode("utf-8")
 
 
+def parse_auth_users(value):
+    users = {}
+    for item in str(value or "").split(","):
+        if ":" not in item:
+            continue
+        username, password = item.split(":", 1)
+        username = username.strip()
+        if username:
+            users[username] = password.strip()
+    return users
+
+
+AUTH_USERS = parse_auth_users(os.environ.get("VSS_AUTH_USERS")) or DEFAULT_AUTH_USERS
+
+
 def is_auth_configured_with_default():
-    return AUTH_USERNAME == "admin" and AUTH_PASSWORD == "vss"
+    return AUTH_USERS == DEFAULT_AUTH_USERS
+
+
+def valid_credentials(username, password):
+    expected_password = AUTH_USERS.get(username)
+    if expected_password is None:
+        return False
+    return hmac.compare_digest(password, expected_password)
 
 
 def create_session():
@@ -162,7 +188,7 @@ def login_page(error="", next_path="/github"):
     )
     default_warning = (
         '<p class="message warning">Usando credenciais padrao de desenvolvimento. '
-        'Na AWS, defina VSS_AUTH_USERNAME e VSS_AUTH_PASSWORD.</p>'
+        'Na AWS, defina VSS_AUTH_USERS.</p>'
         if is_auth_configured_with_default()
         else ""
     )
@@ -657,9 +683,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         if not next_path.startswith("/"):
             next_path = "/github"
 
-        user_ok = hmac.compare_digest(username, AUTH_USERNAME)
-        password_ok = hmac.compare_digest(password, AUTH_PASSWORD)
-        if not user_ok or not password_ok:
+        if not valid_credentials(username, password):
             self.send_html(401, login_page("Usuário ou senha inválidos.", next_path))
             return
 

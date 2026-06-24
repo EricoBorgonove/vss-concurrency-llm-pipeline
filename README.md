@@ -311,6 +311,11 @@ locais do painel e reinicie o servico:
 sudo systemctl restart vss-pipeline-web
 ```
 
+No painel `/validacoes`, o botao **Preparar ferramentas da AWS** executa essa
+preparacao pela interface. Para um achado com erro de ambiente, use
+**Preparar e retestar** para instalar a toolchain e executar aquele achado
+novamente no mesmo fluxo.
+
 ## Execucao local sem Docker
 
 Tambem e possivel executar partes do pipeline localmente. Os scripts Python usam

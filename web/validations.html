@@ -205,6 +205,9 @@
       padding: 6px 8px;
       width: 100%;
     }
+    .table-action + .table-action {
+      margin-top: 6px;
+    }
     tr:nth-child(even) { background: #f9fbfd; }
     .badge {
       background: #edf2f7;
@@ -324,6 +327,14 @@
       <button id="run-all-button" type="button">Rodar testes globais</button>
     </section>
 
+    <section class="run-panel">
+      <div>
+        <h2>Preparação das ferramentas</h2>
+        <p id="toolchain-status" class="run-status">Carregando status...</p>
+      </div>
+      <button id="toolchain-button" type="button" class="button-secondary">Preparar ferramentas da AWS</button>
+    </section>
+
     <section id="summary" class="summary-grid"></section>
 
     <section class="filters">
@@ -357,8 +368,8 @@
           <col style="width: 8%">
           <col style="width: 10%">
           <col style="width: 5%">
-          <col style="width: 14%">
-          <col style="width: 6%">
+          <col style="width: 13%">
+          <col style="width: 7%">
         </colgroup>
         <thead>
           <tr>
@@ -399,6 +410,8 @@
     const runProgress = document.getElementById('run-progress');
     const runProgressFill = document.getElementById('run-progress-fill');
     const runAllButton = document.getElementById('run-all-button');
+    const toolchainStatus = document.getElementById('toolchain-status');
+    const toolchainButton = document.getElementById('toolchain-button');
     const summary = document.getElementById('summary');
     const tableBody = document.getElementById('validation-body');
     const message = document.getElementById('message');
@@ -415,6 +428,7 @@
     };
     let currentRows = [];
     let pollTimer = null;
+    let toolchainPollTimer = null;
 
     function escapeHtml(value) {
       return String(value || '')
@@ -481,7 +495,8 @@
             status: validation.status || 'pendente',
             classification: validation.classification || 'pendente',
             returncode: validation.returncode || '-',
-            log_file: validation.log_file || ''
+            log_file: validation.log_file || '',
+            error: validation.error || ''
           };
         });
     }
@@ -539,7 +554,8 @@
           row.finding.file_path,
           row.finding.message,
           row.link.url,
-          row.log_file
+          row.log_file,
+          row.error
         ].join(' '));
         return (!selected.link || row.finding.link_id === selected.link)
           && (!selected.category || row.finding.category === selected.category)
@@ -563,12 +579,28 @@
           <td class="validation-return">${escapeHtml(row.returncode)}</td>
           <td>${renderLog(row.log_file)}</td>
           <td>
+            ${needsToolchain(row) ? `
+              <button type="button" class="button-secondary table-action" data-prepare-retest-finding-id="${escapeHtml(row.finding.id)}">
+                Preparar e retestar
+              </button>
+            ` : ''}
             <button type="button" class="button-secondary table-action" data-retest-finding-id="${escapeHtml(row.finding.id)}">
-              Retestar
+              Testar somente este achado
             </button>
           </td>
         </tr>
       `).join('') || '<tr><td colspan="10">Nenhum achado encontrado.</td></tr>';
+    }
+
+    function needsToolchain(row) {
+      const text = normalize(`${row.error} ${row.log_file}`);
+      return row.classification === 'erro_ferramenta'
+        && (
+          text.includes('install_aws_toolchain')
+          || text.includes('preparar e retestar')
+          || text.includes('toolchain')
+          || text.includes('header padrao')
+        );
     }
 
     function setRunProgress(run = {}) {
@@ -615,6 +647,34 @@
       }
     }
 
+    function describeToolchainRun(run) {
+      const status = run.status || 'idle';
+      const logLink = run.log_file ? ` <a href="/${escapeHtml(run.log_file)}" target="_blank" rel="noopener">Ver log</a>` : '';
+      if (status === 'running') return [`Preparando ferramentas da AWS...${logLink}`, ''];
+      if (status === 'succeeded') return [`Ferramentas preparadas.${logLink}`, 'success'];
+      if (status === 'failed') return [`Falha ao preparar ferramentas: ${escapeHtml(run.error || 'erro não informado')}.${logLink}`, 'error'];
+      return ['Pronto para preparar a toolchain local.', ''];
+    }
+
+    async function refreshToolchainStatus() {
+      const response = await fetch('/api/toolchain-run');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'falha ao consultar preparação das ferramentas');
+      const run = data.run || {};
+      const [text, type] = describeToolchainRun(run);
+      toolchainStatus.innerHTML = text;
+      toolchainStatus.className = `run-status ${type}`.trim();
+      toolchainButton.disabled = run.status === 'running';
+      if (run.status === 'running' && !toolchainPollTimer) {
+        toolchainPollTimer = window.setInterval(refreshToolchainStatus, 3000);
+      }
+      if (run.status !== 'running' && toolchainPollTimer) {
+        window.clearInterval(toolchainPollTimer);
+        toolchainPollTimer = null;
+      }
+      return run;
+    }
+
     async function loadData() {
       const [linksResponse, findingsResponse, validationsResponse] = await Promise.all([
         fetch('/api/github-links'),
@@ -646,6 +706,41 @@
         return;
       }
       await refreshRunStatus();
+    }
+
+    async function waitForToolchain() {
+      for (;;) {
+        await new Promise((resolve) => window.setTimeout(resolve, 3000));
+        const run = await refreshToolchainStatus();
+        if (run.status === 'succeeded') return run;
+        if (run.status === 'failed') throw new Error(run.error || 'falha ao preparar ferramentas');
+      }
+    }
+
+    async function prepareToolchain() {
+      toolchainButton.disabled = true;
+      setMessage('Preparando ferramentas da AWS...');
+      const response = await fetch('/api/toolchain-run', {method: 'POST'});
+      const data = await response.json();
+      if (!response.ok && response.status !== 409) {
+        throw new Error(data.error || 'falha ao iniciar preparação das ferramentas');
+      }
+      await refreshToolchainStatus();
+      await waitForToolchain();
+      setMessage('Ferramentas preparadas.', 'success');
+    }
+
+    async function prepareAndRetestFinding(findingId, button) {
+      button.disabled = true;
+      setMessage(`Preparando ferramentas e testando ${findingId}...`);
+      try {
+        await prepareToolchain();
+        await retestFinding(findingId, button);
+      } catch (error) {
+        setMessage(error.message, 'error');
+      } finally {
+        button.disabled = false;
+      }
     }
 
     async function retestFinding(findingId, button) {
@@ -699,6 +794,16 @@
     }
 
     runAllButton.addEventListener('click', runAllValidations);
+    toolchainButton.addEventListener('click', async () => {
+      if (!window.confirm('Preparar ferramentas da AWS agora? Isso pode instalar pacotes com apt e pode demorar alguns minutos.')) return;
+      try {
+        await prepareToolchain();
+      } catch (error) {
+        setMessage(error.message, 'error');
+      } finally {
+        await refreshToolchainStatus();
+      }
+    });
     Object.values(filters).forEach((field) => {
       field.addEventListener('input', renderTable);
       field.addEventListener('change', renderTable);
@@ -716,6 +821,11 @@
       const retestButton = event.target.closest('[data-retest-finding-id]');
       if (retestButton) {
         await retestFinding(retestButton.dataset.retestFindingId, retestButton);
+        return;
+      }
+      const prepareRetestButton = event.target.closest('[data-prepare-retest-finding-id]');
+      if (prepareRetestButton) {
+        await prepareAndRetestFinding(prepareRetestButton.dataset.prepareRetestFindingId, prepareRetestButton);
       }
     });
     closeLogModalButton.addEventListener('click', closeLogModal);
@@ -728,6 +838,7 @@
 
     loadData()
       .then(refreshRunStatus)
+      .then(refreshToolchainStatus)
       .catch((error) => setMessage(error.message, 'error'));
   </script>
 </body>

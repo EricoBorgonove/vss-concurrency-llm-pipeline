@@ -239,6 +239,7 @@ class GitHubToolValidationsTest(unittest.TestCase):
             "erro_ferramenta",
         )
         self.assertIn("header padrao stddef.h", github_tool_validations.extract_error_message(log_text))
+        self.assertIn("Preparar e retestar", github_tool_validations.extract_error_message(log_text))
 
     # Verifica se header do projeto ausente nao e confundido com problema da AWS.
     def test_classify_tool_result_treats_missing_project_header_as_not_validatable(self):

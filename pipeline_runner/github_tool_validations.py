@@ -157,8 +157,8 @@ def extract_error_message(log_text, stderr=""):
         if Path(missing_header).name in STANDARD_C_HEADERS:
             return (
                 f"ESBMC nao encontrou o header padrao {missing_header}. "
-                "Na AWS, rode ./scripts/install_aws_toolchain.sh e reinicie o painel "
-                "com sudo systemctl restart vss-pipeline-web."
+                "No painel, use Preparar e retestar para instalar a toolchain da AWS "
+                "e executar este achado novamente."
             )
         return (
             f"ESBMC nao conseguiu parsear o arquivo isoladamente porque falta o header "

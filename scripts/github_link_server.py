@@ -90,6 +90,16 @@ GITHUB_VALIDATION_RUN_STATE = {
     "log_file": "",
     "error": "",
 }
+TOOLCHAIN_RUN_LOG = REPORTS_DIR / "toolchain_install_latest.log"
+TOOLCHAIN_RUN_LOCK = threading.Lock()
+TOOLCHAIN_RUN_STATE = {
+    "status": "idle",
+    "started_at": "",
+    "finished_at": "",
+    "returncode": None,
+    "log_file": "",
+    "error": "",
+}
 
 
 def env_int(name, default):
@@ -312,6 +322,17 @@ def update_github_validation_run_state(**updates):
         return dict(GITHUB_VALIDATION_RUN_STATE)
 
 
+def toolchain_run_status():
+    with TOOLCHAIN_RUN_LOCK:
+        return dict(TOOLCHAIN_RUN_STATE)
+
+
+def update_toolchain_run_state(**updates):
+    with TOOLCHAIN_RUN_LOCK:
+        TOOLCHAIN_RUN_STATE.update(updates)
+        return dict(TOOLCHAIN_RUN_STATE)
+
+
 def run_benchmark_pipeline():
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     command = [sys.executable, "run_pipeline.py"]
@@ -347,6 +368,68 @@ def run_benchmark_pipeline():
         returncode=result.returncode,
         error="" if result.returncode == 0 else "A execução dos benchmarks falhou.",
     )
+
+
+def run_toolchain_install():
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    command = ["bash", "scripts/install_aws_toolchain.sh"]
+    started_at = dt.datetime.now().isoformat(timespec="seconds")
+    update_toolchain_run_state(
+        status="running",
+        started_at=started_at,
+        finished_at="",
+        returncode=None,
+        log_file=str(TOOLCHAIN_RUN_LOG.relative_to(PROJECT_ROOT)),
+        error="",
+    )
+
+    try:
+        with TOOLCHAIN_RUN_LOG.open("w", encoding="utf-8") as log_file:
+            log_file.write("Preparação da toolchain local\n")
+            log_file.write(f"$ {' '.join(command)}\n")
+            log_file.write(f"Início: {started_at}\n\n")
+            log_file.flush()
+            result = subprocess.run(
+                command,
+                cwd=PROJECT_ROOT,
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                text=True,
+                check=False,
+                timeout=env_int("VSS_TOOLCHAIN_INSTALL_TIMEOUT", 900),
+            )
+            finished_at = dt.datetime.now().isoformat(timespec="seconds")
+            log_file.write(f"\nFim: {finished_at}\n")
+            log_file.write(f"Código de retorno: {result.returncode}\n")
+
+        update_toolchain_run_state(
+            status="succeeded" if result.returncode == 0 else "failed",
+            finished_at=finished_at,
+            returncode=result.returncode,
+            error="" if result.returncode == 0 else "A preparação da toolchain falhou.",
+        )
+    except subprocess.TimeoutExpired:
+        finished_at = dt.datetime.now().isoformat(timespec="seconds")
+        with TOOLCHAIN_RUN_LOG.open("a", encoding="utf-8") as log_file:
+            log_file.write(f"\nErro: tempo limite excedido.\n")
+            log_file.write(f"Fim: {finished_at}\n")
+        update_toolchain_run_state(
+            status="failed",
+            finished_at=finished_at,
+            returncode=124,
+            error="tempo limite excedido ao preparar a toolchain",
+        )
+    except Exception as exc:
+        finished_at = dt.datetime.now().isoformat(timespec="seconds")
+        with TOOLCHAIN_RUN_LOG.open("a", encoding="utf-8") as log_file:
+            log_file.write(f"\nErro: {exc}\n")
+            log_file.write(f"Fim: {finished_at}\n")
+        update_toolchain_run_state(
+            status="failed",
+            finished_at=finished_at,
+            returncode=1,
+            error=str(exc),
+        )
 
 
 def run_github_validations():
@@ -595,6 +678,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.send_json(200, {"run": github_validation_run_status()})
             return
 
+        if path == "/api/toolchain-run":
+            self.send_json(200, {"run": toolchain_run_status()})
+            return
+
         if path == "/api/benchmark-run":
             self.send_json(200, {"run": benchmark_run_status()})
             return
@@ -620,6 +707,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
         if path == "/api/benchmark-run":
             self.handle_run_benchmarks()
+            return
+
+        if path == "/api/toolchain-run":
+            self.handle_run_toolchain_install()
             return
 
         if path.startswith("/api/github-findings/") and path.endswith("/validate"):
@@ -888,6 +979,24 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         thread = threading.Thread(target=run_benchmark_pipeline, daemon=True)
         thread.start()
         self.send_json(202, {"run": benchmark_run_status()})
+
+    def handle_run_toolchain_install(self):
+        state = toolchain_run_status()
+        if state.get("status") == "running":
+            self.send_json(409, {"run": state, "error": "já existe uma preparação em andamento"})
+            return
+
+        update_toolchain_run_state(
+            status="running",
+            started_at=dt.datetime.now().isoformat(timespec="seconds"),
+            finished_at="",
+            returncode=None,
+            log_file=str(TOOLCHAIN_RUN_LOG.relative_to(PROJECT_ROOT)),
+            error="",
+        )
+        thread = threading.Thread(target=run_toolchain_install, daemon=True)
+        thread.start()
+        self.send_json(202, {"run": toolchain_run_status()})
 
     def handle_validate_link(self, link_id):
         limit = env_int("GITHUB_LINK_VALIDATION_LIMIT", 10)

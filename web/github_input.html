@@ -940,7 +940,16 @@
         const response = await fetch(logUrlValue);
         const text = await response.text();
         if (!response.ok) {
-          throw new Error(text || `falha ao abrir log (${response.status})`);
+          let message = text || `falha ao abrir log (${response.status})`;
+          try {
+            const payload = JSON.parse(text);
+            message = [
+              payload.error || `falha ao abrir log (${response.status})`,
+              payload.path ? `Arquivo: ${payload.path}` : '',
+              payload.hint || ''
+            ].filter(Boolean).join('\n');
+          } catch (parseError) {}
+          throw new Error(message);
         }
         logModalContent.textContent = text || 'Log vazio.';
       } catch (error) {

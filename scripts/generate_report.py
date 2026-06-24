@@ -1496,7 +1496,16 @@ def write_html_report(
         const response = await fetch(url);
         const text = await response.text();
         if (!response.ok) {{
-          throw new Error(text || `Não foi possível carregar o log (${{response.status}}).`);
+          let message = text || `Não foi possível carregar o log (${{response.status}}).`;
+          try {{
+            const payload = JSON.parse(text);
+            message = [
+              payload.error || `Não foi possível carregar o log (${{response.status}}).`,
+              payload.path ? `Arquivo: ${{payload.path}}` : '',
+              payload.hint || ''
+            ].filter(Boolean).join('\\n');
+          }} catch (parseError) {{}}
+          throw new Error(message);
         }}
         logModalContent.textContent = text || 'Log vazio.';
       }} catch (error) {{

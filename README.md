@@ -270,6 +270,16 @@ sudo systemctl restart vss-pipeline-web
 sudo journalctl -u vss-pipeline-web -f
 ```
 
+Se um modal de log mostrar que o arquivo nao foi encontrado, o relatorio esta
+apontando para um arquivo em `outputs/` que nao existe na instancia atual. Isso
+normalmente acontece depois de atualizar `reports/` pelo Git sem regenerar os
+logs locais. Regere os relatorios e logs juntos:
+
+```bash
+./scripts/run_lightsail_report.sh
+sudo systemctl restart vss-pipeline-web
+```
+
 ## Execucao local sem Docker
 
 Tambem e possivel executar partes do pipeline localmente. Os scripts Python usam

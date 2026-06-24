@@ -516,7 +516,18 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             return
 
         if not file_path.is_file():
-            self.send_json(404, {"error": "arquivo não encontrado"})
+            self.send_json(
+                404,
+                {
+                    "error": "arquivo de log não encontrado",
+                    "path": path.lstrip("/"),
+                    "hint": (
+                        "O relatório aponta para um arquivo que não existe em outputs/. "
+                        "Na AWS, rode ./scripts/run_lightsail_report.sh para regenerar "
+                        "reports/ e outputs/ juntos."
+                    ),
+                },
+            )
             return
 
         self.send_file(file_path)

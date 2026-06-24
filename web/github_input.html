@@ -1058,27 +1058,35 @@
     function describeGithubValidationRun(run) {
       const status = run.status || 'idle';
       const count = Number(run.count || 0);
+      const processed = Number(run.processed || 0);
+      const total = Number(run.total || 0);
       const limit = run.limit ? `limite ${run.limit}` : 'todos os candidatos';
       const timeout = run.timeout ? `timeout ${run.timeout}s` : 'timeout padrão';
+      const progressText = total
+        ? `${processed}/${total} testes concluídos`
+        : 'preparando lista de testes';
+      const currentText = run.current_finding_id
+        ? ` Achado atual: ${escapeHtml(run.current_finding_id)}${run.current_tool ? ` (${escapeHtml(run.current_tool)})` : ''}.`
+        : '';
       const logLink = run.log_file
         ? ` <a href="/${escapeHtml(run.log_file)}" target="_blank" rel="noopener">Ver log</a>`
         : '';
 
       if (status === 'running') {
         return {
-          text: `Rodando validações GitHub (${limit}, ${timeout}) desde ${escapeHtml(run.started_at || '-')}.${logLink}`,
+          text: `Rodando testes GitHub: ${progressText}. ${currentText} (${limit}, ${timeout}) desde ${escapeHtml(run.started_at || '-')}.${logLink}`,
           type: ''
         };
       }
       if (status === 'succeeded') {
         return {
-          text: `Validações concluídas: ${count} registros. Fim: ${escapeHtml(run.finished_at || '-')}.${logLink}`,
+          text: `Testes GitHub concluídos: ${count} registros. Fim: ${escapeHtml(run.finished_at || '-')}.${logLink}`,
           type: 'success'
         };
       }
       if (status === 'failed') {
         return {
-          text: `Falha nas validações: ${escapeHtml(run.error || 'erro não informado')}.${logLink}`,
+          text: `Falha nos testes GitHub após ${processed}/${total || '?'} testes: ${escapeHtml(run.error || 'erro não informado')}.${logLink}`,
           type: 'error'
         };
       }

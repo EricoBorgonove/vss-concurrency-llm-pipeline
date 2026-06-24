@@ -178,7 +178,7 @@ def validate_finding_with_tool(finding, tool, index, timeout=10, created_at=None
     )
 
 
-def validate_findings(findings, timeout=10, limit=None, created_at=None, start_index=1):
+def validation_candidates(findings, limit=None):
     candidates = []
     for finding in findings:
         if finding.get("status") == "falso_positivo":
@@ -188,10 +188,25 @@ def validate_findings(findings, timeout=10, limit=None, created_at=None, start_i
 
     if limit is not None:
         candidates = candidates[:limit]
+    return candidates
 
+
+def validate_findings(
+    findings,
+    timeout=10,
+    limit=None,
+    created_at=None,
+    start_index=1,
+    progress_callback=None,
+):
+    candidates = validation_candidates(findings, limit=limit)
     rows = []
     created_at = created_at or dt.datetime.now().isoformat(timespec="seconds")
-    for index, (finding, tool) in enumerate(candidates, start=start_index):
+    total = len(candidates)
+    if progress_callback:
+        progress_callback(0, total, "", "")
+    for offset, (finding, tool) in enumerate(candidates, start=1):
+        index = start_index + offset - 1
         rows.append(
             validate_finding_with_tool(
                 finding,
@@ -201,6 +216,8 @@ def validate_findings(findings, timeout=10, limit=None, created_at=None, start_i
                 created_at=created_at,
             )
         )
+        if progress_callback:
+            progress_callback(offset, total, finding.get("id", ""), tool)
     return rows
 
 
@@ -248,12 +265,18 @@ def validate_findings_file(
     limit=None,
     link_id=None,
     finding_id=None,
+    progress_callback=None,
 ):
     findings = read_findings(findings_file) if findings_file else read_findings()
     findings = filter_findings(findings, link_id=link_id, finding_id=finding_id)
 
     if link_id is None and finding_id is None:
-        rows = validate_findings(findings, timeout=timeout, limit=limit)
+        rows = validate_findings(
+            findings,
+            timeout=timeout,
+            limit=limit,
+            progress_callback=progress_callback,
+        )
         write_validations(rows, output_file)
         return rows
 
@@ -268,6 +291,7 @@ def validate_findings_file(
         timeout=timeout,
         limit=limit,
         start_index=len(remaining_rows) + 1,
+        progress_callback=progress_callback,
     )
     write_validations([*remaining_rows, *rows], output_file)
     return rows

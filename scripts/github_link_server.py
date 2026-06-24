@@ -67,6 +67,10 @@ GITHUB_VALIDATION_RUN_STATE = {
     "started_at": "",
     "finished_at": "",
     "count": 0,
+    "processed": 0,
+    "total": 0,
+    "current_finding_id": "",
+    "current_tool": "",
     "limit": "",
     "timeout": "",
     "log_file": "",
@@ -186,6 +190,10 @@ def run_github_validations():
         started_at=started_at,
         finished_at="",
         count=0,
+        processed=0,
+        total=0,
+        current_finding_id="",
+        current_tool="",
         limit="" if limit is None else limit,
         timeout=timeout,
         log_file=str(GITHUB_VALIDATION_RUN_LOG.relative_to(PROJECT_ROOT)),
@@ -199,7 +207,20 @@ def run_github_validations():
             log_file.write(f"Limite: {'todos' if limit is None else limit}\n")
             log_file.write(f"Timeout por ferramenta: {timeout}s\n\n")
             log_file.flush()
-            rows = validate_findings_file(limit=limit, timeout=timeout)
+
+            def update_progress(processed, total, finding_id, tool):
+                update_github_validation_run_state(
+                    processed=processed,
+                    total=total,
+                    current_finding_id=finding_id,
+                    current_tool=tool,
+                )
+
+            rows = validate_findings_file(
+                limit=limit,
+                timeout=timeout,
+                progress_callback=update_progress,
+            )
             finished_at = dt.datetime.now().isoformat(timespec="seconds")
             log_file.write(f"Validações registradas: {len(rows)}\n")
             log_file.write(f"Fim: {finished_at}\n")
@@ -208,6 +229,10 @@ def run_github_validations():
             status="succeeded",
             finished_at=finished_at,
             count=len(rows),
+            processed=len(rows),
+            total=len(rows),
+            current_finding_id="",
+            current_tool="",
             error="",
         )
     except Exception as exc:
@@ -218,6 +243,8 @@ def run_github_validations():
         update_github_validation_run_state(
             status="failed",
             finished_at=finished_at,
+            current_finding_id="",
+            current_tool="",
             error=str(exc),
         )
 
@@ -536,6 +563,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             started_at=dt.datetime.now().isoformat(timespec="seconds"),
             finished_at="",
             count=0,
+            processed=0,
+            total=0,
+            current_finding_id="",
+            current_tool="",
             limit="",
             timeout="",
             log_file=str(GITHUB_VALIDATION_RUN_LOG.relative_to(PROJECT_ROOT)),

@@ -95,6 +95,37 @@ class GitHubToolValidationsTest(unittest.TestCase):
 
         self.assertEqual(rows, [])
 
+    # Verifica se a validacao em lote reporta progresso para a interface.
+    def test_validate_findings_reports_progress(self):
+        progress = []
+        rows = github_tool_validations.validate_findings(
+            [
+                {
+                    "id": "f1",
+                    "link_id": "gh_000001",
+                    "file_path": "missing-one.c",
+                    "category": "memory_corruption",
+                    "status": "suspeito",
+                },
+                {
+                    "id": "f2",
+                    "link_id": "gh_000001",
+                    "file_path": "missing-two.c",
+                    "category": "data_race",
+                    "status": "suspeito",
+                },
+            ],
+            created_at="2026-06-17T12:00:00",
+            progress_callback=lambda processed, total, finding_id, tool: progress.append(
+                (processed, total, finding_id, tool)
+            ),
+        )
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(progress[0], (0, 2, "", ""))
+        self.assertEqual(progress[1], (1, 2, "f1", "asan"))
+        self.assertEqual(progress[2], (2, 2, "f2", "tsan"))
+
     # Verifica se validacoes persistidas em CSV podem ser lidas pela pagina.
     def test_read_validations_loads_existing_csv(self):
         with TemporaryDirectory() as temp_dir:

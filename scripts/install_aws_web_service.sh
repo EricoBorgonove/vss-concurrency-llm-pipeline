@@ -6,6 +6,8 @@ WEB_HOST="${WEB_HOST:-127.0.0.1}"
 WEB_PORT="${WEB_PORT:-8080}"
 PUBLIC_PORT="${PUBLIC_PORT:-80}"
 SERVER_NAME="${SERVER_NAME:-_}"
+DEFAULT_AUTH_USERS="erico:vss123,brenda:vss123,alberjan:vss123,lucas:vss123"
+AUTH_USERS="${VSS_AUTH_USERS:-$DEFAULT_AUTH_USERS}"
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="/etc/${SERVICE_NAME}.env"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
@@ -14,18 +16,6 @@ NGINX_ENABLED="/etc/nginx/sites-enabled/${SERVICE_NAME}"
 
 if [ "$(id -u)" -eq 0 ]; then
   echo "Execute este script com o usuario padrao da instancia, nao como root."
-  exit 1
-fi
-
-if [ -z "${VSS_AUTH_USERS:-}" ]; then
-  echo "Defina VSS_AUTH_USERS com usuarios e senhas fortes antes de instalar."
-  echo 'Exemplo: export VSS_AUTH_USERS="erico:senha-forte,brenda:senha-forte,alberjan:senha-forte,lucas:senha-forte"'
-  exit 1
-fi
-
-if printf '%s' "$VSS_AUTH_USERS" | grep -Eq '(^|,)[^,:]+:vss123(,|$)'; then
-  echo "VSS_AUTH_USERS ainda contem a senha de desenvolvimento vss123."
-  echo "Troque por senhas fortes antes de expor o painel na AWS."
   exit 1
 fi
 
@@ -43,7 +33,7 @@ sudo apt-get install -y python3 nginx
 echo "Gravando variaveis de ambiente em $ENV_FILE..."
 sudo install -m 600 -o root -g root /dev/null "$ENV_FILE"
 {
-  write_env_var "VSS_AUTH_USERS" "$VSS_AUTH_USERS"
+  write_env_var "VSS_AUTH_USERS" "$AUTH_USERS"
   write_env_var "GITHUB_VALIDATION_LIMIT" "${GITHUB_VALIDATION_LIMIT:-25}"
   write_env_var "GITHUB_VALIDATION_TIMEOUT" "${GITHUB_VALIDATION_TIMEOUT:-10}"
   printf 'PYTHONUNBUFFERED=1\n'

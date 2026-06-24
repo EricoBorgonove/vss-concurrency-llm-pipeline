@@ -240,11 +240,9 @@ scp ubuntu@IP_DA_INSTANCIA:~/vss-concurrency-llm-pipeline/reports-lightsail.tar.
 tar -xzf reports-lightsail.tar.gz
 ```
 
-Para deixar o painel web ativo na instancia, defina usuarios com senhas fortes
-e instale o servico:
+Para deixar o painel web ativo na instancia, instale o servico:
 
 ```bash
-export VSS_AUTH_USERS="erico:senha-forte,brenda:senha-forte,alberjan:senha-forte,lucas:senha-forte"
 ./scripts/install_aws_web_service.sh
 ```
 
@@ -253,6 +251,9 @@ O script cria:
 - o arquivo `/etc/vss-pipeline-web.env`, com as variaveis do painel;
 - o servico `systemd` `vss-pipeline-web`;
 - uma configuracao Nginx que publica o painel em `http://IP_DA_INSTANCIA/`.
+
+Por padrao, o painel usa os usuarios `erico`, `brenda`, `alberjan` e `lucas`,
+todos com a senha `vss123`.
 
 Na Lightsail, libere a porta TCP `80` no firewall da instancia. Para usar um
 dominio, informe o nome antes de instalar:
@@ -332,12 +333,8 @@ padrao de desenvolvimento sao:
 - `alberjan` / `vss123`;
 - `lucas` / `vss123`.
 
-Em hospedagem na AWS, sobrescreva os usuarios com senhas fortes antes de iniciar
-o servico:
-
-```bash
-export VSS_AUTH_USERS="erico:senha-forte,brenda:senha-forte,alberjan:senha-forte,lucas:senha-forte"
-```
+Na AWS, o script `scripts/install_aws_web_service.sh` grava esses mesmos
+usuarios no arquivo de ambiente do servico.
 
 A tela `/validacoes` concentra a auditoria dos testes dos achados GitHub. Ela
 mostra resumo, filtros, tabela de achados, status da ultima validacao, botao

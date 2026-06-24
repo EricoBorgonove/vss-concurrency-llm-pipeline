@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Gera uma sugestao simulada de reparo a partir de um log de ferramenta."""
+"""Gera reparo LLM para um benchmark a partir de um log de ferramenta."""
 
 import argparse
-import datetime as dt
 import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = PROJECT_ROOT / "outputs" / "llm"
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from pipeline_runner.benchmark_llm_repairs import generate_repair_from_log  # noqa: E402
 
 
 def display_path(path):
@@ -20,69 +21,16 @@ def display_path(path):
 
 def build_parser():
     parser = argparse.ArgumentParser(
-        description="Gera uma sugestao simulada de reparo sem chamar API externa."
+        description="Gera reparo LLM para um benchmark a partir de um log."
     )
     parser.add_argument("evidence", help="Arquivo de log usado como evidencia.")
-    return parser
-
-
-def make_output_path(evidence_path):
-    timestamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
-    return OUTPUT_DIR / f"{evidence_path.stem}_{timestamp}_repair.txt"
-
-
-def classify_evidence(log_text):
-    text = log_text.lower()
-    if "heap-buffer-overflow" in text or "addresssanitizer" in text:
-        return (
-            "memory_corruption",
-            "Revisar os limites do buffer, validar indices antes de escrita e "
-            "garantir que a alocacao tenha tamanho suficiente.",
-        )
-    if "data race" in text or "threadsanitizer" in text:
-        return (
-            "data_race",
-            "Proteger o estado compartilhado com mutex ou usar operacoes atomicas "
-            "para sincronizar acessos concorrentes.",
-        )
-    if "deadlock" in text:
-        return (
-            "deadlock",
-            "Definir uma ordem global de aquisicao de locks e liberar mutexes em "
-            "todos os caminhos de erro.",
-        )
-    if "assert" in text or "violated property" in text or "verification failed" in text:
-        return (
-            "assertion_violation",
-            "Revisar a pre-condicao que leva a assertiva, corrigindo o valor de "
-            "entrada ou fortalecendo a validacao antes da propriedade.",
-        )
-    if "ferramenta afl++ nao encontrada" in text:
-        return (
-            "tool_unavailable",
-            "Instalar AFL++ ou configurar os caminhos de afl-clang-fast e afl-fuzz "
-            "antes de solicitar uma sugestao de reparo baseada em fuzzing.",
-        )
-    return (
-        "unknown",
-        "Inspecionar manualmente o log e identificar a propriedade violada antes "
-        "de propor uma alteracao no codigo.",
+    parser.add_argument(
+        "--benchmark",
+        help="Arquivo .c a ser reparado. Se omitido, sera lido do campo benchmark do log.",
     )
-
-
-def write_repair(output_path, evidence_path, issue_type, suggestion):
-    with output_path.open("w", encoding="utf-8") as output_file:
-        output_file.write("LLM repair simulation\n")
-        output_file.write(f"generated_at: {dt.datetime.now().isoformat(timespec='seconds')}\n")
-        output_file.write(f"evidence: {display_path(evidence_path)}\n")
-        output_file.write(f"issue_type: {issue_type}\n\n")
-        output_file.write("suggestion:\n")
-        output_file.write(suggestion)
-        output_file.write("\n\n")
-        output_file.write("note:\n")
-        output_file.write(
-            "Esta etapa e uma simulacao deterministica. Nenhuma API externa foi chamada.\n"
-        )
+    parser.add_argument("--tool", help="Ferramenta usada para validar este benchmark.")
+    parser.add_argument("--model", help="Modelo LLM. Padrao: VSS_LLM_MODEL ou gpt-4.1-mini.")
+    return parser
 
 
 def main():
@@ -90,9 +38,6 @@ def main():
     args = parser.parse_args()
 
     evidence_path = Path(args.evidence).resolve()
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = make_output_path(evidence_path)
-
     if not evidence_path.exists():
         print(f"Erro: evidencia nao encontrada: {display_path(evidence_path)}", file=sys.stderr)
         return 2
@@ -102,13 +47,21 @@ def main():
         return 2
 
     try:
-        log_text = evidence_path.read_text(encoding="utf-8", errors="replace")
-        issue_type, suggestion = classify_evidence(log_text)
-        write_repair(output_path, evidence_path, issue_type, suggestion)
-        print(f"Sugestao simulada salva em: {display_path(output_path)}")
+        row = generate_repair_from_log(
+            evidence_path,
+            benchmark=args.benchmark or "",
+            tool=args.tool or "",
+            model=args.model,
+        )
+        print(f"Reparo LLM registrado: {row['id']}")
+        print(f"Arquivo de reparo: {row['repair_file']}")
+        print(f"Benchmark reparado: {row['repaired_benchmark']}")
+        print(f"Resposta LLM: {row['response_file']}")
+        if row.get("error"):
+            print(f"Aviso: {row['error']}", file=sys.stderr)
         return 0
-    except OSError as exc:
-        print(f"Erro ao processar evidencia: {exc}", file=sys.stderr)
+    except (OSError, ValueError) as exc:
+        print(f"Erro ao gerar reparo LLM: {exc}", file=sys.stderr)
         return 2
 
 

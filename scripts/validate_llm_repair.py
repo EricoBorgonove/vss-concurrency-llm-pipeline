@@ -9,8 +9,13 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from pipeline_runner.benchmark_llm_repairs import update_repair  # noqa: E402
+
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "llm"
 SUPPORTED_TOOLS = ("asan", "tsan", "esbmc", "deadlock")
+LOG_PATH_PATTERN = re.compile(r"Log salvo em:\s*(.+)")
 
 
 def display_path(path):
@@ -54,6 +59,10 @@ def build_parser():
         default=30,
         help="Timeout usado pela ferramenta de validacao em segundos. Padrao: 30.",
     )
+    parser.add_argument(
+        "--repair-id",
+        help="ID do reparo em reports/llm_benchmark_repairs.csv a atualizar.",
+    )
     return parser
 
 
@@ -69,7 +78,11 @@ def parse_repair(content):
     for line in content.splitlines():
         if line.startswith("issue_type: "):
             issue_type = line.removeprefix("issue_type: ").strip()
+        if line.startswith("category: ") and not issue_type:
+            issue_type = line.removeprefix("category: ").strip()
         if line.strip() == "suggestion:":
+            has_suggestion = True
+        if line.strip() == "response:":
             has_suggestion = True
 
     return issue_type, has_suggestion
@@ -79,8 +92,8 @@ def validate_repair(content):
     issue_type, has_suggestion = parse_repair(content)
     problems = []
 
-    if "LLM repair simulation" not in content:
-        problems.append("arquivo nao parece ser uma sugestao simulada de LLM")
+    if "LLM repair simulation" not in content and "LLM benchmark repair" not in content:
+        problems.append("arquivo nao parece ser uma sugestao de LLM")
     if not issue_type:
         problems.append("campo issue_type ausente")
     if not has_suggestion:
@@ -134,6 +147,16 @@ def run_tool_validation(tool, fixed_benchmark, timeout):
         check=False,
     )
     return command, result
+
+
+def parse_log_path(output):
+    for line in str(output or "").splitlines():
+        match = LOG_PATH_PATTERN.search(line)
+        if match:
+            value = match.group(1).strip()
+            path = PROJECT_ROOT / value if not Path(value).is_absolute() else Path(value)
+            return display_path(path)
+    return ""
 
 
 def write_validation(
@@ -226,6 +249,21 @@ def main():
             tool_command=tool_command,
             tool_result=tool_result,
         )
+        if args.repair_id:
+            validation_log = ""
+            if tool_result:
+                validation_log = parse_log_path(f"{tool_result.stdout}\n{tool_result.stderr}")
+            update_repair(
+                args.repair_id,
+                {
+                    "status": "validado",
+                    "validation_status": status,
+                    "validation_tool": args.tool if args.fixed_benchmark else "",
+                    "validation_log": validation_log,
+                    "validated_at": dt.datetime.now().isoformat(timespec="seconds"),
+                    "error": "; ".join(problems),
+                },
+            )
         print(f"Validacao simulada salva em: {display_path(output_path)}")
         return 0 if not problems else 1
     except OSError as exc:

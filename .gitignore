@@ -37,6 +37,7 @@ outputs/**
 !outputs/**/
 inputs/**
 reports/github_*.csv
+reports/*.log
 antigos/**
 
 # OneDrive temp files

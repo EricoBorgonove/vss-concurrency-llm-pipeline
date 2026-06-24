@@ -328,6 +328,24 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", table)
         self.assertNotIn("<script>alert(1)</script>", table)
 
+    # Verifica se a tabela detalhada oferece acao LLM para benchmarks controlados.
+    def test_render_dashboard_detail_table_adds_llm_repair_action(self):
+        table = generate_report.render_dashboard_detail_table(
+            [
+                {
+                    "tool": "asan",
+                    "category": "memory_corruption",
+                    "benchmark": "benchmarks/memory_corruption/simple_buffer_overflow.c",
+                    "log_file": "outputs/asan/simple_buffer_overflow_20260624-120000.log",
+                    "llm_action": "",
+                }
+            ],
+            ["tool", "category", "benchmark", "log_file", "llm_action"],
+        )
+
+        self.assertIn("data-llm-benchmark", table)
+        self.assertIn("Gerar e validar reparo", table)
+
     # Verifica se metricas por categoria sao derivadas dos resultados quando o CSV auxiliar falta.
     def test_build_category_metrics_from_rows_counts_benchmarks_and_executions(self):
         rows = generate_report.dashboard_rows(

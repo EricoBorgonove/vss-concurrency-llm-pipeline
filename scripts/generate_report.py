@@ -30,6 +30,7 @@ GITHUB_FILES_FILE = REPORTS_DIR / "github_files.csv"
 GITHUB_FINDINGS_FILE = REPORTS_DIR / "github_findings.csv"
 GITHUB_LLM_QUEUE_FILE = REPORTS_DIR / "github_llm_queue.csv"
 GITHUB_TOOL_VALIDATIONS_FILE = REPORTS_DIR / "github_tool_validations.csv"
+LLM_BENCHMARK_REPAIRS_FILE = REPORTS_DIR / "llm_benchmark_repairs.csv"
 TOOLS = ("esbmc", "asan", "tsan", "deadlock", "afl")
 DETECTED_MARKERS = (
     "AddressSanitizer:",
@@ -455,14 +456,15 @@ def escape(value):
 DETAIL_COLUMN_WIDTHS = {
     "tool": "5%",
     "category": "8%",
-    "benchmark": "20%",
+    "benchmark": "18%",
     "execution_date": "9%",
     "expected_behavior": "7%",
     "expectation_match": "8%",
     "expected_tool_behavior": "8%",
     "tool_expectation_match": "8%",
     "classification": "7%",
-    "log_file": "17%",
+    "log_file": "14%",
+    "llm_action": "8%",
     "error": "3%",
 }
 
@@ -507,6 +509,26 @@ def render_log_cell(value, css_class=""):
         f"<td{class_attr}>"
         f"<button class=\"log-link\" type=\"button\" data-log-url=\"{escaped_href}\" "
         f"data-log-file=\"{escaped_value}\">{escaped_value}</button>"
+        "</td>"
+    )
+
+
+def render_llm_action_cell(row, css_class=""):
+    benchmark = row.get("benchmark", "")
+    log_file = row.get("log_file", "")
+    tool = row.get("tool", "")
+    if not benchmark or not log_file or not benchmark.startswith("benchmarks/"):
+        return f"<td class=\"{escape(css_class)}\"></td>" if css_class else "<td></td>"
+
+    class_attr = f" class=\"{escape(css_class)}\"" if css_class else ""
+    return (
+        f"<td{class_attr}>"
+        "<button class=\"llm-repair-button\" type=\"button\" "
+        f"data-llm-benchmark=\"{escape(benchmark)}\" "
+        f"data-llm-log=\"{escape(log_file)}\" "
+        f"data-llm-tool=\"{escape(tool)}\">"
+        "Gerar e validar reparo"
+        "</button>"
         "</td>"
     )
 
@@ -888,6 +910,8 @@ def render_dashboard_detail_table(rows, fieldnames):
                 cells.append(render_benchmark_cell(value, css_class))
             elif field == "log_file" and value:
                 cells.append(render_log_cell(value, css_class))
+            elif field == "llm_action":
+                cells.append(render_llm_action_cell(row, css_class))
             else:
                 cells.append(f"<td class=\"{escape(css_class)}\">{escape(value)}</td>")
         body_rows.append(
@@ -919,6 +943,7 @@ def write_html_report(
     github_finding_rows=None,
     github_llm_queue_rows=None,
     github_tool_validation_rows=None,
+    llm_benchmark_repair_rows=None,
 ):
     html_output_file.parent.mkdir(parents=True, exist_ok=True)
     summary_rows = build_summary(rows)
@@ -930,6 +955,7 @@ def write_html_report(
     github_finding_rows = github_finding_rows_with_priority(github_finding_rows or [])
     github_llm_queue_rows = github_llm_queue_rows or []
     github_tool_validation_rows = github_tool_validation_rows or []
+    llm_benchmark_repair_rows = llm_benchmark_repair_rows or []
     github_link_rows = github_dashboard_rows(
         github_link_rows,
         github_file_rows,
@@ -958,6 +984,7 @@ def write_html_report(
         "tool_expectation_match",
         "classification",
         "log_file",
+        "llm_action",
         "error",
     ]
     category_metric_fields = [
@@ -1029,6 +1056,21 @@ def write_html_report(
         "log_file",
         "error",
         "created_at",
+    ]
+    llm_benchmark_repair_fields = [
+        "id",
+        "benchmark",
+        "category",
+        "tool",
+        "mode",
+        "status",
+        "validation_status",
+        "repair_file",
+        "repaired_benchmark",
+        "validation_log",
+        "error",
+        "created_at",
+        "validated_at",
     ]
     content = f"""<!doctype html>
 <html lang="pt-BR">
@@ -1178,6 +1220,12 @@ def write_html_report(
       padding: 0;
       text-align: left;
       text-decoration: underline;
+    }}
+    .llm-repair-button {{
+      font-size: 12px;
+      min-height: 0;
+      padding: 6px 8px;
+      width: 100%;
     }}
     output {{
       color: var(--muted);
@@ -1336,6 +1384,8 @@ def write_html_report(
     </div>
     <h2>Métricas por Benchmark</h2>
     <div class="table-wrap">{render_html_table(benchmark_metrics_rows, benchmark_metric_fields)}</div>
+    <h2>Reparos LLM dos Benchmarks</h2>
+    <div class="table-wrap">{render_html_table(llm_benchmark_repair_rows, llm_benchmark_repair_fields)}</div>
   </main>
   <div id="code-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="code-modal-title">
     <section class="modal">
@@ -1522,6 +1572,53 @@ def write_html_report(
       logModalContent.textContent = '';
     }}
 
+    async function runLlmRepair(button) {{
+      const benchmark = button.dataset.llmBenchmark;
+      const logFile = button.dataset.llmLog;
+      const tool = button.dataset.llmTool;
+      if (!benchmark || !logFile) return;
+      if (!window.confirm(`Gerar reparo LLM e validar este benchmark agora?\\n${{benchmark}}`)) return;
+
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = 'Gerando...';
+      try {{
+        const response = await fetch('/api/benchmark-llm-repairs', {{
+          method: 'POST',
+          headers: {{'Content-Type': 'application/json'}},
+          body: JSON.stringify({{benchmark, log_file: logFile, tool}})
+        }});
+        const data = await response.json();
+        if (!response.ok) {{
+          throw new Error(data.error || 'falha ao gerar reparo LLM');
+        }}
+        const repair = data.repair || {{}};
+        const lines = [
+          `Reparo: ${{repair.id || '-'}}`,
+          `Status: ${{repair.status || '-'}}`,
+          `Validação: ${{repair.validation_status || '-'}}`,
+          `Arquivo reparado: ${{repair.repaired_benchmark || '-'}}`,
+          `Log de validação: ${{repair.validation_log || '-'}}`,
+          repair.error ? `Erro: ${{repair.error}}` : '',
+          '',
+          'Atualize a página para ver o histórico completo na tabela de reparos LLM.'
+        ].filter(Boolean);
+        logModalSubtitle.textContent = benchmark;
+        logModalContent.textContent = lines.join('\\n');
+        logModalBackdrop.classList.add('is-open');
+        document.body.classList.add('modal-open');
+        closeLogModalButton.focus();
+      }} catch (error) {{
+        logModalSubtitle.textContent = benchmark;
+        logModalContent.textContent = error.message;
+        logModalBackdrop.classList.add('is-open');
+        document.body.classList.add('modal-open');
+      }} finally {{
+        button.disabled = false;
+        button.textContent = originalText;
+      }}
+    }}
+
     document.addEventListener('click', (event) => {{
       const codeButton = event.target.closest('[data-code-path]');
       if (codeButton) {{
@@ -1532,6 +1629,12 @@ def write_html_report(
       const logButton = event.target.closest('[data-log-url]');
       if (logButton) {{
         openLogModal(logButton.dataset.logUrl, logButton.dataset.logFile);
+        return;
+      }}
+
+      const llmButton = event.target.closest('[data-llm-benchmark]');
+      if (llmButton) {{
+        runLlmRepair(llmButton);
       }}
     }});
 
@@ -1662,6 +1765,7 @@ def main():
         github_finding_rows = read_csv_if_exists(GITHUB_FINDINGS_FILE)
         github_llm_queue_rows = read_csv_if_exists(GITHUB_LLM_QUEUE_FILE)
         github_tool_validation_rows = read_csv_if_exists(GITHUB_TOOL_VALIDATIONS_FILE)
+        llm_benchmark_repair_rows = read_csv_if_exists(LLM_BENCHMARK_REPAIRS_FILE)
         write_csv(rows, results_file)
         write_summary_csv(rows, summary_file)
         write_html_report(
@@ -1674,6 +1778,7 @@ def main():
             github_finding_rows=github_finding_rows,
             github_llm_queue_rows=github_llm_queue_rows,
             github_tool_validation_rows=github_tool_validation_rows,
+            llm_benchmark_repair_rows=llm_benchmark_repair_rows,
         )
         print(f"Relatório salvo em: {display_path(results_file)}")
         print(f"Resumo salvo em: {display_path(summary_file)}")

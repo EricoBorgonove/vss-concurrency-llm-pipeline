@@ -458,8 +458,8 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("filter-classification", content)
         self.assertIn("detail-table", content)
         self.assertIn("Resumo", content)
-        self.assertIn("Metricas por Categoria", content)
-        self.assertIn("Metricas por Benchmark", content)
+        self.assertIn("Métricas por Categoria", content)
+        self.assertIn("Métricas por Benchmark", content)
         self.assertIn("Resultados Detalhados", content)
         self.assertIn("memory_corruption", content)
         self.assertIn("duration_seconds", content)
@@ -493,11 +493,11 @@ class GenerateReportTest(unittest.TestCase):
 
         self.assertIn("memory_corruption", content)
         self.assertIn("nao informado", content)
-        self.assertIn("Metricas por Categoria", content)
-        self.assertIn("Metricas por Benchmark", content)
+        self.assertIn("Métricas por Categoria", content)
+        self.assertIn("Métricas por Benchmark", content)
 
-    # Verifica se o HTML inclui links e achados vindos da analise de GitHub.
-    def test_write_html_report_includes_github_links_and_findings(self):
+    # Verifica se secoes antigas de GitHub removidas nao voltam ao relatorio principal.
+    def test_write_html_report_omits_removed_github_sections(self):
         rows = [
             {
                 "tool": "asan",
@@ -588,25 +588,9 @@ class GenerateReportTest(unittest.TestCase):
             )
             content = html_path.read_text(encoding="utf-8")
 
-        self.assertIn("Analises de Links do GitHub", content)
-        self.assertIn("Achados dos Links do GitHub", content)
-        self.assertIn("https://github.com/nginx/nginx", content)
-        self.assertIn("gh_000001", content)
-        self.assertIn("file_count", content)
-        self.assertIn("finding_count", content)
-        self.assertIn("github-filter-link", content)
-        self.assertIn("github-filter-category", content)
-        self.assertIn("github-filter-severity", content)
-        self.assertIn("github-filter-priority", content)
-        self.assertIn("github-filter-status", content)
-        self.assertIn("github-finding-table", content)
-        self.assertIn("memcpy(dst, src, n);", content)
-        self.assertIn("context_start_line", content)
-        self.assertIn("&gt; 10: memcpy(dst, src, n);", content)
-        self.assertIn("Fila de Candidatos para LLM", content)
-        self.assertIn("llm_candidate_000001", content)
-        self.assertIn("Validacoes dos Achados por Ferramentas", content)
-        self.assertIn("github_validation_000001", content)
+        self.assertNotIn("Analises de Links do GitHub", content)
+        self.assertNotIn("Achados dos Links do GitHub", content)
+        self.assertNotIn("Fila de Candidatos para LLM", content)
 
     # Verifica se tabelas muito grandes sao limitadas no HTML.
     def test_render_limited_html_table_shows_limit_note(self):

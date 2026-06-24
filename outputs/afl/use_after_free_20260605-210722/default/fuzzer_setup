@@ -1,8 +1,0 @@
-# environment variables:
-AFL_CUSTOM_INFO_PROGRAM=<tmp>/use_after_free
-AFL_CUSTOM_INFO_PROGRAM_ARGV=
-AFL_CUSTOM_INFO_OUT=outputs/afl/use_after_free_20260605-210722/default
-AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
-AFL_SKIP_CPUFREQ=1
-# command line:
-'/opt/homebrew/Cellar/afl++/5.00c/libexec/afl-fuzz' '-i' 'seeds' '-o' 'outputs/afl/use_after_free_20260605-210722' '-V' '5' '--' '<tmp>/use_after_free'

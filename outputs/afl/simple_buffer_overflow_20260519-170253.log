@@ -1,9 +1,0 @@
-tool: afl++
-benchmark: benchmarks/memory_corruption/simple_buffer_overflow.c
-seeds_dir: seeds
-campaign_dir: N/A
-compile_command: N/A
-fuzz_command: N/A
-
-[error]
-Ferramenta AFL++ nao encontrada: afl-clang-fast, afl-fuzz.

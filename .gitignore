@@ -28,14 +28,16 @@ var/
 # OS files
 .DS_Store
 
+# Public documentation policy
+*.md
+!README.md
+
 # Generated execution artifacts
 outputs/**
 !outputs/**/
 inputs/**
 reports/github_*.csv
 antigos/**
-!antigos/
-!antigos/README.md
 
 # OneDrive temp files
 ~$*

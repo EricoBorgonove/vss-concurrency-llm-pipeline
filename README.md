@@ -62,7 +62,6 @@ pipeline-vss-llm/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── run_pipeline.py
-├── AWS_LIGHTSAIL.md
 └── README.md
 ```
 
@@ -146,8 +145,7 @@ O projeto ja inclui:
 - `docker-compose.yml`: configuracao da execucao;
 - `scripts/setup_lightsail_ubuntu.sh`: preparacao de uma VM Ubuntu na AWS;
 - `scripts/run_lightsail_report.sh`: execucao completa e empacotamento dos
-  relatorios;
-- `AWS_LIGHTSAIL.md`: guia rapido para execucao na AWS Lightsail.
+  relatorios.
 
 ## Execucao rapida com Docker
 
@@ -178,7 +176,9 @@ reports/report.html
 
 Para a instancia usada no experimento, foi considerada uma AWS Lightsail com
 Ubuntu 24.04, 2 GB de RAM e 2 vCPU. Como a memoria e limitada, o script de
-preparacao cria swap antes da construcao da imagem Docker.
+preparacao cria swap antes da construcao da imagem Docker. A execucao em Linux
+`amd64` nativo e preferivel para a rodada final, pois reduz efeitos de emulacao
+em ferramentas como o ThreadSanitizer.
 
 Na instancia:
 
@@ -237,8 +237,6 @@ Para baixar os relatorios para a maquina local:
 scp ubuntu@IP_DA_INSTANCIA:~/vss-concurrency-llm-pipeline/reports-lightsail.tar.gz .
 tar -xzf reports-lightsail.tar.gz
 ```
-
-Mais detalhes estao em `AWS_LIGHTSAIL.md`.
 
 ## Execucao local sem Docker
 

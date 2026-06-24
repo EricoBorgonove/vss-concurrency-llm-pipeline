@@ -220,6 +220,40 @@ class GitHubToolValidationsTest(unittest.TestCase):
         )
         self.assertIn("arquivo sem funcao main", github_tool_validations.extract_error_message(log_text))
 
+    # Verifica se falta de header padrao no ESBMC vira erro de ambiente.
+    def test_classify_tool_result_treats_missing_standard_header_as_tool_error(self):
+        log_text = (
+            "tool: esbmc\n"
+            "benchmark: inputs/github_repos/gh_000001/deps/hiredis/async.c\n"
+            "command: esbmc inputs/github_repos/gh_000001/deps/hiredis/async.c\n"
+            "returncode: 6\n"
+            "\n[stderr]\n"
+            "Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc\n"
+            "Parsing inputs/github_repos/gh_000001/deps/hiredis/async.c\n"
+            "/tmp/esbmc/headers/stddef.h:13:15: fatal error: 'stddef.h' file not found\n"
+            "ERROR: PARSING ERROR\n"
+        )
+
+        self.assertEqual(
+            github_tool_validations.classify_tool_result("esbmc", 6, log_text),
+            "erro_ferramenta",
+        )
+        self.assertIn("header padrao stddef.h", github_tool_validations.extract_error_message(log_text))
+
+    # Verifica se header do projeto ausente nao e confundido com problema da AWS.
+    def test_classify_tool_result_treats_missing_project_header_as_not_validatable(self):
+        log_text = (
+            "[stderr]\n"
+            "src/file.c:1:10: fatal error: 'project/private.h' file not found\n"
+            "ERROR: PARSING ERROR\n"
+        )
+
+        self.assertEqual(
+            github_tool_validations.classify_tool_result("esbmc", 6, log_text),
+            "nao_validavel",
+        )
+        self.assertIn("includes/build", github_tool_validations.extract_error_message(log_text))
+
     # Verifica se a validacao registra mensagem util para arquivo sem main.
     def test_validate_finding_with_tool_marks_missing_main_as_not_validatable(self):
         with TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:

@@ -47,6 +47,33 @@ DETECTED_MARKERS = (
     "heap-buffer-overflow",
 )
 LOG_PATH_PATTERN = re.compile(r"Log salvo em:\s*(.+)")
+MISSING_HEADER_PATTERN = re.compile(r"fatal error:\s*['<]([^'>]+)[>']\s+file not found")
+STANDARD_C_HEADERS = {
+    "assert.h",
+    "ctype.h",
+    "errno.h",
+    "float.h",
+    "inttypes.h",
+    "limits.h",
+    "locale.h",
+    "math.h",
+    "setjmp.h",
+    "signal.h",
+    "stdalign.h",
+    "stdarg.h",
+    "stdatomic.h",
+    "stdbool.h",
+    "stddef.h",
+    "stdint.h",
+    "stdio.h",
+    "stdlib.h",
+    "stdnoreturn.h",
+    "string.h",
+    "time.h",
+    "uchar.h",
+    "wchar.h",
+    "wctype.h",
+}
 
 
 def tools_for_finding(finding):
@@ -73,11 +100,25 @@ def parse_log_path(output):
     return ""
 
 
+def missing_header_name(text):
+    match = MISSING_HEADER_PATTERN.search(str(text or ""))
+    return match.group(1) if match else ""
+
+
+def has_esbmc_parsing_error(text):
+    return "ERROR: PARSING ERROR" in str(text or "")
+
+
 def classify_tool_result(tool, returncode, log_text, stderr=""):
     combined = f"{log_text}\n{stderr}"
     if any(marker in combined for marker in DETECTED_MARKERS):
         return "detectado"
     if "undefined reference to `main'" in combined or "undefined reference to 'main'" in combined:
+        return "nao_validavel"
+    missing_header = missing_header_name(combined)
+    if tool == "esbmc" and has_esbmc_parsing_error(combined) and missing_header:
+        if Path(missing_header).name in STANDARD_C_HEADERS:
+            return "erro_ferramenta"
         return "nao_validavel"
     if "falha na compilacao" in combined.lower() or re.search(
         r"\[compile\]\s*returncode:\s*[1-9]\d*",
@@ -110,6 +151,18 @@ def extract_error_message(log_text, stderr=""):
         return (
             "arquivo sem funcao main; validacao isolada por ASAN exige um executavel. "
             "Para esse achado, use um harness ou o build do projeto original."
+        )
+    missing_header = missing_header_name(combined)
+    if has_esbmc_parsing_error(combined) and missing_header:
+        if Path(missing_header).name in STANDARD_C_HEADERS:
+            return (
+                f"ESBMC nao encontrou o header padrao {missing_header}. "
+                "Na AWS, rode ./scripts/install_aws_toolchain.sh e reinicie o painel "
+                "com sudo systemctl restart vss-pipeline-web."
+            )
+        return (
+            f"ESBMC nao conseguiu parsear o arquivo isoladamente porque falta o header "
+            f"{missing_header}. Esse achado precisa dos includes/build do projeto original."
         )
     marker = "[error]"
     if marker in text:

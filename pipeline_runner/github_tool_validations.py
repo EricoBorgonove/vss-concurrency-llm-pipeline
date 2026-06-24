@@ -77,6 +77,8 @@ def classify_tool_result(tool, returncode, log_text, stderr=""):
     combined = f"{log_text}\n{stderr}"
     if any(marker in combined for marker in DETECTED_MARKERS):
         return "detectado"
+    if "undefined reference to `main'" in combined or "undefined reference to 'main'" in combined:
+        return "nao_validavel"
     if "falha na compilacao" in combined.lower() or re.search(
         r"\[compile\]\s*returncode:\s*[1-9]\d*",
         combined,
@@ -103,6 +105,12 @@ def read_log_text(log_file):
 
 def extract_error_message(log_text, stderr=""):
     text = str(log_text or "")
+    combined = f"{text}\n{stderr}"
+    if "undefined reference to `main'" in combined or "undefined reference to 'main'" in combined:
+        return (
+            "arquivo sem funcao main; validacao isolada por ASAN exige um executavel. "
+            "Para esse achado, use um harness ou o build do projeto original."
+        )
     marker = "[error]"
     if marker in text:
         return text.split(marker, 1)[1].strip()
@@ -171,8 +179,18 @@ def validate_finding_with_tool(finding, tool, index, timeout=10, created_at=None
     log_file = parse_log_path(f"{result.stdout}\n{result.stderr}")
     log_text = read_log_text(log_file)
     classification = classify_tool_result(tool, result.returncode, log_text, result.stderr)
-    status = "executado" if classification not in ("erro_compilacao", "erro_ferramenta") else "falhou"
-    error = extract_error_message(log_text, result.stderr) if status == "falhou" else ""
+    status = (
+        "nao_executado"
+        if classification == "nao_validavel"
+        else "executado"
+        if classification not in ("erro_compilacao", "erro_ferramenta")
+        else "falhou"
+    )
+    error = (
+        extract_error_message(log_text, result.stderr)
+        if classification in ("erro_compilacao", "erro_ferramenta", "nao_validavel")
+        else ""
+    )
     return validation_row(
         index,
         finding,

@@ -203,6 +203,64 @@ class GitHubToolValidationsTest(unittest.TestCase):
             "erro_compilacao",
         )
 
+    # Verifica se arquivo de biblioteca sem main nao e tratado como falha operacional.
+    def test_classify_tool_result_treats_missing_main_as_not_validatable(self):
+        log_text = (
+            "[compile]\n"
+            "returncode: 1\n"
+            "stderr:\n"
+            "/usr/bin/ld: /lib/x86_64-linux-gnu/Scrt1.o: in function `_start':\n"
+            "(.text+0x1b): undefined reference to `main'\n"
+            "clang: error: linker command failed with exit code 1\n"
+        )
+
+        self.assertEqual(
+            github_tool_validations.classify_tool_result("asan", 1, log_text),
+            "nao_validavel",
+        )
+        self.assertIn("arquivo sem funcao main", github_tool_validations.extract_error_message(log_text))
+
+    # Verifica se a validacao registra mensagem util para arquivo sem main.
+    def test_validate_finding_with_tool_marks_missing_main_as_not_validatable(self):
+        with TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:
+            root = Path(temp_dir)
+            source = root / "library_file.c"
+            log_file = root / "asan.log"
+            source.write_text("int helper(void) { return 1; }\n", encoding="utf-8")
+            log_file.write_text(
+                (
+                    "[compile]\n"
+                    "returncode: 1\n"
+                    "stderr:\n"
+                    "(.text+0x1b): undefined reference to `main'\n"
+                ),
+                encoding="utf-8",
+            )
+            stdout = f"Log salvo em: {display_path(log_file)}\n"
+            completed = subprocess.CompletedProcess(
+                args=["python", "scripts/run_asan.py"],
+                returncode=1,
+                stdout=stdout,
+                stderr="",
+            )
+
+            with patch("pipeline_runner.github_tool_validations.subprocess.run", return_value=completed):
+                row = github_tool_validations.validate_finding_with_tool(
+                    {
+                        "id": "f1",
+                        "link_id": "gh_000001",
+                        "file_path": str(source),
+                        "category": "memory_corruption",
+                    },
+                    "asan",
+                    1,
+                    created_at="2026-06-17T12:00:00",
+                )
+
+            self.assertEqual(row["status"], "nao_executado")
+            self.assertEqual(row["classification"], "nao_validavel")
+            self.assertIn("arquivo sem funcao main", row["error"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -51,6 +51,7 @@ from pipeline_runner.github_tool_validations import (  # noqa: E402
 
 WEB_DIR = PROJECT_ROOT / "web"
 INDEX_FILE = WEB_DIR / "github_input.html"
+VALIDATIONS_FILE = WEB_DIR / "validations.html"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 BENCHMARKS_DIR = PROJECT_ROOT / "benchmarks"
@@ -530,6 +531,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
         if path in ("/", "/github"):
             self.send_html(200, INDEX_FILE.read_text(encoding="utf-8"))
+            return
+
+        if path == "/validacoes":
+            self.send_html(200, VALIDATIONS_FILE.read_text(encoding="utf-8"))
             return
 
         if path.startswith("/reports/"):

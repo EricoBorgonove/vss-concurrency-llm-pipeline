@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Validações GitHub - Pipeline VSS-LLM</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f6f8;
+      --surface: #ffffff;
+      --line: #d9e2ec;
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #2563eb;
+      --header: #e4edf7;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --soft: #eef4ff;
+      --success: #157f3b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+      margin: 0;
+    }
+    body.modal-open { overflow: hidden; }
+    main {
+      margin: 0 auto;
+      padding: 28px 16px 40px;
+      width: min(1440px, 100%);
+    }
+    .page-header {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    h1 { font-size: 28px; margin: 0; }
+    h2 { font-size: 18px; margin: 0 0 10px; }
+    a, .link-button {
+      color: var(--accent);
+    }
+    button, .button-link, select, input {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      font: inherit;
+      min-height: 38px;
+      padding: 8px 10px;
+    }
+    button, .button-link {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+    }
+    button:disabled { cursor: not-allowed; opacity: 0.7; }
+    .button-link {
+      align-items: center;
+      display: inline-flex;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .button-secondary {
+      background: var(--soft);
+      border-color: #b7cdfb;
+      color: #1e3a8a;
+    }
+    .button-plain {
+      background: #ffffff;
+      color: var(--muted);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .run-panel,
+    .filters,
+    .summary-grid,
+    .table-card {
+      margin-bottom: 14px;
+    }
+    .run-panel {
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding: 14px;
+    }
+    .run-status {
+      color: var(--muted);
+      margin: 0;
+    }
+    .run-status.error { color: var(--danger); }
+    .run-status.success { color: var(--success); }
+    .progress-track {
+      background: #e5edf7;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      height: 10px;
+      margin-top: 8px;
+      overflow: hidden;
+      width: 100%;
+    }
+    .progress-track[hidden] { display: none; }
+    .progress-fill {
+      background: var(--accent);
+      height: 100%;
+      transition: width 180ms ease;
+      width: 0%;
+    }
+    .summary-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .metric-card span {
+      color: var(--muted);
+      display: block;
+      font-size: 13px;
+    }
+    .metric-card strong {
+      display: block;
+      font-size: 26px;
+      margin-top: 4px;
+    }
+    .filters {
+      align-items: end;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      padding: 14px;
+    }
+    label {
+      color: var(--muted);
+      display: grid;
+      font-size: 13px;
+      gap: 6px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      background: var(--surface);
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 1180px;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--header);
+      color: #102a43;
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) { background: #f9fbfd; }
+    .badge {
+      background: #edf2f7;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      display: inline-flex;
+      line-height: 1;
+      padding: 5px 8px;
+      white-space: nowrap;
+    }
+    .badge-success {
+      background: #ecfdf3;
+      border-color: #b7e4c7;
+      color: var(--success);
+    }
+    .badge-error {
+      background: var(--danger-bg);
+      border-color: #f1b3ad;
+      color: var(--danger);
+    }
+    .log-link {
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      cursor: pointer;
+      font: inherit;
+      min-height: 0;
+      overflow-wrap: anywhere;
+      padding: 0;
+      text-align: left;
+      text-decoration: underline;
+    }
+    .message {
+      color: var(--muted);
+      margin: 0 0 10px;
+      min-height: 22px;
+    }
+    .message.error { color: var(--danger); }
+    .message.success { color: var(--success); }
+    .modal-backdrop {
+      align-items: center;
+      background: rgba(15, 23, 42, 0.52);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 20;
+    }
+    .modal-backdrop.is-open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      max-height: min(88vh, 860px);
+      width: min(980px, 100%);
+    }
+    .modal-header {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      padding: 14px;
+    }
+    .modal-title h2 { margin: 0; }
+    .modal-title p {
+      color: var(--muted);
+      margin: 4px 0 0;
+      overflow-wrap: anywhere;
+    }
+    .modal-body {
+      overflow: auto;
+      padding: 14px;
+    }
+    .log-output {
+      background: #0f172a;
+      border-radius: 6px;
+      color: #e5e7eb;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 0;
+      max-height: 62vh;
+      overflow: auto;
+      padding: 12px;
+      white-space: pre-wrap;
+    }
+    @media (max-width: 720px) {
+      .run-panel { grid-template-columns: 1fr; }
+      button, .button-link { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <h1>Validações GitHub</h1>
+      <div class="actions">
+        <a class="button-link button-secondary" href="/github">Voltar para links</a>
+        <a class="button-link button-secondary" href="/reports/report.html" target="_blank" rel="noopener">Abrir relatório</a>
+        <a class="button-link button-secondary" href="/logout">Sair</a>
+      </div>
+    </header>
+
+    <section class="run-panel">
+      <div>
+        <h2>Execução dos testes</h2>
+        <p id="run-status" class="run-status">Carregando status...</p>
+        <div id="run-progress" class="progress-track" role="progressbar" aria-label="Progresso dos testes GitHub" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+          <div id="run-progress-fill" class="progress-fill"></div>
+        </div>
+      </div>
+      <button id="run-all-button" type="button">Rodar testes globais</button>
+    </section>
+
+    <section id="summary" class="summary-grid"></section>
+
+    <section class="filters">
+      <label>Link
+        <select id="filter-link"><option value="">Todos</option></select>
+      </label>
+      <label>Categoria
+        <select id="filter-category"><option value="">Todas</option></select>
+      </label>
+      <label>Ferramenta
+        <select id="filter-tool"><option value="">Todas</option></select>
+      </label>
+      <label>Classificação
+        <select id="filter-classification"><option value="">Todas</option></select>
+      </label>
+      <label>Buscar
+        <input id="filter-search" type="search" placeholder="arquivo, achado, mensagem">
+      </label>
+      <button id="clear-filters" type="button" class="button-secondary">Limpar filtros</button>
+    </section>
+
+    <p id="message" class="message"></p>
+    <section class="table-card table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Achado</th>
+            <th>Link</th>
+            <th>Arquivo</th>
+            <th>Categoria</th>
+            <th>Ferramenta</th>
+            <th>Status</th>
+            <th>Classificação</th>
+            <th>Retorno</th>
+            <th>Log</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="validation-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <div id="log-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+    <section class="modal">
+      <header class="modal-header">
+        <div class="modal-title">
+          <h2 id="log-modal-title">Saída da ferramenta</h2>
+          <p id="log-modal-subtitle"></p>
+        </div>
+        <button id="close-log-modal" class="button-plain" type="button">Fechar</button>
+      </header>
+      <div class="modal-body">
+        <pre id="log-modal-content" class="log-output">Carregando...</pre>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const runStatus = document.getElementById('run-status');
+    const runProgress = document.getElementById('run-progress');
+    const runProgressFill = document.getElementById('run-progress-fill');
+    const runAllButton = document.getElementById('run-all-button');
+    const summary = document.getElementById('summary');
+    const tableBody = document.getElementById('validation-body');
+    const message = document.getElementById('message');
+    const logModalBackdrop = document.getElementById('log-modal-backdrop');
+    const logModalSubtitle = document.getElementById('log-modal-subtitle');
+    const logModalContent = document.getElementById('log-modal-content');
+    const closeLogModalButton = document.getElementById('close-log-modal');
+    const filters = {
+      link: document.getElementById('filter-link'),
+      category: document.getElementById('filter-category'),
+      tool: document.getElementById('filter-tool'),
+      classification: document.getElementById('filter-classification'),
+      search: document.getElementById('filter-search')
+    };
+    let currentRows = [];
+    let pollTimer = null;
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function normalize(value) {
+      return String(value || '').toLowerCase();
+    }
+
+    function setMessage(text, type = '') {
+      message.textContent = text;
+      message.className = `message ${type}`.trim();
+    }
+
+    function badgeClass(value) {
+      if (['detectado', 'executado', 'confirmado'].includes(value)) return 'badge-success';
+      if (['falhou', 'erro_compilacao', 'erro_ferramenta', 'nao_validavel'].includes(value)) return 'badge-error';
+      return '';
+    }
+
+    function latestValidationByFinding(validations) {
+      return validations.reduce((latest, validation) => {
+        const findingId = validation.finding_id || '';
+        const current = latest[findingId];
+        if (!current || String(validation.created_at || '') >= String(current.created_at || '')) {
+          latest[findingId] = validation;
+        }
+        return latest;
+      }, {});
+    }
+
+    function logUrl(logFile) {
+      const value = String(logFile || '').trim();
+      if (!value) return '';
+      if (value.startsWith('outputs/') || value.startsWith('reports/')) return `/${value}`;
+      return '';
+    }
+
+    function renderLog(logFile) {
+      const url = logUrl(logFile);
+      if (!url) return escapeHtml(logFile || '-');
+      return `<button class="log-link" type="button" data-log-url="${escapeHtml(url)}" data-log-file="${escapeHtml(logFile)}">${escapeHtml(logFile)}</button>`;
+    }
+
+    function buildRows(links, findings, validations) {
+      const linksById = Object.fromEntries(links.map((link) => [link.id, link]));
+      const latest = latestValidationByFinding(validations);
+      return findings
+        .filter((finding) => finding.status !== 'falso_positivo')
+        .map((finding) => {
+          const validation = latest[finding.id] || {};
+          const link = linksById[finding.link_id] || {};
+          return {
+            finding,
+            validation,
+            link,
+            linkLabel: link.id ? `${link.id} ${link.url || ''}` : finding.link_id,
+            tool: validation.tool || '-',
+            status: validation.status || 'pendente',
+            classification: validation.classification || 'pendente',
+            returncode: validation.returncode || '-',
+            log_file: validation.log_file || ''
+          };
+        });
+    }
+
+    function renderSummary(rows) {
+      const total = rows.length;
+      const tested = rows.filter((row) => row.validation.id).length;
+      const pending = total - tested;
+      const detected = rows.filter((row) => row.classification === 'detectado').length;
+      const inconclusive = rows.filter((row) => row.classification === 'inconclusivo').length;
+      const errors = rows.filter((row) => ['erro_compilacao', 'erro_ferramenta', 'nao_validavel'].includes(row.classification)).length;
+      const cards = [
+        ['Achados', total],
+        ['Testados', tested],
+        ['Pendentes', pending],
+        ['Detectados', detected],
+        ['Inconclusivos', inconclusive],
+        ['Erros', errors]
+      ];
+      summary.innerHTML = cards.map(([label, value]) => `
+        <article class="metric-card">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+        </article>
+      `).join('');
+    }
+
+    function renderOptions(select, values) {
+      const previous = select.value;
+      select.innerHTML = '<option value="">Todas</option>' + [...new Set(values.filter(Boolean))]
+        .sort((left, right) => left.localeCompare(right))
+        .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
+        .join('');
+      select.value = previous;
+    }
+
+    function updateFilterOptions(rows) {
+      renderOptions(filters.link, rows.map((row) => row.finding.link_id));
+      renderOptions(filters.category, rows.map((row) => row.finding.category));
+      renderOptions(filters.tool, rows.map((row) => row.tool).filter((tool) => tool !== '-'));
+      renderOptions(filters.classification, rows.map((row) => row.classification));
+    }
+
+    function filteredRows() {
+      const selected = {
+        link: filters.link.value,
+        category: filters.category.value,
+        tool: filters.tool.value,
+        classification: filters.classification.value,
+        search: normalize(filters.search.value)
+      };
+      return currentRows.filter((row) => {
+        const searchText = normalize([
+          row.finding.id,
+          row.finding.file_path,
+          row.finding.message,
+          row.link.url,
+          row.log_file
+        ].join(' '));
+        return (!selected.link || row.finding.link_id === selected.link)
+          && (!selected.category || row.finding.category === selected.category)
+          && (!selected.tool || row.tool === selected.tool)
+          && (!selected.classification || row.classification === selected.classification)
+          && (!selected.search || searchText.includes(selected.search));
+      });
+    }
+
+    function renderTable() {
+      const rows = filteredRows();
+      tableBody.innerHTML = rows.map((row) => `
+        <tr>
+          <td>${escapeHtml(row.finding.id)}</td>
+          <td>${escapeHtml(row.finding.link_id)}</td>
+          <td>${escapeHtml(row.finding.file_path)}</td>
+          <td>${escapeHtml(row.finding.category)}</td>
+          <td>${escapeHtml(row.tool)}</td>
+          <td><span class="badge ${badgeClass(row.status)}">${escapeHtml(row.status)}</span></td>
+          <td><span class="badge ${badgeClass(row.classification)}">${escapeHtml(row.classification)}</span></td>
+          <td>${escapeHtml(row.returncode)}</td>
+          <td>${renderLog(row.log_file)}</td>
+          <td>
+            <button type="button" class="button-secondary" data-retest-finding-id="${escapeHtml(row.finding.id)}">
+              Testar novamente
+            </button>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="10">Nenhum achado encontrado.</td></tr>';
+    }
+
+    function setRunProgress(run = {}) {
+      const status = run.status || 'idle';
+      const processed = Number(run.processed || 0);
+      const total = Number(run.total || 0);
+      const shouldShow = status === 'running' || total > 0;
+      runProgress.hidden = !shouldShow;
+      const percent = total ? Math.min(100, Math.round((processed / total) * 100)) : 0;
+      runProgressFill.style.width = `${percent}%`;
+      runProgress.setAttribute('aria-valuenow', String(percent));
+    }
+
+    function describeRun(run) {
+      const status = run.status || 'idle';
+      const processed = Number(run.processed || 0);
+      const total = Number(run.total || 0);
+      const logLink = run.log_file ? ` <a href="/${escapeHtml(run.log_file)}" target="_blank" rel="noopener">Ver log</a>` : '';
+      if (status === 'running') {
+        const progress = total ? `${processed}/${total}` : 'preparando';
+        const current = run.current_finding_id ? ` Achado atual: ${escapeHtml(run.current_finding_id)} (${escapeHtml(run.current_tool || '-')}).` : '';
+        return [`Rodando testes: ${progress}.${current}${logLink}`, ''];
+      }
+      if (status === 'succeeded') return [`Testes concluídos: ${escapeHtml(run.count || 0)} registros.${logLink}`, 'success'];
+      if (status === 'failed') return [`Falha nos testes: ${escapeHtml(run.error || 'erro não informado')}.${logLink}`, 'error'];
+      return ['Pronto para rodar testes.', ''];
+    }
+
+    async function refreshRunStatus() {
+      const response = await fetch('/api/github-validations/run');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'falha ao consultar status');
+      const run = data.run || {};
+      const [text, type] = describeRun(run);
+      runStatus.innerHTML = text;
+      runStatus.className = `run-status ${type}`.trim();
+      setRunProgress(run);
+      runAllButton.disabled = run.status === 'running';
+      if (run.status === 'running' && !pollTimer) pollTimer = window.setInterval(refreshRunStatus, 3000);
+      if (run.status !== 'running' && pollTimer) {
+        window.clearInterval(pollTimer);
+        pollTimer = null;
+        await loadData();
+      }
+    }
+
+    async function loadData() {
+      const [linksResponse, findingsResponse, validationsResponse] = await Promise.all([
+        fetch('/api/github-links'),
+        fetch('/api/github-findings'),
+        fetch('/api/github-validations')
+      ]);
+      const linksData = await linksResponse.json();
+      const findingsData = await findingsResponse.json();
+      const validationsData = await validationsResponse.json();
+      if (!linksResponse.ok) throw new Error(linksData.error || 'falha ao carregar links');
+      if (!findingsResponse.ok) throw new Error(findingsData.error || 'falha ao carregar achados');
+      if (!validationsResponse.ok) throw new Error(validationsData.error || 'falha ao carregar validações');
+
+      currentRows = buildRows(linksData.links || [], findingsData.findings || [], validationsData.validations || []);
+      renderSummary(currentRows);
+      updateFilterOptions(currentRows);
+      renderTable();
+    }
+
+    async function runAllValidations() {
+      if (!window.confirm('Rodar os testes globais dos achados GitHub agora?')) return;
+      runAllButton.disabled = true;
+      setMessage('');
+      const response = await fetch('/api/github-validations/run', {method: 'POST'});
+      const data = await response.json();
+      if (!response.ok) {
+        setMessage(data.error || 'falha ao iniciar testes globais', 'error');
+        runAllButton.disabled = false;
+        return;
+      }
+      await refreshRunStatus();
+    }
+
+    async function retestFinding(findingId, button) {
+      button.disabled = true;
+      setMessage(`Testando ${findingId}...`);
+      try {
+        const response = await fetch(`/api/github-findings/${findingId}/validate`, {method: 'POST'});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'falha ao testar achado');
+        setMessage(`Teste concluído para ${findingId}: ${data.count} validações registradas.`, 'success');
+        await loadData();
+      } catch (error) {
+        setMessage(error.message, 'error');
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function openLogModal(logUrlValue, logFile) {
+      logModalSubtitle.textContent = logFile || logUrlValue;
+      logModalContent.textContent = 'Carregando...';
+      logModalBackdrop.classList.add('is-open');
+      document.body.classList.add('modal-open');
+      closeLogModalButton.focus();
+      try {
+        const response = await fetch(logUrlValue);
+        const text = await response.text();
+        if (!response.ok) throw new Error(text || `falha ao abrir log (${response.status})`);
+        logModalContent.textContent = text || 'Log vazio.';
+      } catch (error) {
+        logModalContent.textContent = error.message;
+      }
+    }
+
+    function closeLogModal() {
+      logModalBackdrop.classList.remove('is-open');
+      document.body.classList.remove('modal-open');
+      logModalSubtitle.textContent = '';
+      logModalContent.textContent = '';
+    }
+
+    runAllButton.addEventListener('click', runAllValidations);
+    Object.values(filters).forEach((field) => {
+      field.addEventListener('input', renderTable);
+      field.addEventListener('change', renderTable);
+    });
+    document.getElementById('clear-filters').addEventListener('click', () => {
+      Object.values(filters).forEach((field) => field.value = '');
+      renderTable();
+    });
+    tableBody.addEventListener('click', async (event) => {
+      const logButton = event.target.closest('[data-log-url]');
+      if (logButton) {
+        await openLogModal(logButton.dataset.logUrl, logButton.dataset.logFile);
+        return;
+      }
+      const retestButton = event.target.closest('[data-retest-finding-id]');
+      if (retestButton) {
+        await retestFinding(retestButton.dataset.retestFindingId, retestButton);
+      }
+    });
+    closeLogModalButton.addEventListener('click', closeLogModal);
+    logModalBackdrop.addEventListener('click', (event) => {
+      if (event.target === logModalBackdrop) closeLogModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && logModalBackdrop.classList.contains('is-open')) closeLogModal();
+    });
+
+    loadData()
+      .then(refreshRunStatus)
+      .catch((error) => setMessage(error.message, 'error'));
+  </script>
+</body>
+</html>

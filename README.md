@@ -145,7 +145,9 @@ O projeto ja inclui:
 - `docker-compose.yml`: configuracao da execucao;
 - `scripts/setup_lightsail_ubuntu.sh`: preparacao de uma VM Ubuntu na AWS;
 - `scripts/run_lightsail_report.sh`: execucao completa e empacotamento dos
-  relatorios.
+  relatorios;
+- `scripts/install_aws_web_service.sh`: instalacao do painel web como servico
+  `systemd`, com Nginx como proxy HTTP.
 
 ## Execucao rapida com Docker
 
@@ -236,6 +238,35 @@ Para baixar os relatorios para a maquina local:
 ```bash
 scp ubuntu@IP_DA_INSTANCIA:~/vss-concurrency-llm-pipeline/reports-lightsail.tar.gz .
 tar -xzf reports-lightsail.tar.gz
+```
+
+Para deixar o painel web ativo na instancia, defina usuarios com senhas fortes
+e instale o servico:
+
+```bash
+export VSS_AUTH_USERS="erico:senha-forte,brenda:senha-forte,alberjan:senha-forte,lucas:senha-forte"
+./scripts/install_aws_web_service.sh
+```
+
+O script cria:
+
+- o arquivo `/etc/vss-pipeline-web.env`, com as variaveis do painel;
+- o servico `systemd` `vss-pipeline-web`;
+- uma configuracao Nginx que publica o painel em `http://IP_DA_INSTANCIA/`.
+
+Na Lightsail, libere a porta TCP `80` no firewall da instancia. Para usar um
+dominio, informe o nome antes de instalar:
+
+```bash
+SERVER_NAME="exemplo.seudominio.com" ./scripts/install_aws_web_service.sh
+```
+
+Com o painel instalado, os comandos uteis na instancia sao:
+
+```bash
+sudo systemctl status vss-pipeline-web
+sudo systemctl restart vss-pipeline-web
+sudo journalctl -u vss-pipeline-web -f
 ```
 
 ## Execucao local sem Docker

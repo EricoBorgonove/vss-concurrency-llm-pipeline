@@ -3,16 +3,20 @@
 
 import argparse
 import datetime as dt
+import hmac
 import json
 import mimetypes
 import os
+import secrets
 import subprocess
 import sys
 import threading
+import time
+from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from socketserver import TCPServer
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -50,6 +54,11 @@ INDEX_FILE = WEB_DIR / "github_input.html"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 BENCHMARKS_DIR = PROJECT_ROOT / "benchmarks"
+SESSION_COOKIE_NAME = "vss_session"
+AUTH_USERNAME = os.environ.get("VSS_AUTH_USERNAME", "admin")
+AUTH_PASSWORD = os.environ.get("VSS_AUTH_PASSWORD", "vss")
+AUTH_SESSIONS = {}
+AUTH_SESSIONS_LOCK = threading.Lock()
 BENCHMARK_RUN_LOG = REPORTS_DIR / "benchmark_run_latest.log"
 BENCHMARK_RUN_LOCK = threading.Lock()
 BENCHMARK_RUN_STATE = {
@@ -85,6 +94,9 @@ def env_int(name, default):
         return default
 
 
+SESSION_TTL_SECONDS = env_int("VSS_SESSION_TTL_SECONDS", 12 * 60 * 60)
+
+
 def env_optional_int(name):
     value = os.environ.get(name, "").strip()
     if not value or value.lower() in ("0", "all", "todos", "none"):
@@ -106,6 +118,147 @@ def build_parser():
 
 def json_bytes(payload):
     return json.dumps(payload, ensure_ascii=True).encode("utf-8")
+
+
+def is_auth_configured_with_default():
+    return AUTH_USERNAME == "admin" and AUTH_PASSWORD == "vss"
+
+
+def create_session():
+    token = secrets.token_urlsafe(32)
+    expires_at = time.time() + SESSION_TTL_SECONDS
+    with AUTH_SESSIONS_LOCK:
+        AUTH_SESSIONS[token] = expires_at
+    return token, expires_at
+
+
+def delete_session(token):
+    if not token:
+        return
+    with AUTH_SESSIONS_LOCK:
+        AUTH_SESSIONS.pop(token, None)
+
+
+def valid_session(token):
+    if not token:
+        return False
+    now = time.time()
+    with AUTH_SESSIONS_LOCK:
+        expires_at = AUTH_SESSIONS.get(token)
+        if not expires_at:
+            return False
+        if expires_at <= now:
+            AUTH_SESSIONS.pop(token, None)
+            return False
+    return True
+
+
+def login_page(error="", next_path="/github"):
+    error_html = (
+        f'<p class="message error">{html_escape(error)}</p>'
+        if error
+        else '<p class="message">Entre para acessar o painel.</p>'
+    )
+    default_warning = (
+        '<p class="message warning">Usando credenciais padrao de desenvolvimento. '
+        'Na AWS, defina VSS_AUTH_USERNAME e VSS_AUTH_PASSWORD.</p>'
+        if is_auth_configured_with_default()
+        else ""
+    )
+    return f"""<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - Pipeline VSS-LLM</title>
+  <style>
+    :root {{
+      --bg: #f3f6f8;
+      --surface: #ffffff;
+      --line: #d9e2ec;
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #2563eb;
+      --danger: #b42318;
+      --warning: #8a5a00;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      align-items: center;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      font-family: Inter, Arial, sans-serif;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+    }}
+    main {{
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 14px;
+      padding: 22px;
+      width: min(420px, 100%);
+    }}
+    h1 {{ font-size: 24px; margin: 0; }}
+    p {{ margin: 0; }}
+    label {{
+      color: var(--muted);
+      display: grid;
+      font-size: 13px;
+      gap: 6px;
+    }}
+    input, button {{
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      font: inherit;
+      min-height: 40px;
+      padding: 8px 10px;
+    }}
+    button {{
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+    }}
+    .message {{ color: var(--muted); }}
+    .message.error {{ color: var(--danger); }}
+    .message.warning {{ color: var(--warning); }}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Pipeline VSS-LLM</h1>
+    {error_html}
+    {default_warning}
+    <form method="post" action="/login">
+      <input type="hidden" name="next" value="{html_escape(next_path)}">
+      <label>Usuário
+        <input name="username" autocomplete="username" required>
+      </label>
+      <label>Senha
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit">Entrar</button>
+    </form>
+  </main>
+</body>
+</html>"""
+
+
+def html_escape(value):
+    return (
+        str(value or "")
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#039;")
+    )
 
 
 def links_with_file_counts():
@@ -255,6 +408,37 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         print(f"{self.address_string()} - {format % args}", file=sys.stderr)
 
+    def session_token(self):
+        raw_cookie = self.headers.get("Cookie", "")
+        cookie = SimpleCookie()
+        cookie.load(raw_cookie)
+        morsel = cookie.get(SESSION_COOKIE_NAME)
+        return morsel.value if morsel else ""
+
+    def is_authenticated(self):
+        return valid_session(self.session_token())
+
+    def is_login_route(self, path):
+        return path in ("/login", "/logout")
+
+    def wants_json(self, path):
+        accept = self.headers.get("Accept", "")
+        return path.startswith("/api/") or "application/json" in accept
+
+    def require_auth(self, path):
+        if self.is_login_route(path):
+            return True
+        if self.is_authenticated():
+            return True
+
+        if self.wants_json(path):
+            self.send_json(401, {"error": "autenticação necessária"})
+            return False
+
+        next_path = quote(self.path or "/github", safe="/:?&=%")
+        self.send_redirect(f"/login?next={next_path}")
+        return False
+
     def send_json(self, status, payload):
         body = json_bytes(payload)
         self.send_response(status)
@@ -262,6 +446,32 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def send_redirect(self, location, extra_headers=None):
+        self.send_response(303)
+        self.send_header("Location", location)
+        for name, value in (extra_headers or {}).items():
+            self.send_header(name, value)
+        self.end_headers()
+
+    def session_cookie_header(self, token, expires_at):
+        max_age = max(int(expires_at - time.time()), 0)
+        cookie = SimpleCookie()
+        cookie[SESSION_COOKIE_NAME] = token
+        cookie[SESSION_COOKIE_NAME]["path"] = "/"
+        cookie[SESSION_COOKIE_NAME]["httponly"] = True
+        cookie[SESSION_COOKIE_NAME]["samesite"] = "Lax"
+        cookie[SESSION_COOKIE_NAME]["max-age"] = str(max_age)
+        return cookie.output(header="").strip()
+
+    def expired_session_cookie_header(self):
+        cookie = SimpleCookie()
+        cookie[SESSION_COOKIE_NAME] = ""
+        cookie[SESSION_COOKIE_NAME]["path"] = "/"
+        cookie[SESSION_COOKIE_NAME]["httponly"] = True
+        cookie[SESSION_COOKIE_NAME]["samesite"] = "Lax"
+        cookie[SESSION_COOKIE_NAME]["max-age"] = "0"
+        return cookie.output(header="").strip()
 
     def send_html(self, status, content):
         body = content.encode("utf-8")
@@ -297,6 +507,27 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = urlparse(self.path).path
+        if path == "/login":
+            query = parse_qs(urlparse(self.path).query)
+            next_path = query.get("next", ["/github"])[0] or "/github"
+            if self.is_authenticated():
+                self.send_redirect(next_path)
+                return
+            self.send_html(200, login_page(next_path=next_path))
+            return
+
+        if path == "/logout":
+            token = self.session_token()
+            delete_session(token)
+            self.send_redirect(
+                "/login",
+                {"Set-Cookie": self.expired_session_cookie_header()},
+            )
+            return
+
+        if not self.require_auth(path):
+            return
+
         if path in ("/", "/github"):
             self.send_html(200, INDEX_FILE.read_text(encoding="utf-8"))
             return
@@ -341,6 +572,13 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urlparse(self.path).path
+        if path == "/login":
+            self.handle_login()
+            return
+
+        if not self.require_auth(path):
+            return
+
         if path == "/api/github-links":
             self.handle_create_link()
             return
@@ -382,6 +620,9 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
     def do_PATCH(self):
         path = urlparse(self.path).path
+        if not self.require_auth(path):
+            return
+
         if path.startswith("/api/github-findings/"):
             finding_id = path.removeprefix("/api/github-findings/").strip("/")
             self.handle_update_finding_status(finding_id)
@@ -391,12 +632,37 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         path = urlparse(self.path).path
+        if not self.require_auth(path):
+            return
+
         if path.startswith("/api/github-links/"):
             link_id = path.removeprefix("/api/github-links/").strip("/")
             self.handle_remove_link(link_id)
             return
 
         self.send_json(404, {"error": "rota não encontrada"})
+
+    def handle_login(self):
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        raw_body = self.rfile.read(length).decode("utf-8")
+        payload = parse_qs(raw_body)
+        username = payload.get("username", [""])[0]
+        password = payload.get("password", [""])[0]
+        next_path = payload.get("next", ["/github"])[0] or "/github"
+        if not next_path.startswith("/"):
+            next_path = "/github"
+
+        user_ok = hmac.compare_digest(username, AUTH_USERNAME)
+        password_ok = hmac.compare_digest(password, AUTH_PASSWORD)
+        if not user_ok or not password_ok:
+            self.send_html(401, login_page("Usuário ou senha inválidos.", next_path))
+            return
+
+        token, expires_at = create_session()
+        self.send_redirect(
+            next_path,
+            {"Set-Cookie": self.session_cookie_header(token, expires_at)},
+        )
 
     def handle_create_link(self):
         length = int(self.headers.get("Content-Length", "0") or "0")

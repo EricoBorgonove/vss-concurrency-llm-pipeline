@@ -37,6 +37,10 @@ sudo install -m 600 -o root -g root /dev/null "$ENV_FILE"
   write_env_var "VSS_AUTH_USERS" "$AUTH_USERS"
   write_env_var "GITHUB_VALIDATION_LIMIT" "${GITHUB_VALIDATION_LIMIT:-25}"
   write_env_var "GITHUB_VALIDATION_TIMEOUT" "${GITHUB_VALIDATION_TIMEOUT:-10}"
+  write_env_var "VSS_LLM_MODEL" "${VSS_LLM_MODEL:-gpt-4.1-mini}"
+  if [ -n "${OPENAI_API_KEY:-}" ]; then
+    write_env_var "OPENAI_API_KEY" "$OPENAI_API_KEY"
+  fi
   printf 'PYTHONUNBUFFERED=1\n'
 } | sudo tee "$ENV_FILE" >/dev/null
 

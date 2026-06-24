@@ -490,29 +490,56 @@ Quando o AFL++ usa `AFL_USE_ASAN=1`, algumas violacoes de memoria aparecem logo
 no dry run. O pipeline trata esse crash inicial como deteccao, pois o binario
 falhou durante uma execucao controlada do fuzzer.
 
-## Etapa LLM simulada
+## Etapa LLM dos benchmarks
 
-O projeto possui uma etapa simulada de reparo por LLM. Ela ainda nao chama uma
-API externa e nao altera automaticamente os arquivos C.
+O projeto possui uma etapa de reparo por LLM para os benchmarks controlados. Se
+`OPENAI_API_KEY` estiver configurada, o script chama a API externa e gera uma
+versao corrigida do arquivo C. Sem chave, o fluxo usa fallback simulado para
+manter o experimento executavel e auditavel.
 
-O objetivo atual dessa etapa e exercitar o fluxo experimental:
+O fluxo executa:
 
 - ler um log de ferramenta;
-- identificar marcadores simples de erro;
-- gerar uma sugestao textual generica;
-- registrar essa sugestao em `outputs/llm/`;
-- permitir uma validacao posterior com benchmarks corrigidos.
+- ler o codigo original do benchmark;
+- gerar um arquivo C reparado em `outputs/llm/repaired_benchmarks/`;
+- registrar metadados em `outputs/llm/repairs/`;
+- gravar o historico em `reports/llm_benchmark_repairs.csv`;
+- validar o arquivo reparado com ASAN, TSAN, ESBMC ou detector de deadlock.
 
 Exemplo:
 
 ```bash
-python3 scripts/run_llm_repair.py outputs/asan/<arquivo_de_log>.log
+OPENAI_API_KEY="sua_chave" VSS_LLM_MODEL="gpt-4.1-mini" \
+  python3 scripts/run_llm_repair.py outputs/asan/<arquivo_de_log>.log
 ```
 
-Para validar uma sugestao simulada:
+Para validar um reparo gerado:
 
 ```bash
-python3 scripts/validate_llm_repair.py outputs/llm/<arquivo_de_reparo>.txt
+python3 scripts/validate_llm_repair.py \
+  outputs/llm/repairs/<arquivo_de_reparo>.txt \
+  --fixed-benchmark outputs/llm/repaired_benchmarks/<arquivo_corrigido>.c \
+  --tool asan
+```
+
+No dashboard HTML, a tabela **Resultados Detalhados** possui o botao
+**Gerar e validar reparo** para cada benchmark. Quando o dashboard esta aberto
+pelo painel web, esse botao chama a API local, gera o reparo LLM, valida o
+arquivo corrigido e atualiza `reports/llm_benchmark_repairs.csv`.
+
+Na AWS, configure a chave antes de instalar ou reinstalar o servico:
+
+```bash
+OPENAI_API_KEY="sua_chave" VSS_LLM_MODEL="gpt-4.1-mini" \
+  ./scripts/install_aws_web_service.sh
+```
+
+Se o servico ja estiver instalado, edite `/etc/vss-pipeline-web.env`, inclua as
+variaveis e reinicie:
+
+```bash
+sudo nano /etc/vss-pipeline-web.env
+sudo systemctl restart vss-pipeline-web
 ```
 
 ## Testes do projeto
@@ -543,7 +570,8 @@ Este e um pipeline experimental. Algumas limitacoes importantes sao:
 - o detector de deadlock por timeout e simples e pode produzir resultados
   dependentes de escalonamento;
 - TSAN dentro de Docker emulado no Apple Silicon pode ficar inconclusivo;
-- a etapa LLM ainda e simulada e nao substitui uma analise manual.
+- a etapa LLM depende da qualidade do log e deve ser validada pelas ferramentas
+  antes de ser considerada no experimento.
 
 Essas limitacoes nao invalidam o experimento. Pelo contrario: elas ficam
 registradas para que os resultados sejam interpretados com cuidado.
@@ -559,4 +587,4 @@ evolucoes mais relevantes sao:
   olhando os logs diretamente pelo modal;
 - decidir se os CSVs gerados em `reports/` serao versionados como artefatos da
   rodada final ou mantidos apenas localmente;
-- integrar uma LLM real para sugerir reparos a partir dos logs coletados.
+- revisar os reparos LLM aprovados e comparar contra os benchmarks originais.

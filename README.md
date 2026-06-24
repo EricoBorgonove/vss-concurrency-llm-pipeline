@@ -144,6 +144,8 @@ O projeto ja inclui:
 - `Dockerfile`: imagem Ubuntu 24.04 com as ferramentas necessarias;
 - `docker-compose.yml`: configuracao da execucao;
 - `scripts/setup_lightsail_ubuntu.sh`: preparacao de uma VM Ubuntu na AWS;
+- `scripts/install_aws_toolchain.sh`: instalacao local de `clang`, `gcc`,
+  `g++`, `build-essential` e `esbmc`, usados pelo painel web nas validacoes;
 - `scripts/run_lightsail_report.sh`: execucao completa e empacotamento dos
   relatorios;
 - `scripts/install_aws_web_service.sh`: instalacao do painel web como servico
@@ -298,6 +300,14 @@ Os relatorios em `reports/` e logs em `outputs/` sao artefatos locais. Eles nao
 sao versionados para evitar conflitos durante `git pull` na AWS. Os clones de
 repositorios analisados ficam em `inputs/github_repos/` e nao sao apagados pelos
 scripts de limpeza do historico de benchmarks.
+
+Se uma validacao mostrar `Compilador C nao encontrado` ou `Executavel ESBMC nao
+encontrado`, instale as ferramentas locais do painel e reinicie o servico:
+
+```bash
+./scripts/install_aws_toolchain.sh
+sudo systemctl restart vss-pipeline-web
+```
 
 ## Execucao local sem Docker
 

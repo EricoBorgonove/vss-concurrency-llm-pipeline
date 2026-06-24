@@ -29,6 +29,7 @@ write_env_var() {
 echo "Instalando dependencias do painel web..."
 sudo apt-get update
 sudo apt-get install -y python3 nginx
+./scripts/install_aws_toolchain.sh
 
 echo "Gravando variaveis de ambiente em $ENV_FILE..."
 sudo install -m 600 -o root -g root /dev/null "$ENV_FILE"

@@ -11,6 +11,11 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "esbmc"
+MISSING_ESBMC_HINT = (
+    "Executavel ESBMC nao encontrado no PATH.\n"
+    "Na AWS, rode: ./scripts/install_aws_toolchain.sh\n"
+    "Depois reinicie o painel: sudo systemctl restart vss-pipeline-web"
+)
 
 
 def display_path(path):
@@ -104,7 +109,7 @@ def main():
             command,
             benchmark,
             127,
-            error="Executavel ESBMC nao encontrado no PATH.",
+            error=MISSING_ESBMC_HINT,
         )
         print("Erro: executavel ESBMC nao encontrado no PATH.", file=sys.stderr)
         print(f"Log salvo em: {display_path(log_path)}")

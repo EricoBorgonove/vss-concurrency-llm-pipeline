@@ -101,6 +101,14 @@ def read_log_text(log_file):
         return ""
 
 
+def extract_error_message(log_text, stderr=""):
+    text = str(log_text or "")
+    marker = "[error]"
+    if marker in text:
+        return text.split(marker, 1)[1].strip()
+    return str(stderr or "").strip()
+
+
 def validation_row(
     index,
     finding,
@@ -164,6 +172,7 @@ def validate_finding_with_tool(finding, tool, index, timeout=10, created_at=None
     log_text = read_log_text(log_file)
     classification = classify_tool_result(tool, result.returncode, log_text, result.stderr)
     status = "executado" if classification not in ("erro_compilacao", "erro_ferramenta") else "falhou"
+    error = extract_error_message(log_text, result.stderr) if status == "falhou" else ""
     return validation_row(
         index,
         finding,
@@ -173,7 +182,7 @@ def validate_finding_with_tool(finding, tool, index, timeout=10, created_at=None
         command=command,
         returncode=result.returncode,
         log_file=log_file,
-        error="" if status == "executado" else classification,
+        error=error or classification,
         created_at=created_at,
     )
 

@@ -13,6 +13,8 @@ echo "Atualizando pacotes basicos..."
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl git
 
+./scripts/install_aws_toolchain.sh
+
 if ! command -v docker >/dev/null 2>&1; then
   echo "Instalando Docker..."
   curl -fsSL https://get.docker.com | sudo sh

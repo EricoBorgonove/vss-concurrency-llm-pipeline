@@ -12,6 +12,11 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "asan"
+MISSING_COMPILER_HINT = (
+    "Compilador C nao encontrado.\n"
+    "Na AWS, rode: ./scripts/install_aws_toolchain.sh\n"
+    "Depois reinicie o painel: sudo systemctl restart vss-pipeline-web"
+)
 
 
 def display_path(path):
@@ -145,7 +150,7 @@ def main():
 
     compiler_path, compiler_name = find_compiler(args.compiler)
     if compiler_path is None:
-        write_log(log_path, benchmark, [], [], error="Compilador C nao encontrado.")
+        write_log(log_path, benchmark, [], [], error=MISSING_COMPILER_HINT)
         print("Erro: compilador C nao encontrado.", file=sys.stderr)
         print(f"Log salvo em: {display_path(log_path)}")
         return 127

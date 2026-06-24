@@ -455,17 +455,17 @@ def escape(value):
 
 DETAIL_COLUMN_WIDTHS = {
     "tool": "5%",
-    "category": "8%",
-    "benchmark": "18%",
+    "category": "7%",
+    "benchmark": "16%",
     "execution_date": "9%",
     "expected_behavior": "7%",
-    "expectation_match": "8%",
-    "expected_tool_behavior": "8%",
-    "tool_expectation_match": "8%",
-    "classification": "7%",
-    "log_file": "14%",
-    "llm_action": "8%",
-    "error": "3%",
+    "expectation_match": "7%",
+    "expected_tool_behavior": "7%",
+    "tool_expectation_match": "7%",
+    "classification": "6%",
+    "log_file": "12%",
+    "llm_action": "7%",
+    "error": "10%",
 }
 
 
@@ -823,6 +823,16 @@ def render_limited_html_table(rows, fieldnames, limit=500):
             "O conjunto completo esta no CSV correspondente.</p>"
         )
     return note + render_html_table(visible_rows, fieldnames)
+
+
+def render_collapsible_section(title, content, open_by_default=True):
+    open_attr = " open" if open_by_default else ""
+    return (
+        f"<details class=\"report-section\"{open_attr}>"
+        f"<summary><span>{escape(title)}</span><span class=\"toggle-label\">Abrir/Recolher</span></summary>"
+        f"{content}"
+        "</details>"
+    )
 
 
 def render_github_finding_table(rows, fieldnames, limit=500):
@@ -1235,10 +1245,55 @@ def write_html_report(
     .table-wrap {{
       overflow-x: auto;
     }}
+    .report-section {{
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin: 18px 0;
+      overflow: hidden;
+    }}
+    .report-section summary {{
+      align-items: center;
+      background: var(--header);
+      cursor: pointer;
+      display: flex;
+      font-size: 18px;
+      font-weight: 700;
+      gap: 12px;
+      justify-content: space-between;
+      list-style: none;
+      padding: 12px 14px;
+    }}
+    .report-section summary::-webkit-details-marker {{
+      display: none;
+    }}
+    .report-section summary::before {{
+      content: "+";
+      color: var(--accent);
+      font-weight: 800;
+      margin-right: 2px;
+    }}
+    .report-section[open] summary::before {{
+      content: "-";
+    }}
+    .toggle-label {{
+      background: var(--surface);
+      border: 1px solid #b7cdfb;
+      border-radius: 6px;
+      color: #1e3a8a;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 8px;
+    }}
+    .report-section .table-wrap,
+    .report-section .filters {{
+      margin-left: 14px;
+      margin-right: 14px;
+    }}
     table {{
       border-collapse: collapse;
       width: 100%;
-      margin: 16px 0 32px;
+      margin: 16px 0 18px;
       background: var(--surface);
       font-size: 14px;
     }}
@@ -1259,7 +1314,7 @@ def write_html_report(
     }}
     #detail-table {{
       table-layout: fixed;
-      min-width: 1280px;
+      min-width: 1600px;
     }}
     #detail-table th,
     #detail-table td {{
@@ -1277,6 +1332,12 @@ def write_html_report(
     #detail-table .detail-col-error:empty::after {{
       content: "-";
       color: var(--muted);
+    }}
+    #detail-table .detail-col-error {{
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: break-word;
+      word-break: normal;
     }}
     #detail-table .code-link,
     #detail-table .log-link {{
@@ -1373,19 +1434,31 @@ def write_html_report(
     <section class="cards" aria-label="Indicadores principais">
       {render_dashboard_cards(rows)}
     </section>
-    <h2>Métricas por Categoria</h2>
-    <div class="table-wrap">{render_html_table(category_metrics_rows, category_metric_fields)}</div>
-    <h2>Resumo</h2>
-    <div class="table-wrap">{render_html_table(summary_rows, summary_fields)}</div>
-    <h2>Resultados Detalhados</h2>
-    {render_filter_controls(rows)}
-    <div class="table-wrap">
-      {render_dashboard_detail_table(rows, detail_fields)}
-    </div>
-    <h2>Métricas por Benchmark</h2>
-    <div class="table-wrap">{render_html_table(benchmark_metrics_rows, benchmark_metric_fields)}</div>
-    <h2>Reparos LLM dos Benchmarks</h2>
-    <div class="table-wrap">{render_html_table(llm_benchmark_repair_rows, llm_benchmark_repair_fields)}</div>
+    {render_collapsible_section(
+        "Métricas por Categoria",
+        f"<div class=\"table-wrap\">{render_html_table(category_metrics_rows, category_metric_fields)}</div>",
+        open_by_default=False,
+    )}
+    {render_collapsible_section(
+        "Resumo",
+        f"<div class=\"table-wrap\">{render_html_table(summary_rows, summary_fields)}</div>",
+        open_by_default=True,
+    )}
+    {render_collapsible_section(
+        "Resultados Detalhados",
+        f"{render_filter_controls(rows)}<div class=\"table-wrap\">{render_dashboard_detail_table(rows, detail_fields)}</div>",
+        open_by_default=True,
+    )}
+    {render_collapsible_section(
+        "Métricas por Benchmark",
+        f"<div class=\"table-wrap\">{render_html_table(benchmark_metrics_rows, benchmark_metric_fields)}</div>",
+        open_by_default=False,
+    )}
+    {render_collapsible_section(
+        "Reparos LLM dos Benchmarks",
+        f"<div class=\"table-wrap\">{render_html_table(llm_benchmark_repair_rows, llm_benchmark_repair_fields)}</div>",
+        open_by_default=False,
+    )}
   </main>
   <div id="code-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="code-modal-title">
     <section class="modal">

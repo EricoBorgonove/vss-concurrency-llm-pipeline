@@ -346,6 +346,18 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("data-llm-benchmark", table)
         self.assertIn("Gerar e validar reparo", table)
 
+    # Verifica se secoes grandes podem ser recolhidas no relatorio.
+    def test_render_collapsible_section_uses_details(self):
+        section = generate_report.render_collapsible_section(
+            "Resultados Detalhados",
+            "<p>conteudo</p>",
+            open_by_default=False,
+        )
+
+        self.assertIn('<details class="report-section"', section)
+        self.assertIn("Abrir/Recolher", section)
+        self.assertNotIn(" open>", section)
+
     # Verifica se metricas por categoria sao derivadas dos resultados quando o CSV auxiliar falta.
     def test_build_category_metrics_from_rows_counts_benchmarks_and_executions(self):
         rows = generate_report.dashboard_rows(

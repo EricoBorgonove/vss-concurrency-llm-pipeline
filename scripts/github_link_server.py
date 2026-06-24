@@ -140,10 +140,6 @@ def parse_auth_users(value):
 AUTH_USERS = parse_auth_users(os.environ.get("VSS_AUTH_USERS")) or DEFAULT_AUTH_USERS
 
 
-def is_auth_configured_with_default():
-    return AUTH_USERS == DEFAULT_AUTH_USERS
-
-
 def valid_credentials(username, password):
     expected_password = AUTH_USERS.get(username)
     if expected_password is None:
@@ -185,12 +181,6 @@ def login_page(error="", next_path="/github"):
         f'<p class="message error">{html_escape(error)}</p>'
         if error
         else '<p class="message">Entre para acessar o painel.</p>'
-    )
-    default_warning = (
-        '<p class="message warning">Usando credenciais padrao de desenvolvimento. '
-        'Na AWS, defina VSS_AUTH_USERS.</p>'
-        if is_auth_configured_with_default()
-        else ""
     )
     return f"""<!doctype html>
 <html lang="pt-BR">
@@ -261,7 +251,6 @@ def login_page(error="", next_path="/github"):
   <main>
     <h1>Pipeline VSS-LLM</h1>
     {error_html}
-    {default_warning}
     <form method="post" action="/login">
       <input type="hidden" name="next" value="{html_escape(next_path)}">
       <label>Usuário

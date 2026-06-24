@@ -269,6 +269,42 @@ Para gerar relatorios a partir dos logs ja existentes:
 python3 scripts/generate_report.py --latest-only
 ```
 
+Para registrar o diagnostico do ambiente local:
+
+```bash
+python3 scripts/check_environment.py
+```
+
+Na execucao local registrada em 2026-06-23, o diagnostico encontrou `clang`,
+`gcc`, `esbmc` 8.2.0, `afl-clang-fast` e `afl-fuzz` disponiveis. O arquivo
+gerado fica em `outputs/environment/` e deve ser usado para contextualizar os
+resultados, porque versoes e arquitetura influenciam sanitizers e verificadores.
+
+## Interface local e relatorio HTML
+
+O servidor local de links GitHub expoe uma tela em `/github`. Ela permite:
+
+- adicionar links de repositorios GitHub;
+- baixar o repositorio;
+- listar arquivos C/C++;
+- gerar achados por triagem estatica;
+- revisar achados em modal;
+- testar todos os achados de um link;
+- testar somente um achado especifico;
+- rodar testes globais dos links em background;
+- acompanhar progresso com texto e barra visual;
+- abrir logs das ferramentas em modal.
+
+O relatorio HTML em `reports/report.html` tambem e interativo:
+
+- possui filtros por ferramenta, categoria, classificacao e expectativa;
+- mostra metricas por categoria antes do resumo;
+- permite abrir o codigo do benchmark em modal;
+- permite abrir a saida/log da ferramenta em modal;
+- inclui botao para rodar benchmarks;
+- inclui botao para voltar para a tela de links;
+- usa larguras ajustadas na tabela de resultados detalhados.
+
 ## Execucao individual das ferramentas
 
 Cada ferramenta tambem pode ser chamada separadamente.
@@ -420,8 +456,15 @@ Este e um pipeline experimental. Algumas limitacoes importantes sao:
 Essas limitacoes nao invalidam o experimento. Pelo contrario: elas ficam
 registradas para que os resultados sejam interpretados com cuidado.
 
-## Proxima etapa
+## Proximas etapas
 
-A proxima melhoria planejada e tornar o relatorio HTML mais interativo, com
-filtros por ferramenta, categoria e classificacao. Outra evolucao natural e
-integrar uma LLM real para sugerir reparos a partir dos logs coletados.
+As melhorias de interface do relatorio HTML ja foram incorporadas. As proximas
+evolucoes mais relevantes sao:
+
+- executar uma rodada final em Linux `amd64` nativo, preferencialmente na AWS
+  Lightsail, para reduzir efeitos de emulacao;
+- revisar casos `inconclusivo`, especialmente retornos de ferramenta como `6`,
+  olhando os logs diretamente pelo modal;
+- decidir se os CSVs gerados em `reports/` serao versionados como artefatos da
+  rodada final ou mantidos apenas localmente;
+- integrar uma LLM real para sugerir reparos a partir dos logs coletados.

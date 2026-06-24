@@ -145,8 +145,8 @@ O projeto ja inclui:
 - `docker-compose.yml`: configuracao da execucao;
 - `scripts/setup_lightsail_ubuntu.sh`: preparacao de uma VM Ubuntu na AWS;
 - `scripts/install_aws_toolchain.sh`: instalacao local de `clang`, `gcc`,
-  `g++`, `build-essential`, headers/runtimes do Clang e `esbmc`, usados pelo
-  painel web nas validacoes;
+  `g++`, `build-essential`, headers/runtimes do Clang, `afl++` e `esbmc`,
+  usados pelo painel web nas validacoes;
 - `scripts/run_lightsail_report.sh`: execucao completa e empacotamento dos
   relatorios;
 - `scripts/install_aws_web_service.sh`: instalacao do painel web como servico
@@ -303,8 +303,8 @@ repositorios analisados ficam em `inputs/github_repos/` e nao sao apagados pelos
 scripts de limpeza do historico de benchmarks.
 
 Se uma validacao mostrar `Compilador C nao encontrado`, `Executavel ESBMC nao
-encontrado` ou `fatal error: 'stddef.h' file not found`, instale as ferramentas
-locais do painel e reinicie o servico:
+encontrado`, `Ferramenta AFL++ nao encontrada` ou `fatal error: 'stddef.h' file
+not found`, instale as ferramentas locais do painel e reinicie o servico:
 
 ```bash
 ./scripts/install_aws_toolchain.sh

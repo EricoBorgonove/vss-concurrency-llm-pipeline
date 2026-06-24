@@ -20,6 +20,7 @@ sudo apt-get install -y \
   software-properties-common
 
 optional_packages=(
+  afl++
   libc6-dev
   linux-libc-dev
   llvm
@@ -53,7 +54,7 @@ else
 fi
 
 echo "Ferramentas disponiveis:"
-for tool in clang gcc g++ esbmc python3; do
+for tool in clang gcc g++ esbmc afl-clang-fast afl-fuzz python3; do
   if command -v "$tool" >/dev/null 2>&1; then
     printf '  - %s: %s\n' "$tool" "$(command -v "$tool")"
   else

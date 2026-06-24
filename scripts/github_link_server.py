@@ -459,6 +459,31 @@ def validate_llm_benchmark_repair(row, timeout=30):
     )
 
 
+def should_refresh_report_html():
+    report_path = REPORTS_DIR / "report.html"
+    generator_path = PROJECT_ROOT / "scripts" / "generate_report.py"
+    if not report_path.is_file():
+        return True
+    try:
+        return generator_path.stat().st_mtime > report_path.stat().st_mtime
+    except OSError:
+        return False
+
+
+def refresh_report_html_if_needed():
+    if not should_refresh_report_html():
+        return
+    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [sys.executable, "scripts/generate_report.py", "--latest-only"],
+        cwd=PROJECT_ROOT,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        text=True,
+        check=False,
+    )
+
+
 def run_github_validations():
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     limit = env_optional_int("GITHUB_VALIDATION_LIMIT")
@@ -676,6 +701,11 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
         if path == "/validacoes":
             self.send_html(200, VALIDATIONS_FILE.read_text(encoding="utf-8"))
+            return
+
+        if path == "/reports/report.html":
+            refresh_report_html_if_needed()
+            self.send_project_file("/reports/", REPORTS_DIR, path)
             return
 
         if path.startswith("/reports/"):

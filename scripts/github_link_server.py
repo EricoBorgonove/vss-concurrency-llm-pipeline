@@ -48,6 +48,10 @@ from pipeline_runner.github_tool_validations import (  # noqa: E402
     read_validations,
     validate_findings_file,
 )
+from pipeline_runner.benchmark_llm_repairs import (  # noqa: E402
+    read_repairs,
+    generate_repair_from_log,
+)
 
 WEB_DIR = PROJECT_ROOT / "web"
 INDEX_FILE = WEB_DIR / "github_input.html"
@@ -432,6 +436,29 @@ def run_toolchain_install():
         )
 
 
+def validate_llm_benchmark_repair(row, timeout=30):
+    command = [
+        sys.executable,
+        "scripts/validate_llm_repair.py",
+        row["repair_file"],
+        "--fixed-benchmark",
+        row["repaired_benchmark"],
+        "--tool",
+        row["tool"],
+        "--tool-timeout",
+        str(timeout),
+        "--repair-id",
+        row["id"],
+    ]
+    return subprocess.run(
+        command,
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
 def run_github_validations():
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     limit = env_optional_int("GITHUB_VALIDATION_LIMIT")
@@ -545,6 +572,11 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def read_json_body(self):
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        raw_body = self.rfile.read(length).decode("utf-8")
+        return json.loads(raw_body or "{}")
 
     def send_redirect(self, location, extra_headers=None):
         self.send_response(303)
@@ -686,6 +718,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             self.send_json(200, {"run": benchmark_run_status()})
             return
 
+        if path == "/api/benchmark-llm-repairs":
+            self.send_json(200, {"repairs": read_repairs()})
+            return
+
         self.send_json(404, {"error": "rota não encontrada"})
 
     def do_POST(self):
@@ -711,6 +747,10 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
 
         if path == "/api/toolchain-run":
             self.handle_run_toolchain_install()
+            return
+
+        if path == "/api/benchmark-llm-repairs":
+            self.handle_create_benchmark_llm_repair()
             return
 
         if path.startswith("/api/github-findings/") and path.endswith("/validate"):
@@ -785,11 +825,8 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         )
 
     def handle_create_link(self):
-        length = int(self.headers.get("Content-Length", "0") or "0")
-        raw_body = self.rfile.read(length).decode("utf-8")
-
         try:
-            payload = json.loads(raw_body or "{}")
+            payload = self.read_json_body()
             row = append_link(payload.get("url", ""))
         except json.JSONDecodeError:
             self.send_json(400, {"error": "JSON inválido"})
@@ -923,11 +960,8 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         self.send_json(200, {"removed_id": removed_id})
 
     def handle_update_finding_status(self, finding_id):
-        length = int(self.headers.get("Content-Length", "0") or "0")
-        raw_body = self.rfile.read(length).decode("utf-8")
-
         try:
-            payload = json.loads(raw_body or "{}")
+            payload = self.read_json_body()
             row = update_finding_status(finding_id, payload.get("status", ""))
         except json.JSONDecodeError:
             self.send_json(400, {"error": "JSON inválido"})
@@ -997,6 +1031,37 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
         thread = threading.Thread(target=run_toolchain_install, daemon=True)
         thread.start()
         self.send_json(202, {"run": toolchain_run_status()})
+
+    def handle_create_benchmark_llm_repair(self):
+        timeout = env_int("VSS_LLM_REPAIR_VALIDATION_TIMEOUT", 30)
+
+        try:
+            payload = self.read_json_body()
+            row = generate_repair_from_log(
+                payload.get("log_file", ""),
+                benchmark=payload.get("benchmark", ""),
+                tool=payload.get("tool", ""),
+                model=payload.get("model") or None,
+            )
+            validation = validate_llm_benchmark_repair(row, timeout=timeout)
+            updated_rows = read_repairs()
+            updated_row = next((item for item in updated_rows if item.get("id") == row["id"]), row)
+        except json.JSONDecodeError:
+            self.send_json(400, {"error": "JSON inválido"})
+            return
+        except Exception as exc:
+            self.send_json(500, {"error": str(exc)})
+            return
+
+        self.send_json(
+            200,
+            {
+                "repair": updated_row,
+                "validation_returncode": validation.returncode,
+                "stdout": validation.stdout,
+                "stderr": validation.stderr,
+            },
+        )
 
     def handle_validate_link(self, link_id):
         limit = env_int("GITHUB_LINK_VALIDATION_LIMIT", 10)

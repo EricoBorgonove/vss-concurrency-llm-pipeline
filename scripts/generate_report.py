@@ -479,7 +479,7 @@ def render_benchmark_cell(value, css_class=""):
 
     escaped_value = escape(value)
     class_attr = f" class=\"{escape(css_class)}\"" if css_class else ""
-    if str(value).startswith("benchmarks/"):
+    if str(value).startswith("benchmarks/") or str(value).startswith("outputs/llm/repaired_benchmarks/"):
         return (
             f"<td{class_attr}>"
             f"<button class=\"code-link\" type=\"button\" data-code-path=\"{escaped_value}\">"
@@ -797,7 +797,7 @@ def render_html_table(rows, fieldnames):
     for row in rows:
         cells = "".join(
             render_benchmark_cell(row.get(field, ""))
-            if field == "benchmark"
+            if field in ("benchmark", "repaired_benchmark")
             else f"<td>{escape(row.get(field, ''))}</td>"
             for field in fieldnames
         )

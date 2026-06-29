@@ -346,6 +346,22 @@ class GenerateReportTest(unittest.TestCase):
         self.assertIn("data-llm-benchmark", table)
         self.assertIn("Gerar e validar reparo", table)
 
+    # Verifica se arquivos reparados pela LLM tambem abrem no modal de codigo.
+    def test_render_html_table_links_repaired_benchmark_code(self):
+        table = generate_report.render_html_table(
+            [
+                {
+                    "repaired_benchmark": (
+                        "outputs/llm/repaired_benchmarks/simple_buffer_overflow_fixed.c"
+                    )
+                }
+            ],
+            ["repaired_benchmark"],
+        )
+
+        self.assertIn("data-code-path", table)
+        self.assertIn("outputs/llm/repaired_benchmarks/simple_buffer_overflow_fixed.c", table)
+
     # Verifica se secoes grandes podem ser recolhidas no relatorio.
     def test_render_collapsible_section_uses_details(self):
         section = generate_report.render_collapsible_section(

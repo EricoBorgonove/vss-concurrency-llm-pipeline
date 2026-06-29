@@ -462,10 +462,14 @@ def validate_llm_benchmark_repair(row, timeout=30):
 def should_refresh_report_html():
     report_path = REPORTS_DIR / "report.html"
     generator_path = PROJECT_ROOT / "scripts" / "generate_report.py"
+    llm_repairs_path = REPORTS_DIR / "llm_benchmark_repairs.csv"
     if not report_path.is_file():
         return True
     try:
-        return generator_path.stat().st_mtime > report_path.stat().st_mtime
+        report_mtime = report_path.stat().st_mtime
+        if generator_path.stat().st_mtime > report_mtime:
+            return True
+        return llm_repairs_path.is_file() and llm_repairs_path.stat().st_mtime > report_mtime
     except OSError:
         return False
 
@@ -1076,6 +1080,7 @@ class GitHubLinkHandler(BaseHTTPRequestHandler):
             validation = validate_llm_benchmark_repair(row, timeout=timeout)
             updated_rows = read_repairs()
             updated_row = next((item for item in updated_rows if item.get("id") == row["id"]), row)
+            refresh_report_html_if_needed()
         except json.JSONDecodeError:
             self.send_json(400, {"error": "JSON inválido"})
             return

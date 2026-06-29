@@ -1674,13 +1674,14 @@ def write_html_report(
           `Log de validação: ${{repair.validation_log || '-'}}`,
           repair.error ? `Erro: ${{repair.error}}` : '',
           '',
-          'Atualize a página para ver o histórico completo na tabela de reparos LLM.'
+          'A tabela será atualizada automaticamente.'
         ].filter(Boolean);
         logModalSubtitle.textContent = benchmark;
         logModalContent.textContent = lines.join('\\n');
         logModalBackdrop.classList.add('is-open');
         document.body.classList.add('modal-open');
         closeLogModalButton.focus();
+        window.setTimeout(() => window.location.reload(), 1200);
       }} catch (error) {{
         logModalSubtitle.textContent = benchmark;
         logModalContent.textContent = error.message;

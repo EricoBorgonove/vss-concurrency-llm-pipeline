@@ -23,10 +23,16 @@ As ferramentas integradas atualmente sao:
 - `ThreadSanitizer` ou `TSAN`: deteccao de condicoes de corrida;
 - `AFL++`: fuzzing para explorar entradas e provocar crashes;
 - detector simples de deadlock por timeout;
-- uma etapa simulada de reparo por LLM, ainda sem chamada a API externa.
+- reparo por LLM para gerar versoes corrigidas dos benchmarks e valida-las com
+  as ferramentas integradas.
 
 Depois de executar as ferramentas, o projeto gera relatorios em CSV e HTML. Os
 relatorios ficam na pasta `reports/`, e os logs brutos ficam em `outputs/`.
+
+A aplicacao tambem inclui um painel web autenticado para operar o fluxo na AWS:
+cadastro de links GitHub, triagem estatica de achados, validacao individual ou
+global, abertura de logs e codigo em modais, preparo da toolchain local e
+execucao de reparos LLM diretamente pelo dashboard.
 
 ## Por que isso e util
 
@@ -169,6 +175,7 @@ reports/summary.csv
 reports/report.html
 reports/benchmark_metrics.csv
 reports/category_metrics.csv
+reports/llm_benchmark_repairs.csv
 ```
 
 O arquivo mais amigavel para leitura e apresentacao e:
@@ -228,6 +235,8 @@ Essa rodada tambem gera os artefatos da analise de links GitHub:
 - `reports/github_llm_queue.csv`: candidatos priorizados para analise por LLM;
 - `reports/github_tool_validations.csv`: validacoes dos achados por ferramentas;
 - `reports/report.html`: dashboard atualizado com essas secoes.
+- `reports/llm_benchmark_repairs.csv`: historico de reparos LLM gerados e
+  validados para os benchmarks.
 
 Na tela local de links GitHub (`/github`), o botao **Rodar testes dos links**
 executa a validacao global em background e grava o status em
@@ -369,6 +378,7 @@ O servidor local de links GitHub expoe uma tela em `/github`. Ela permite:
 - testar somente um achado especifico;
 - rodar testes globais dos links em background;
 - acompanhar progresso com texto e barra visual;
+- preparar as ferramentas locais da AWS pelo painel;
 - abrir logs das ferramentas em modal.
 
 Antes de acessar o painel, o servidor mostra a tela `/login`. As credenciais
@@ -390,10 +400,13 @@ abrir o log da ferramenta.
 O relatorio HTML em `reports/report.html` tambem e interativo:
 
 - possui filtros por ferramenta, categoria, classificacao e expectativa;
-- mostra metricas por categoria antes do resumo;
+- mostra metricas por categoria, resumo e resultados detalhados;
+- permite recolher e abrir tabelas grandes;
 - permite abrir o codigo do benchmark em modal;
+- permite abrir o codigo reparado pela LLM em modal;
 - permite abrir a saida/log da ferramenta em modal;
 - inclui botao para rodar benchmarks;
+- inclui botao para gerar e validar reparos LLM;
 - inclui botao para voltar para a tela de links;
 - usa larguras ajustadas na tabela de resultados detalhados.
 
@@ -492,10 +505,10 @@ falhou durante uma execucao controlada do fuzzer.
 
 ## Etapa LLM dos benchmarks
 
-O projeto possui uma etapa de reparo por LLM para os benchmarks controlados. Se
-`OPENAI_API_KEY` estiver configurada, o script chama a API externa e gera uma
-versao corrigida do arquivo C. Sem chave, o fluxo usa fallback simulado para
-manter o experimento executavel e auditavel.
+O projeto possui uma etapa de reparo por LLM para os benchmarks controlados. A
+LLM recebe o log da ferramenta, o codigo original e o contexto do benchmark, e
+gera uma versao corrigida do arquivo C. O reparo nao sobrescreve o benchmark
+original: ele e salvo como artefato auditavel e validado em seguida.
 
 O fluxo executa:
 
@@ -504,7 +517,8 @@ O fluxo executa:
 - gerar um arquivo C reparado em `outputs/llm/repaired_benchmarks/`;
 - registrar metadados em `outputs/llm/repairs/`;
 - gravar o historico em `reports/llm_benchmark_repairs.csv`;
-- validar o arquivo reparado com ASAN, TSAN, ESBMC ou detector de deadlock.
+- validar o arquivo reparado com ASAN, TSAN, ESBMC ou detector de deadlock;
+- permitir abrir o codigo reparado e o log de validacao pelo dashboard HTML.
 
 Exemplo:
 
@@ -525,7 +539,8 @@ python3 scripts/validate_llm_repair.py \
 No dashboard HTML, a tabela **Resultados Detalhados** possui o botao
 **Gerar e validar reparo** para cada benchmark. Quando o dashboard esta aberto
 pelo painel web, esse botao chama a API local, gera o reparo LLM, valida o
-arquivo corrigido e atualiza `reports/llm_benchmark_repairs.csv`.
+arquivo corrigido, atualiza `reports/llm_benchmark_repairs.csv` e recarrega a
+tabela de reparos.
 
 Na AWS, configure a chave antes de instalar ou reinstalar o servico:
 
@@ -552,7 +567,7 @@ ferramentas externas pesadas. Ela cobre, por exemplo:
 - classificacao de resultados;
 - geracao de resumo;
 - helpers dos executores;
-- validacao simulada de reparos.
+- fluxo de geracao, registro e validacao de reparos LLM.
 
 Execute:
 

@@ -39,6 +39,10 @@ TOOL_BY_CATEGORY = {
     "deadlock": "deadlock",
     "assertion_violation": "esbmc",
 }
+TOOL_ALIASES = {
+    "afl": "asan",
+    "afl++": "asan",
+}
 
 
 def relative_or_raw(path):
@@ -123,7 +127,7 @@ def category_for_benchmark(benchmark):
 
 def tool_for_benchmark(benchmark, tool=""):
     if tool:
-        return tool
+        return TOOL_ALIASES.get(tool, tool)
     return TOOL_BY_CATEGORY.get(category_for_benchmark(benchmark), "asan")
 
 
@@ -162,16 +166,89 @@ codigo original:
 """
 
 
-def simulated_response(category):
-    suggestions = {
-        "memory_corruption": "Validar tamanhos, indices e tempo de vida dos ponteiros antes de acessar memoria.",
-        "data_race": "Proteger estado compartilhado com mutex ou atomicos.",
-        "deadlock": "Usar ordem global de aquisicao de locks.",
-        "assertion_violation": "Fortalecer pre-condicoes antes da assertiva.",
+def simulated_repaired_code(category):
+    if category == "assertion_violation":
+        return """#include <assert.h>
+
+int main(void) {
+    int limite = 10;
+    int valor = 10;
+    assert(valor <= limite);
+    return 0;
+}
+"""
+    if category == "data_race":
+        return """#include <pthread.h>
+
+static int contador = 0;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static void *worker(void *arg) {
+    (void)arg;
+    pthread_mutex_lock(&mutex);
+    contador++;
+    pthread_mutex_unlock(&mutex);
+    return 0;
+}
+
+int main(void) {
+    pthread_t t1;
+    pthread_t t2;
+    pthread_create(&t1, 0, worker, 0);
+    pthread_create(&t2, 0, worker, 0);
+    pthread_join(t1, 0);
+    pthread_join(t2, 0);
+    return contador == 2 ? 0 : 1;
+}
+"""
+    if category == "deadlock":
+        return """#include <pthread.h>
+
+static pthread_mutex_t primeiro = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t segundo = PTHREAD_MUTEX_INITIALIZER;
+
+static void *worker(void *arg) {
+    (void)arg;
+    pthread_mutex_lock(&primeiro);
+    pthread_mutex_lock(&segundo);
+    pthread_mutex_unlock(&segundo);
+    pthread_mutex_unlock(&primeiro);
+    return 0;
+}
+
+int main(void) {
+    pthread_t t1;
+    pthread_t t2;
+    pthread_create(&t1, 0, worker, 0);
+    pthread_create(&t2, 0, worker, 0);
+    pthread_join(t1, 0);
+    pthread_join(t2, 0);
+    return 0;
+}
+"""
+    return """#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+    char *buffer = (char *)malloc(16);
+    if (!buffer) {
+        return 1;
     }
+    strncpy(buffer, "corrigido", 15);
+    buffer[15] = '\\0';
+    free(buffer);
+    return 0;
+}
+"""
+
+
+def simulated_response(category):
     return (
         "LLM repair simulation\n"
-        f"suggestion: {suggestions.get(category, 'Inspecionar o log e corrigir a causa raiz.')}\n"
+        "note: codigo seguro gerado localmente para demonstracao temporaria.\n\n"
+        "```c\n"
+        f"{simulated_repaired_code(category)}"
+        "```\n"
     )
 
 

@@ -24,6 +24,17 @@ class BenchmarkLlmRepairsTest(unittest.TestCase):
 
         self.assertEqual(benchmark_llm_repairs.category_for_benchmark(benchmark), "assertion_violation")
         self.assertEqual(benchmark_llm_repairs.tool_for_benchmark(benchmark), "esbmc")
+        self.assertEqual(benchmark_llm_repairs.tool_for_benchmark(benchmark, "afl++"), "asan")
+
+    # Verifica se o fallback simulado retorna um programa C compilavel, nao apenas texto.
+    def test_simulated_response_contains_safe_c_code(self):
+        code = benchmark_llm_repairs.extract_c_code(
+            benchmark_llm_repairs.simulated_response("memory_corruption"),
+            "original",
+        )
+
+        self.assertIn("int main", code)
+        self.assertIn("free(buffer)", code)
 
     # Verifica se ausencia de chave gera fallback auditavel sem chamar API externa.
     def test_generate_repair_from_log_uses_simulated_fallback_without_api_key(self):
@@ -52,6 +63,9 @@ class BenchmarkLlmRepairsTest(unittest.TestCase):
                 self.assertEqual(row["category"], "memory_corruption")
                 self.assertTrue((PROJECT_ROOT / row["repair_file"]).is_file())
                 self.assertTrue((PROJECT_ROOT / row["repaired_benchmark"]).is_file())
+                repaired_code = (PROJECT_ROOT / row["repaired_benchmark"]).read_text(encoding="utf-8")
+                self.assertIn("int main", repaired_code)
+                self.assertNotIn("original", repaired_code)
         finally:
             for key in ("repair_file", "repaired_benchmark", "response_file"):
                 if "row" in locals() and row.get(key):

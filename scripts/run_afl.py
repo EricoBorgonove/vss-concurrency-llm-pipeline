@@ -220,6 +220,7 @@ def main():
                 str(benchmark),
                 "-o",
                 str(binary_path),
+                "-pthread",
             ]
             use_asan = not args.disable_asan
             asan_compile_result = None

@@ -166,6 +166,7 @@ def main():
                 str(benchmark),
                 "-o",
                 str(binary_path),
+                "-pthread",
             ]
             compile_result = subprocess.run(
                 compile_command,
